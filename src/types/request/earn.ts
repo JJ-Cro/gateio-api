@@ -16,3 +16,14 @@ export interface GetStructuredProductOrdersReq {
   page?: number;
   limit?: number;
 }
+
+/** Request params for POST /earn/dual/orders */
+export interface PlaceDualInvestmentOrderParams {
+  plan_id: string;
+  /** Subscription amount. Mutually exclusive with copies. */
+  amount: string;
+  /** Units. Mutually exclusive with amount. */
+  copies?: string;
+  /** Custom order info, must start with t- */
+  text?: string;
+}

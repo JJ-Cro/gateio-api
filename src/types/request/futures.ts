@@ -46,6 +46,11 @@ export interface GetFundingRatesReq {
   to?: number;
 }
 
+export interface BatchFundingRatesReq {
+  settle: 'btc' | 'usdt';
+  contracts: string[];
+}
+
 export interface GetLiquidationHistoryReq {
   settle: 'btc' | 'usdt' | 'usd';
   contract?: string;
@@ -263,7 +268,75 @@ export interface UpdateFuturesPriceTriggeredOrderReq {
   contract?: string;
   size?: number;
   price?: string;
+  /** When fully closing in single-position mode, set true */
+  close?: boolean;
   trigger_price?: string;
   price_type?: 0 | 1 | 2; // 0 - Latest trade price, 1 - Mark price, 2 - Index price
   auto_size?: string; // Not required in single position mode
+}
+
+/** Trail order (autoorder/v1/trail) request types */
+export interface CreateTrailOrderReq {
+  settle: 'btc' | 'usdt';
+  contract: string;
+  amount: string;
+  activation_price?: string;
+  is_gte?: boolean;
+  price_type?: 1 | 2 | 3;
+  price_offset?: string;
+  reduce_only?: boolean;
+  position_related?: boolean;
+  text?: string;
+  pos_margin_mode?: string;
+  position_mode?: string;
+}
+
+export interface TerminateTrailOrderReq {
+  settle: 'btc' | 'usdt';
+  id?: number;
+  text?: string;
+}
+
+export interface BatchTerminateTrailOrdersReq {
+  settle: 'btc' | 'usdt';
+  contract?: string;
+  related_position?: 1 | 2;
+}
+
+export interface GetTrailOrderListReq {
+  settle: 'btc' | 'usdt';
+  contract?: string;
+  is_finished?: boolean;
+  start_at?: number;
+  end_at?: number;
+  page_num?: number;
+  page_size?: number;
+  sort_by?: 1 | 2;
+  hide_cancel?: boolean;
+  related_position?: 1 | 2;
+  sort_by_trigger?: boolean;
+  reduce_only?: 1 | 2;
+  side?: 1 | 2;
+}
+
+export interface GetTrailOrderDetailReq {
+  settle: 'btc' | 'usdt';
+  id: number;
+}
+
+export interface UpdateTrailOrderReq {
+  settle: 'btc' | 'usdt';
+  id: number;
+  amount?: string;
+  activation_price?: string;
+  is_gte_str?: string;
+  price_type?: 0 | 1 | 2 | 3;
+  price_offset?: string;
+}
+
+export interface GetTrailOrderChangeLogReq {
+  settle: 'btc' | 'usdt';
+  id: number;
+  page_num?: number;
+  page_size?: number;
 }

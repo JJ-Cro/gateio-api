@@ -17,13 +17,6 @@ import {
   GetAlphaTickersReq,
 } from './types/request/alpha.js';
 import {
-  GetLoanCollateralRecordsReq,
-  GetLoanOrdersReq,
-  GetLoanRepaymentHistoryReq,
-  SubmitLoanOrderReq,
-  UpdateLoanCollateralReq,
-} from './types/request/collateralLoan.js';
-import {
   CloseCrossExPositionReq,
   CreateCrossExConvertOrderReq,
   CreateCrossExConvertQuoteReq,
@@ -69,6 +62,7 @@ import {
 import {
   GetStructuredProductListReq,
   GetStructuredProductOrdersReq,
+  PlaceDualInvestmentOrderParams,
 } from './types/request/earn.js';
 import {
   GetLendingInterestRecordsReq,
@@ -83,6 +77,9 @@ import {
 } from './types/request/flashswap.js';
 import {
   BatchAmendOrderReq,
+  BatchFundingRatesReq,
+  BatchTerminateTrailOrdersReq,
+  CreateTrailOrderReq,
   DeleteAllFuturesOrdersReq,
   GetFundingRatesReq,
   GetFuturesAccountBookReq,
@@ -103,12 +100,17 @@ import {
   GetLiquidationHistoryReq,
   GetRiskLimitTableReq,
   GetRiskLimitTiersReq,
+  GetTrailOrderChangeLogReq,
+  GetTrailOrderDetailReq,
+  GetTrailOrderListReq,
   SubmitFuturesOrderReq,
   SubmitFuturesTriggeredOrderReq,
+  TerminateTrailOrderReq,
   UpdateDualModePositionLeverageReq,
   UpdateDualModePositionMarginReq,
   UpdateFuturesOrderReq,
   UpdateFuturesPriceTriggeredOrderReq,
+  UpdateTrailOrderReq,
 } from './types/request/futures.js';
 import {
   GetCrossMarginAccountHistoryReq,
@@ -156,6 +158,24 @@ import {
   MarkOTCOrderAsPaidReq,
 } from './types/request/otc.js';
 import {
+  P2PMerchantAdsDetailReq,
+  P2PMerchantAdsUpdateStatusReq,
+  P2PMerchantCancelTransactionReq,
+  P2PMerchantConfirmPaymentReq,
+  P2PMerchantConfirmReceiptReq,
+  P2PMerchantGetAdsListReq,
+  P2PMerchantGetChatsListReq,
+  P2PMerchantGetCompletedTransactionListReq,
+  P2PMerchantGetCounterpartyUserInfoReq,
+  P2PMerchantGetMyselfPaymentReq,
+  P2PMerchantGetPendingTransactionListReq,
+  P2PMerchantGetTransactionDetailsReq,
+  P2PMerchantMyAdsListReq,
+  P2PMerchantPlaceBizPushOrderReq,
+  P2PMerchantSendChatMessageReq,
+  P2PMerchantUploadChatFileReq,
+} from './types/request/p2pMerchant.js';
+import {
   GetAgencyCommissionHistoryReq,
   GetAgencyTransactionHistoryReq,
   GetBrokerCommissionHistoryReq,
@@ -185,6 +205,18 @@ import {
   CreateSubAccountReq,
   UpdateSubAccountApiKeyReq,
 } from './types/request/subaccount.js';
+import {
+  TradFiClosePositionReq,
+  TradFiCreateOrderReq,
+  TradFiCreateTransactionReq,
+  TradFiGetKlinesParams,
+  TradFiGetOrderHistoryParams,
+  TradFiGetPositionHistoryParams,
+  TradFiGetSymbolDetailParams,
+  TradFiGetTransactionsParams,
+  TradFiModifyOrderReq,
+  TradFiModifyPositionReq,
+} from './types/request/tradfi.js';
 import {
   GetUnifiedHistoryLendingRateReq,
   GetUnifiedInterestRecordsReq,
@@ -222,12 +254,6 @@ import {
   CreateAlphaOrderResp,
   CreateAlphaQuoteResp,
 } from './types/response/alpha.js';
-import {
-  LoanCollateralRatio,
-  LoanCollateralRecord,
-  LoanOrder,
-  LoanRepaymentHistoryRecord,
-} from './types/response/collateralloan.js';
 import {
   CancelCrossExOrderResp,
   CloseCrossExPositionResp,
@@ -289,6 +315,7 @@ import {
 } from './types/response/flashswap.js';
 import {
   BatchAmendOrderResp,
+  BatchFundingRatesResponse,
   DeleteFuturesBatchOrdersResp,
   FuturesAccount,
   FuturesAccountBookRecord,
@@ -312,6 +339,8 @@ import {
   PremiumIndexKLine,
   RiskLimitTableTier,
   RiskLimitTier,
+  TrailChangeLog,
+  TrailOrder,
 } from './types/response/futures.js';
 import {
   CrossMarginAccount,
@@ -369,6 +398,18 @@ import {
   MarkOTCOrderAsPaidResp,
 } from './types/response/otc.js';
 import {
+  P2PMerchantAdsDetail,
+  P2PMerchantAdsListItem,
+  P2PMerchantApiResp,
+  P2PMerchantChatsListData,
+  P2PMerchantCounterpartyUserInfo,
+  P2PMerchantMyAdsListData,
+  P2PMerchantPaymentMethod,
+  P2PMerchantTransactionDetails,
+  P2PMerchantTransactionListData,
+  P2PMerchantUserInfo,
+} from './types/response/p2pMerchant.js';
+import {
   AgencyCommissionHistoryRecord,
   AgencyTransactionHistoryRecord,
   BrokerCommissionHistoryRecord,
@@ -400,6 +441,25 @@ import {
   SubAccountAPIKey,
   SubAccountMode,
 } from './types/response/subaccount.js';
+import {
+  TradFiApiResp,
+  TradFiAssets,
+  TradFiCategoryItem,
+  TradFiCreateOrderResult,
+  TradFiCreateUserResult,
+  TradFiKlineItem,
+  TradFiListData,
+  TradFiModifyOrderResult,
+  TradFiMT5Account,
+  TradFiOrderHistoryItem,
+  TradFiOrderItem,
+  TradFiPositionHistoryItem,
+  TradFiPositionItem,
+  TradFiSymbolDetailItem,
+  TradFiSymbolItem,
+  TradFiTicker,
+  TradFiTransactionListData,
+} from './types/response/tradfi.js';
 import {
   MarginTier,
   PortfolioMarginCalculation,
@@ -2465,6 +2525,21 @@ export class RestClient extends BaseRestClient {
   }
 
   /**
+   * Batch query historical funding rate data for perpetual contracts
+   *
+   * @param params settle and array of contract names
+   * @returns Promise<BatchFundingRatesResponse[]>
+   */
+  getBatchFundingRates(
+    params: BatchFundingRatesReq,
+  ): Promise<BatchFundingRatesResponse[]> {
+    const { settle, contracts } = params;
+    return this.post(`/futures/${settle}/funding_rates`, {
+      body: { contracts },
+    });
+  }
+
+  /**
    * Futures insurance balance history
    *
    * @param params Parameters for retrieving futures insurance balance history
@@ -3201,9 +3276,118 @@ export class RestClient extends BaseRestClient {
     params: UpdateFuturesPriceTriggeredOrderReq,
   ): Promise<{ id: number }> {
     const { settle, order_id, ...body } = params;
-    return this.putPrivate(`/futures/${settle}/price_orders/${order_id}`, {
-      body: body,
+    return this.putPrivate(
+      `/futures/${settle}/price_orders/amend/${order_id}`,
+      {
+        body: body,
+      },
+    );
+  }
+
+  /**
+   * Create trail order
+   *
+   * @param params settle and trail order parameters
+   * @returns Promise with code, message, data containing id and timestamp
+   */
+  createTrailOrder(params: CreateTrailOrderReq): Promise<{
+    code?: number;
+    message?: string;
+    data?: { id?: string; timestamp?: number };
+    timestamp?: number;
+  }> {
+    const { settle, ...body } = params;
+    return this.postPrivate(`/futures/${settle}/autoorder/v1/trail/create`, {
+      body,
     });
+  }
+
+  /**
+   * Terminate trail order
+   *
+   * @param params settle and id or text
+   * @returns Promise<TrailOrder>
+   */
+  terminateTrailOrder(params: TerminateTrailOrderReq): Promise<TrailOrder> {
+    const { settle, ...body } = params;
+    return this.postPrivate(`/futures/${settle}/autoorder/v1/trail/stop`, {
+      body,
+    });
+  }
+
+  /**
+   * Batch terminate trail orders
+   *
+   * @param params settle and optional contract, related_position
+   * @returns Promise<{ orders: TrailOrder[] }>
+   */
+  batchTerminateTrailOrders(
+    params: BatchTerminateTrailOrdersReq,
+  ): Promise<{ orders?: TrailOrder[] }> {
+    const { settle, ...body } = params;
+    return this.postPrivate(`/futures/${settle}/autoorder/v1/trail/stop_all`, {
+      body,
+    });
+  }
+
+  /**
+   * Get trail order list
+   *
+   * @param params query parameters
+   * @returns Promise<{ orders: TrailOrder[] }>
+   */
+  getTrailOrderList(
+    params: GetTrailOrderListReq,
+  ): Promise<{ orders?: TrailOrder[] }> {
+    const { settle, ...query } = params;
+    return this.getPrivate(`/futures/${settle}/autoorder/v1/trail/list`, query);
+  }
+
+  /**
+   * Get trail order details
+   *
+   * @param params settle and order id
+   * @returns Promise with code, message, data.order
+   */
+  getTrailOrderDetail(params: GetTrailOrderDetailReq): Promise<{
+    code?: number;
+    message?: string;
+    data?: { order?: TrailOrder };
+    timestamp?: number;
+  }> {
+    const { settle, id } = params;
+    return this.getPrivate(`/futures/${settle}/autoorder/v1/trail/detail`, {
+      id,
+    });
+  }
+
+  /**
+   * Update trail order
+   *
+   * @param params settle, id and fields to update
+   * @returns Promise<TrailOrder>
+   */
+  updateTrailOrder(params: UpdateTrailOrderReq): Promise<TrailOrder> {
+    const { settle, id, ...body } = params;
+    return this.postPrivate(`/futures/${settle}/autoorder/v1/trail/update`, {
+      body: { id, ...body },
+    });
+  }
+
+  /**
+   * Get trail order user modification records
+   *
+   * @param params settle, id and optional pagination
+   * @returns Promise<{ change_log: TrailChangeLog[] }>
+   */
+  getTrailOrderChangeLog(
+    params: GetTrailOrderChangeLogReq,
+  ): Promise<{ change_log?: TrailChangeLog[] }> {
+    const { settle, ...query } = params;
+    return this.getPrivate(
+      `/futures/${settle}/autoorder/v1/trail/change_log`,
+      query,
+    );
   }
 
   getFuturesPositionCloseHistory(
@@ -4136,141 +4320,6 @@ export class RestClient extends BaseRestClient {
   }
 
   /**==========================================================================================================================
-   * COLLATERAL LOAN
-   * ==========================================================================================================================
-   */
-
-  /**
-   * Place order
-   *
-   * @param params Parameters for placing an order
-   * @returns Promise<{ order_id: number }>
-   */
-  submitLoanOrder(params: SubmitLoanOrderReq): Promise<{ order_id: number }> {
-    return this.postPrivate('/loan/collateral/orders', { body: params });
-  }
-
-  /**
-   * List Orders
-   *
-   * @param params Parameters for listing orders
-   * @returns Promise<GetLoanOrdersResp[]>
-   */
-  getLoanOrders(params?: GetLoanOrdersReq): Promise<LoanOrder[]> {
-    return this.getPrivate('/loan/collateral/orders', params);
-  }
-
-  /**
-   * Get a single order
-   *
-   * @param params Parameters for retrieving a single order
-   * @returns Promise<GetLoanOrdersResp>
-   */
-  getLoanOrder(params: { order_id: number }): Promise<LoanOrder> {
-    return this.getPrivate(`/loan/collateral/orders/${params.order_id}`);
-  }
-
-  /**
-   * Repayment
-   *
-   * @param params Parameters for repayment
-   * @returns Promise<{
-   *   repaid_principal: string;
-   *   repaid_interest: string;
-   * }>
-   */
-  submitLoanRepay(params: {
-    order_id: number;
-    repay_amount: string;
-    repaid_all: boolean;
-  }): Promise<{
-    repaid_principal: string;
-    repaid_interest: string;
-  }> {
-    return this.postPrivate('/loan/collateral/repay', { body: params });
-  }
-
-  /**
-   * Repayment history
-   *
-   * @param params Parameters for retrieving repayment history
-   * @returns Promise<GetLoanRepaymentHistoryResp[]>
-   */
-  getLoanRepaymentHistory(
-    params: GetLoanRepaymentHistoryReq,
-  ): Promise<LoanRepaymentHistoryRecord[]> {
-    return this.getPrivate('/loan/collateral/repay_records', params);
-  }
-
-  /**
-   * Increase or redeem collateral
-   *
-   * @param params Parameters for increasing or redeeming collateral
-   * @returns Promise<any>
-   */
-  updateLoanCollateral(params: UpdateLoanCollateralReq): Promise<any> {
-    return this.postPrivate('/loan/collateral/collaterals', { body: params });
-  }
-
-  /**
-   * Query collateral adjustment records
-   *
-   * @param params Parameters for querying collateral adjustment records
-   * @returns Promise<GetLoanCollateralRecordsResp[]>
-   */
-  getLoanCollateralRecords(
-    params?: GetLoanCollateralRecordsReq,
-  ): Promise<LoanCollateralRecord[]> {
-    return this.getPrivate('/loan/collateral/collaterals', params);
-  }
-
-  /**
-   * Query the total borrowing and collateral amount for the user
-   *
-   * @returns Promise<{
-   *   borrow_amount: string;
-   *   collateral_amount: string;
-   * }>
-   */
-  getLoanTotalAmount(): Promise<{
-    borrow_amount: string;
-    collateral_amount: string;
-  }> {
-    return this.getPrivate('/loan/collateral/total_amount');
-  }
-
-  /**
-   * Query user's collateralization ratio
-   *
-   * @param params Parameters for querying user's collateralization ratio
-   * @returns Promise<GetLoanCollateralizationRatioResp>
-   */
-  getLoanCollateralizationRatio(params: {
-    collateral_currency: string;
-    borrow_currency: string;
-  }): Promise<LoanCollateralRatio> {
-    return this.getPrivate('/loan/collateral/ltv', params);
-  }
-
-  /**
-   * Query supported borrowing and collateral currencies
-   *
-   * @param params Parameters for querying supported borrowing and collateral currencies
-   * @returns Promise<{
-   *   loan_currency: string;
-   *   collateral_currency: string[];
-   * }[]>
-   */
-  getLoanSupportedCurrencies(params?: { loan_currency?: string }): Promise<
-    {
-      loan_currency: string;
-      collateral_currency: string[];
-    }[]
-  > {
-    return this.get('/loan/collateral/currencies', params);
-  }
-
-  /**==========================================================================================================================
    * MULTI COLLATERAL LOAN
    * ==========================================================================================================================
    */
@@ -4466,15 +4515,12 @@ export class RestClient extends BaseRestClient {
   /**
    * Place Dual Investment order
    *
-   * @param params Parameters for placing a dual investment order
-   * @returns Promise<any>
+   * @param params plan_id, amount (or copies), optional text
+   * @returns Promise<DualInvestmentOrder>
    */
-  submitDualInvestmentOrder(params: {
-    plan_id: string;
-    copies: string;
-    is_max: number;
-    amount: string;
-  }): Promise<any> {
+  submitDualInvestmentOrder(
+    params: PlaceDualInvestmentOrderParams,
+  ): Promise<DualInvestmentOrder> {
     return this.postPrivate('/earn/dual/orders', { body: params });
   }
 
@@ -4917,6 +4963,198 @@ export class RestClient extends BaseRestClient {
     params: GetOTCFiatOrderDetailReq,
   ): Promise<GetOTCFiatOrderDetailResp> {
     return this.getPrivate('/otc/order/detail', params);
+  }
+
+  /**==========================================================================================================================
+   * P2P MERCHANT
+   * ==========================================================================================================================
+   */
+
+  /**
+   * Get account information
+   */
+  getP2PMerchantUserInfo(): Promise<P2PMerchantApiResp<P2PMerchantUserInfo>> {
+    return this.postPrivate('/p2p/merchant/account/get_user_info', {
+      body: {},
+    });
+  }
+
+  /**
+   * Get counterparty information
+   */
+  getP2PMerchantCounterpartyUserInfo(
+    params: P2PMerchantGetCounterpartyUserInfoReq,
+  ): Promise<P2PMerchantApiResp<P2PMerchantCounterpartyUserInfo>> {
+    return this.postPrivate(
+      '/p2p/merchant/account/get_counterparty_user_info',
+      { body: params },
+    );
+  }
+
+  /**
+   * Get payment method list
+   */
+  getP2PMerchantMyselfPayment(
+    params?: P2PMerchantGetMyselfPaymentReq,
+  ): Promise<P2PMerchantApiResp<P2PMerchantPaymentMethod[]>> {
+    return this.postPrivate('/p2p/merchant/account/get_myself_payment', {
+      body: params ?? {},
+    });
+  }
+
+  /**
+   * Get pending orders
+   */
+  getP2PMerchantPendingTransactionList(
+    params: P2PMerchantGetPendingTransactionListReq,
+  ): Promise<P2PMerchantApiResp<P2PMerchantTransactionListData>> {
+    return this.postPrivate(
+      '/p2p/merchant/transaction/get_pending_transaction_list',
+      { body: params },
+    );
+  }
+
+  /**
+   * Get completed/historical orders
+   */
+  getP2PMerchantCompletedTransactionList(
+    params: P2PMerchantGetCompletedTransactionListReq,
+  ): Promise<P2PMerchantApiResp<P2PMerchantTransactionListData>> {
+    return this.postPrivate(
+      '/p2p/merchant/transaction/get_completed_transaction_list',
+      { body: params },
+    );
+  }
+
+  /**
+   * Get order details
+   */
+  getP2PMerchantTransactionDetails(
+    params: P2PMerchantGetTransactionDetailsReq,
+  ): Promise<P2PMerchantApiResp<P2PMerchantTransactionDetails>> {
+    return this.postPrivate(
+      '/p2p/merchant/transaction/get_transaction_details',
+      { body: params },
+    );
+  }
+
+  /**
+   * Confirm payment
+   */
+  confirmP2PMerchantPayment(
+    params: P2PMerchantConfirmPaymentReq,
+  ): Promise<P2PMerchantApiResp<Record<string, unknown>>> {
+    return this.postPrivate('/p2p/merchant/transaction/confirm-payment', {
+      body: params,
+    });
+  }
+
+  /**
+   * Confirm receipt
+   */
+  confirmP2PMerchantReceipt(
+    params: P2PMerchantConfirmReceiptReq,
+  ): Promise<P2PMerchantApiResp<Record<string, unknown>>> {
+    return this.postPrivate('/p2p/merchant/transaction/confirm-receipt', {
+      body: params,
+    });
+  }
+
+  /**
+   * Cancel order
+   */
+  cancelP2PMerchantTransaction(
+    params: P2PMerchantCancelTransactionReq,
+  ): Promise<P2PMerchantApiResp<Record<string, unknown>>> {
+    return this.postPrivate('/p2p/merchant/transaction/cancel', {
+      body: params,
+    });
+  }
+
+  /**
+   * Place ad order
+   */
+  placeP2PMerchantBizPushOrder(
+    params: P2PMerchantPlaceBizPushOrderReq,
+  ): Promise<P2PMerchantApiResp<Record<string, unknown>>> {
+    return this.postPrivate('/p2p/merchant/books/place_biz_push_order', {
+      body: params,
+    });
+  }
+
+  /**
+   * Update ad status
+   */
+  updateP2PMerchantAdsStatus(
+    params: P2PMerchantAdsUpdateStatusReq,
+  ): Promise<P2PMerchantApiResp<{ status: number }>> {
+    const { trade_type, ...body } = params;
+    return this.postPrivate('/p2p/merchant/books/ads_update_status', {
+      body,
+      query: trade_type ? { trade_type } : undefined,
+    });
+  }
+
+  /**
+   * Get ad details
+   */
+  getP2PMerchantAdsDetail(
+    params: P2PMerchantAdsDetailReq,
+  ): Promise<P2PMerchantApiResp<P2PMerchantAdsDetail>> {
+    return this.postPrivate('/p2p/merchant/books/ads_detail', { body: params });
+  }
+
+  /**
+   * Get my ads list
+   */
+  getP2PMerchantMyAdsList(
+    params?: P2PMerchantMyAdsListReq,
+  ): Promise<P2PMerchantApiResp<P2PMerchantMyAdsListData>> {
+    return this.postPrivate('/p2p/merchant/books/my_ads_list', {
+      body: params ?? {},
+    });
+  }
+
+  /**
+   * Get advertisement list
+   */
+  getP2PMerchantAdsList(
+    params: P2PMerchantGetAdsListReq,
+  ): Promise<P2PMerchantApiResp<P2PMerchantAdsListItem[]>> {
+    return this.postPrivate('/p2p/merchant/books/ads_list', { body: params });
+  }
+
+  /**
+   * Get chat history
+   */
+  getP2PMerchantChatsList(
+    params: P2PMerchantGetChatsListReq,
+  ): Promise<P2PMerchantApiResp<P2PMerchantChatsListData>> {
+    return this.postPrivate('/p2p/merchant/chat/get_chats_list', {
+      body: params,
+    });
+  }
+
+  /**
+   * Send chat message
+   */
+  sendP2PMerchantChatMessage(
+    params: P2PMerchantSendChatMessageReq,
+  ): Promise<P2PMerchantApiResp<{ SRVTM: number }>> {
+    return this.postPrivate('/p2p/merchant/chat/send_chat_message', {
+      body: params,
+    });
+  }
+
+  /**
+   * Upload chat file
+   */
+  uploadP2PMerchantChatFile(
+    params: P2PMerchantUploadChatFileReq,
+  ): Promise<P2PMerchantApiResp<{ file_key: string }>> {
+    return this.postPrivate('/p2p/merchant/chat/upload_chat_file', {
+      body: params,
+    });
   }
 
   /**==========================================================================================================================
@@ -5447,5 +5685,115 @@ export class RestClient extends BaseRestClient {
    */
   getAlphaTickers(params?: GetAlphaTickersReq): Promise<AlphaTicker[]> {
     return this.get('/alpha/tickers', params);
+  }
+
+  // ============ TradFi ============
+
+  getTradFiMT5Account(): Promise<TradFiApiResp<TradFiMT5Account>> {
+    return this.get('/tradfi/users/mt5-account');
+  }
+
+  getTradFiSymbolCategories(): Promise<
+    TradFiApiResp<TradFiListData<TradFiCategoryItem>>
+  > {
+    return this.get('/tradfi/symbols/categories');
+  }
+
+  getTradFiSymbols(): Promise<TradFiApiResp<TradFiListData<TradFiSymbolItem>>> {
+    return this.get('/tradfi/symbols');
+  }
+
+  getTradFiSymbolDetail(
+    params: TradFiGetSymbolDetailParams,
+  ): Promise<TradFiApiResp<TradFiListData<TradFiSymbolDetailItem>>> {
+    return this.get('/tradfi/symbols/detail', params);
+  }
+
+  getTradFiKlines(
+    symbol: string,
+    params: TradFiGetKlinesParams,
+  ): Promise<TradFiApiResp<TradFiListData<TradFiKlineItem>>> {
+    return this.get(`/tradfi/symbols/${symbol}/klines`, params);
+  }
+
+  getTradFiTicker(symbol: string): Promise<TradFiApiResp<TradFiTicker>> {
+    return this.get(`/tradfi/symbols/${symbol}/tickers`);
+  }
+
+  createTradFiUser(): Promise<TradFiApiResp<TradFiCreateUserResult>> {
+    return this.postPrivate('/tradfi/users');
+  }
+
+  getTradFiAssets(): Promise<TradFiApiResp<TradFiAssets>> {
+    return this.getPrivate('/tradfi/users/assets');
+  }
+
+  createTradFiTransaction(
+    params: TradFiCreateTransactionReq,
+  ): Promise<TradFiApiResp<Record<string, never>>> {
+    return this.postPrivate('/tradfi/transactions', { body: params });
+  }
+
+  getTradFiTransactions(
+    params?: TradFiGetTransactionsParams,
+  ): Promise<TradFiApiResp<TradFiTransactionListData>> {
+    return this.getPrivate('/tradfi/transactions', params);
+  }
+
+  createTradFiOrder(
+    params: TradFiCreateOrderReq,
+  ): Promise<TradFiApiResp<TradFiCreateOrderResult>> {
+    return this.postPrivate('/tradfi/orders', { body: params });
+  }
+
+  getTradFiOrders(): Promise<TradFiApiResp<TradFiListData<TradFiOrderItem>>> {
+    return this.getPrivate('/tradfi/orders');
+  }
+
+  modifyTradFiOrder(
+    orderId: number,
+    params: TradFiModifyOrderReq,
+  ): Promise<TradFiApiResp<TradFiModifyOrderResult>> {
+    return this.putPrivate(`/tradfi/orders/${orderId}`, { body: params });
+  }
+
+  cancelTradFiOrder(orderId: number): Promise<Record<string, never>> {
+    return this.deletePrivate(`/tradfi/orders/${orderId}`);
+  }
+
+  getTradFiOrderHistory(
+    params?: TradFiGetOrderHistoryParams,
+  ): Promise<TradFiApiResp<TradFiListData<TradFiOrderHistoryItem>>> {
+    return this.getPrivate('/tradfi/orders/history', params);
+  }
+
+  getTradFiPositions(): Promise<
+    TradFiApiResp<TradFiListData<TradFiPositionItem>>
+  > {
+    return this.getPrivate('/tradfi/positions');
+  }
+
+  modifyTradFiPosition(
+    positionId: number,
+    params: TradFiModifyPositionReq,
+  ): Promise<TradFiApiResp<Record<string, never>>> {
+    return this.putPrivate(`/tradfi/positions/${positionId}`, {
+      body: params,
+    });
+  }
+
+  closeTradFiPosition(
+    positionId: number,
+    params: TradFiClosePositionReq,
+  ): Promise<TradFiApiResp<Record<string, never>>> {
+    return this.postPrivate(`/tradfi/positions/${positionId}/close`, {
+      body: params,
+    });
+  }
+
+  getTradFiPositionHistory(
+    params?: TradFiGetPositionHistoryParams,
+  ): Promise<TradFiApiResp<TradFiListData<TradFiPositionHistoryItem>>> {
+    return this.getPrivate('/tradfi/positions/history', params);
   }
 }

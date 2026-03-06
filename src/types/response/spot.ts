@@ -202,7 +202,7 @@ export interface SpotPriceTriggeredOrder {
   trigger: {
     price: string;
     rule: '>=' | '<=';
-    expiration: number;
+    expiration?: number;
   };
   put: {
     type?: 'limit' | 'market';

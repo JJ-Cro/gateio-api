@@ -132,6 +132,10 @@ export interface MultiLoanCurrencyQuota {
   min_quota: string;
   left_quota: string;
   left_quote_usdt: string;
+  /** Remaining borrow/collateral limit for fixed-term currency */
+  left_quota_fixed?: string;
+  /** Remaining currency limit for fixed-term converted to USDT */
+  left_quote_usdt_fixed?: string;
 }
 
 export interface MultiLoanSupportedCurrencies {
