@@ -19,7 +19,7 @@
 [1]: https://www.npmjs.com/package/gateio-api
 
 > [!TIP]
-> Upcoming change: As part of the [Siebly.io](https://siebly.io/?ref=ghgate) brand, this SDK will soon be hosted under the [Siebly.io GitHub organisation](https://github.com/sieblyio). The migration is seamless and requires no user changes.
+> Upcoming change: As part of the [Siebly.io](https://siebly.io/) brand, this SDK will soon be hosted under the [Siebly.io GitHub organisation](https://github.com/sieblyio). The migration is seamless and requires no user changes.
 
 Updated & performant JavaScript & Node.js SDK for the Gate.com (gate.io) REST APIs and WebSockets:
 
@@ -52,6 +52,7 @@ Updated & performant JavaScript & Node.js SDK for the Gate.com (gate.io) REST AP
 - Heavy automated end-to-end testing with real API calls.
 - Proxy support via axios integration.
 - Active community support & collaboration in telegram: [Node.js Algo Traders](https://t.me/nodetraders).
+- QuickStart Guide: https://siebly.io/sdk/gate/javascript
 
 ## Table of Contents
 
@@ -101,7 +102,7 @@ Refer to the [examples](./examples) folder for implementation demos, including:
 
 Check out our JavaScript/TypeScript/Node.js SDKs & Projects:
 
-- Visit our website: [https://Siebly.io](https://siebly.io/?ref=gh)
+- Visit our website: [https://Siebly.io](https://siebly.io/)
 - Try our REST API & WebSocket SDKs published on npmjs:
   - [Bybit Node.js SDK: bybit-api](https://www.npmjs.com/package/bybit-api)
   - [Kraken Node.js SDK: @siebly/kraken-api](https://www.npmjs.com/package/@siebly/kraken-api)
