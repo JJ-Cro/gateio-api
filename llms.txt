@@ -54,6 +54,7 @@ examples/
       futures-balance-trade.ts
       getBalances.ts
       getContractSize.ts
+      getContractSizeExample.ts
       getOrders.ts
       getTickers.ts
       submitLimitOrder.ts
@@ -103,9 +104,11 @@ src/
       multicollateralLoan.ts
       options.ts
       otc.ts
+      p2pMerchant.ts
       rebate.ts
       spot.ts
       subaccount.ts
+      tradfi.ts
       unified.ts
       wallet.ts
       withdrawal.ts
@@ -124,9 +127,11 @@ src/
       multicollateralLoan.ts
       options.ts
       otc.ts
+      p2pMerchant.ts
       rebate.ts
       spot.ts
       subaccount.ts
+      tradfi.ts
       unified.ts
       wallet.ts
       withdrawal.ts
@@ -151,6 +156,7 @@ LICENSE.md
 package.json
 postBuild.sh
 README.md
+RELEASE_NOTES.md
 tsconfig.cjs.json
 tsconfig.esm.json
 tsconfig.json
@@ -159,45 +165,6 @@ tsconfig.linting.json
 ================================================================
 Files
 ================================================================
-
-================
-File: examples/Rest/futures/getContractSize.ts
-================
-/**
- * Example: Get futures contract size (quanto_multiplier) and convert between
- * notional (e.g. USDT) and order size in contracts.
- *
- * Gate.io futures orders use `size` = number of CONTRACTS, not currency amount.
- * The contract details endpoint returns `quanto_multiplier`: the amount of
- * underlying (e.g. BTC) that 1 contract represents. So:
- *   notional_in_settle = size * quanto_multiplier * price
- *   size = notional_in_settle / (quanto_multiplier * price)
- *
- * This example:
- * 1) Fetches contract with getFuturesContract
- * 2) Reads quanto_multiplier and derives "contract size" in quote currency
- * 3) Converts a desired notional (e.g. 1000 USDT) to order size in contracts
- */
-⋮----
-import { RestClient } from '../../../src/index.js';
-// import { RestClient } from 'gateio-api';
-⋮----
-async function getContractSizeExample()
-⋮----
-// 1) Get single contract (public, no auth required)
-⋮----
-// 2) Contract size in quote (settle) currency: 1 contract = q * p
-⋮----
-// 3) Convert desired notional (e.g. 1000 USDT) to size in contracts
-⋮----
-// Example: you would pass this size to submitFuturesOrder
-// await client.submitFuturesOrder({
-//   settle: SETTLE,
-//   contract: CONTRACT,
-//   size: size,  // in contracts; positive = long, negative = short
-//   price: markPrice,
-//   tif: 'gtc',
-// });
 
 ================
 File: examples/README.md
@@ -655,6 +622,23 @@ export interface GetStructuredProductOrdersReq {
   page?: number;
   limit?: number;
 }
+⋮----
+/** Request params for POST /earn/dual/orders */
+export interface PlaceDualInvestmentOrderParams {
+  plan_id: string;
+  /** Subscription amount. Mutually exclusive with copies. */
+  amount: string;
+  /** Units. Mutually exclusive with amount. */
+  copies?: string;
+  /** Custom order info, must start with t- */
+  text?: string;
+}
+⋮----
+/** Subscription amount. Mutually exclusive with copies. */
+⋮----
+/** Units. Mutually exclusive with amount. */
+⋮----
+/** Custom order info, must start with t- */
 
 ================
 File: src/types/request/earnuni.ts
@@ -995,6 +979,138 @@ qty_limit: string; // Maximum transaction volume (positive number, up to 2 decim
 delta_limit: string; // Maximum net delta value (positive number, up to 2 decimal places)
 
 ================
+File: src/types/request/p2pMerchant.ts
+================
+/** P2P Merchant API request types */
+⋮----
+export interface P2PMerchantGetCounterpartyUserInfoReq {
+  biz_uid: string;
+}
+⋮----
+export interface P2PMerchantGetMyselfPaymentReq {
+  fiat?: string;
+}
+⋮----
+export interface P2PMerchantGetPendingTransactionListReq {
+  crypto_currency: string;
+  fiat_currency: string;
+  order_tab?: string;
+  select_type?: string;
+  status?: string;
+  txid?: number;
+  start_time?: number;
+  end_time?: number;
+}
+⋮----
+export interface P2PMerchantGetCompletedTransactionListReq {
+  crypto_currency: string;
+  fiat_currency: string;
+  select_type?: string;
+  status?: string;
+  txid?: number;
+  start_time?: number;
+  end_time?: number;
+  query_dispute?: number;
+  page?: number;
+  per_page?: number;
+}
+⋮----
+export interface P2PMerchantGetTransactionDetailsReq {
+  txid: number;
+  channel?: string;
+}
+⋮----
+export interface P2PMerchantConfirmPaymentReq {
+  trade_id: string;
+  payment_method: string;
+}
+⋮----
+export interface P2PMerchantConfirmReceiptReq {
+  trade_id: string;
+}
+⋮----
+export interface P2PMerchantCancelTransactionReq {
+  trade_id: string;
+  reason_id?: string;
+  reason_memo?: string;
+}
+⋮----
+export interface P2PMerchantPlaceBizPushOrderReq {
+  currencyType: string;
+  exchangeType: string;
+  type: string;
+  unitPrice: string;
+  number: string;
+  payType: string;
+  minAmount: string;
+  maxAmount: string;
+  pay_type_json?: string;
+  rateFixed?: string;
+  oid?: string;
+  tierLimit?: string;
+  verifiedLimit?: string;
+  regTimeLimit?: string;
+  advertisersLimit?: string;
+  hide_payment?: string;
+  expire_min?: string;
+  trade_tips?: string;
+  auto_reply?: string;
+  min_completed_limit?: string;
+  max_completed_limit?: string;
+  completed_rate_limit?: string;
+  user_country_limit?: string;
+  user_order_limit?: string;
+  rateReferenceId?: string;
+  rateOffset?: string;
+  float_trend?: string;
+}
+⋮----
+export interface P2PMerchantAdsUpdateStatusReq {
+  adv_no: number;
+  adv_status: 1 | 3 | 4;
+  /** Optional query param */
+  trade_type?: string;
+}
+⋮----
+/** Optional query param */
+⋮----
+export interface P2PMerchantAdsDetailReq {
+  adv_no: string;
+}
+⋮----
+export interface P2PMerchantMyAdsListReq {
+  asset?: string;
+  fiat_unit?: string;
+  trade_type?: string;
+}
+⋮----
+export interface P2PMerchantGetAdsListReq {
+  asset: string;
+  fiat_unit: string;
+  trade_type: string;
+}
+⋮----
+export interface P2PMerchantGetChatsListReq {
+  txid: number;
+  lastreceived?: number;
+  firstreceived?: number;
+}
+⋮----
+export interface P2PMerchantSendChatMessageReq {
+  txid: number;
+  message: string;
+  /** 0=Text, 1=File (video or image). Default 0 */
+  type?: 0 | 1;
+}
+⋮----
+/** 0=Text, 1=File (video or image). Default 0 */
+⋮----
+export interface P2PMerchantUploadChatFileReq {
+  image_content_type: string;
+  base64_img: string;
+}
+
+================
 File: src/types/request/rebate.ts
 ================
 export interface GetAgencyTransactionHistoryReq {
@@ -1088,6 +1204,76 @@ ip_whitelist?: string[]; // IP white list
 export type UpdateSubAccountApiKeyReq = {
   key: string;
 } & CreateSubAccountApiKeyReq;
+
+================
+File: src/types/request/tradfi.ts
+================
+/** TradFi API request types */
+⋮----
+export interface TradFiGetSymbolDetailParams {
+  symbols: string;
+}
+⋮----
+export interface TradFiGetKlinesParams {
+  kline_type: '1m' | '15m' | '1h' | '4h' | '1d' | '7d' | '30d';
+  begin_time?: number;
+  end_time?: number;
+  limit?: number;
+}
+⋮----
+export interface TradFiCreateTransactionReq {
+  asset: string;
+  change: string;
+  type: 'deposit' | 'withdraw';
+}
+⋮----
+export interface TradFiGetTransactionsParams {
+  begin_time?: number;
+  end_time?: number;
+  type?: 'deposit' | 'withdraw' | 'dividend' | 'fill_negative';
+  page?: number;
+  page_size?: number;
+}
+⋮----
+export interface TradFiCreateOrderReq {
+  price: string;
+  price_type: 'trigger' | 'market';
+  side: 1 | 2;
+  symbol: string;
+  volume: string;
+  price_tp?: string;
+  price_sl?: string;
+}
+⋮----
+export interface TradFiModifyOrderReq {
+  price: string;
+  price_tp?: string | null;
+  price_sl?: string | null;
+}
+⋮----
+export interface TradFiModifyPositionReq {
+  price_tp?: string | null;
+  price_sl?: string | null;
+}
+⋮----
+export interface TradFiClosePositionReq {
+  close_type: 1 | 2;
+  close_volume?: string | null;
+}
+⋮----
+export interface TradFiGetOrderHistoryParams {
+  begin_time?: number;
+  end_time?: number;
+  symbol?: string;
+  side?: 1 | 2;
+}
+⋮----
+export interface TradFiGetPositionHistoryParams {
+  begin_time?: number;
+  end_time?: number;
+  symbol?: string;
+  position_dir?: 'Long' | 'Short';
+}
 
 ================
 File: src/types/request/withdrawal.ts
@@ -1189,12 +1375,15 @@ export interface DualInvestmentProduct {
   delivery_time: number;
   min_copies: number;
   max_copies: number;
+  /** @deprecated */
   per_value: string;
   apy_display: string;
   start_time: number;
   end_time: number;
   status: 'NOTSTARTED' | 'ONGOING' | 'ENDED';
 }
+⋮----
+/** @deprecated */
 ⋮----
 export interface DualInvestmentOrder {
   id: number;
@@ -1470,7 +1659,15 @@ export interface MultiLoanCurrencyQuota {
   min_quota: string;
   left_quota: string;
   left_quote_usdt: string;
+  /** Remaining borrow/collateral limit for fixed-term currency */
+  left_quota_fixed?: string;
+  /** Remaining currency limit for fixed-term converted to USDT */
+  left_quote_usdt_fixed?: string;
 }
+⋮----
+/** Remaining borrow/collateral limit for fixed-term currency */
+⋮----
+/** Remaining currency limit for fixed-term converted to USDT */
 ⋮----
 export interface MultiLoanSupportedCurrencies {
   loan_currencies: {
@@ -1495,6 +1692,196 @@ export interface MultiLoanFixedRate {
   rate_7d: string;
   rate_30d: string;
   update_time: number;
+}
+
+================
+File: src/types/response/p2pMerchant.ts
+================
+/** P2P Merchant API response types */
+⋮----
+export interface P2PMerchantApiResp<T> {
+  timestamp: number;
+  method: string;
+  code: number;
+  message: string;
+  data: T;
+  version: string;
+}
+⋮----
+export interface P2PMerchantUserInfo {
+  is_self?: boolean;
+  user_timest?: string;
+  counterparties_num?: number;
+  email_verified?: string;
+  verified?: string;
+  has_phone?: string;
+  user_name?: string;
+  user_note?: string;
+  complete_transactions?: string;
+  paid_transactions?: string;
+  accepted_transactions?: string;
+  transactions_used_time?: string;
+  cancelled_used_time_month?: string;
+  complete_transactions_month?: string;
+  complete_rate_month?: number;
+  orders_buy_rate_month?: number;
+  is_black?: number;
+  is_follow?: number;
+  have_traded?: number;
+  biz_uid?: string;
+  blue_vip?: number;
+  work_status?: number;
+  registration_days?: number;
+  first_trade_days?: number;
+  need_replenish?: number;
+  merchant_info?: { type?: string; market?: string };
+  online_status?: number;
+  work_hours?: Record<string, unknown> | null;
+  transactions_month?: number;
+  transactions_all?: number;
+  trade_versatile?: boolean;
+  [key: string]: unknown;
+}
+⋮----
+export interface P2PMerchantCounterpartyUserInfo {
+  user_timest?: string;
+  email_verified?: string;
+  verified?: string;
+  has_phone?: string;
+  user_name?: string;
+  user_note?: string;
+  complete_transactions?: string;
+  paid_transactions?: string;
+  accepted_transactions?: string;
+  transactions_used_time?: string;
+  cancelled_used_time_month?: string;
+  complete_transactions_month?: string;
+  complete_rate_month?: number;
+  is_follow?: number;
+  have_traded?: number;
+  biz_uid?: string;
+  registration_days?: number;
+  first_trade_days?: number;
+  trade_versatile?: boolean;
+  [key: string]: unknown;
+}
+⋮----
+export interface P2PMerchantPaymentMethod {
+  pay_type: string;
+  pay_name: string;
+  ids: number[];
+  list: Record<string, unknown>[];
+}
+⋮----
+export interface P2PMerchantTransactionListItem {
+  type_buy?: number;
+  timest?: string;
+  timest_expire?: string;
+  type?: string;
+  trade_type?: string;
+  timestamp?: number;
+  rate?: string;
+  amount?: string;
+  total?: string;
+  txid?: number;
+  status?: string;
+  order_status?: string;
+  [key: string]: unknown;
+}
+⋮----
+export interface P2PMerchantTransactionListData {
+  list: P2PMerchantTransactionListItem[];
+  trans_time?: { od_time?: number }[];
+  count: number;
+  exported_num: number;
+}
+⋮----
+export interface P2PMerchantTransactionDetails {
+  is_sell?: number;
+  txid?: number;
+  orderid?: number;
+  timest?: number;
+  last_pay_time?: number;
+  remain_pay_time?: number;
+  currencyType?: string;
+  want_type?: string;
+  rate?: string;
+  amount?: string;
+  total?: string;
+  status?: string;
+  state?: string;
+  its_uid?: string;
+  its_nickname?: string;
+  its_realname?: string;
+  [key: string]: unknown;
+}
+⋮----
+export interface P2PMerchantAdsDetail {
+  rate?: string;
+  type?: string;
+  amount?: string;
+  min_amount?: string;
+  max_amount?: string;
+  total?: string;
+  orderid?: number;
+  timestamp?: number;
+  currencyType?: string;
+  want_type?: string;
+  status?: string;
+  [key: string]: unknown;
+}
+⋮----
+export interface P2PMerchantMyAdsListItem {
+  type?: string;
+  rate?: string;
+  amount?: string;
+  total?: string;
+  id?: string;
+  status?: string;
+  currencyType?: string;
+  want_type?: string;
+  [key: string]: unknown;
+}
+⋮----
+export interface P2PMerchantMyAdsListData {
+  lists: P2PMerchantMyAdsListItem[];
+}
+⋮----
+export interface P2PMerchantAdsListItem {
+  index?: number;
+  asset?: string;
+  fiat_unit?: string;
+  adv_no?: number;
+  price?: string;
+  max_single_trans_amount?: string;
+  min_single_trans_amount?: string;
+  nick_name?: string;
+}
+⋮----
+export interface P2PMerchantChatMessage {
+  is_sell?: number;
+  msg_type?: number;
+  msg?: string;
+  username?: string;
+  uid?: string;
+  timest?: number;
+  type?: number;
+  pic?: string;
+  file_key?: string;
+  file_type?: string;
+  width?: string;
+  height?: string;
+  msg_obj?: Record<string, unknown>;
+  [key: string]: unknown;
+}
+⋮----
+export interface P2PMerchantChatsListData {
+  messages: P2PMerchantChatMessage[];
+  has_history?: boolean;
+  txid?: number;
+  SRVTM?: number;
+  order_status?: string;
+  memo?: string;
 }
 
 ================
@@ -1565,6 +1952,230 @@ export interface SubAccountMode {
   user_id: number;
   is_unified: boolean;
   mode: 'classic' | 'multi_currency' | 'portfolio';
+}
+
+================
+File: src/types/response/tradfi.ts
+================
+/** TradFi API response types */
+⋮----
+export interface TradFiApiResp<T> {
+  timestamp?: number;
+  data?: T;
+  code?: number;
+  message?: string;
+  label?: string;
+}
+⋮----
+export interface TradFiListData<T> {
+  list?: T[];
+}
+⋮----
+export interface TradFiMT5Account {
+  mt5_uid?: number;
+  leverage?: number;
+  stop_out_level?: string;
+  status?: number;
+}
+⋮----
+export interface TradFiCategoryItem {
+  category_id?: number;
+  is_favorite?: boolean;
+  category_name?: string;
+}
+⋮----
+export interface TradFiSymbolItem {
+  symbol?: string;
+  symbol_desc?: string;
+  category_id?: number;
+  status?: string;
+  trade_mode?: string;
+  icon_link?: string;
+  close_time?: number;
+  open_time?: number;
+  next_open_time?: number;
+  settlement_currency?: string;
+  settlement_currency_symbol?: string;
+  price_precision?: number;
+}
+⋮----
+export interface TradFiSymbolDetailItem {
+  symbol?: string;
+  symbol_desc?: string;
+  category_name?: string;
+  contract_volume?: string;
+  settlement_currency?: string;
+  max_order_volume?: string;
+  min_order_volume?: string;
+  leverage?: string;
+  price_precision?: number;
+  price_sl_level?: string;
+  swap_cost_type?: string;
+  buy_swap_cost_rate?: string;
+  sell_swap_cost_rate?: string;
+  swap_cost_3day?: string;
+  trade_timezone?: string;
+  trade_mode?: string;
+  icon_link?: string;
+  [key: string]: unknown;
+}
+⋮----
+export interface TradFiKlineItem {
+  o?: string;
+  c?: string;
+  h?: string;
+  l?: string;
+  t?: number;
+}
+⋮----
+export interface TradFiTicker {
+  highest_price?: string;
+  lowest_price?: string;
+  price_change?: string;
+  price_change_amount?: string;
+  today_open_price?: string;
+  last_today_close_price?: string;
+  last_price?: string;
+  bid_price?: string;
+  ask_price?: string;
+  favorite?: boolean;
+  status?: string;
+  close_time?: number;
+  open_time?: number;
+  next_open_time?: number;
+  trade_mode?: string;
+  category_name?: string;
+}
+⋮----
+export interface TradFiCreateUserResult {
+  status?: number;
+  leverage?: number;
+  mt5_uid?: string;
+}
+⋮----
+export interface TradFiAssets {
+  equity?: string;
+  margin_level?: string;
+  balance?: string;
+  margin?: string;
+  margin_free?: string;
+  unrealized_pnl?: string;
+  mt5_uid?: string;
+}
+⋮----
+export interface TradFiTransactionRecord {
+  asset?: string;
+  type?: string;
+  type_desc?: string;
+  change?: string;
+  balance?: string;
+  time?: number;
+}
+⋮----
+export interface TradFiTransactionListData {
+  total?: number;
+  total_page?: number;
+  list?: TradFiTransactionRecord[];
+}
+⋮----
+export interface TradFiCreateOrderResult {
+  id?: string;
+}
+⋮----
+export interface TradFiOrderItem {
+  order_id?: number;
+  symbol?: string;
+  symbol_desc?: string;
+  price_type?: string;
+  state?: number;
+  state_desc?: string;
+  finished?: number;
+  side?: number;
+  volume?: string;
+  price?: string;
+  price_tp?: string;
+  price_sl?: string;
+  time_setup?: number;
+}
+⋮----
+export interface TradFiOrderListData {
+  list?: TradFiOrderItem[];
+  timestamp?: number;
+}
+⋮----
+export interface TradFiModifyOrderResult {
+  order_id?: number;
+  symbol?: string;
+  state?: string;
+  volume?: string;
+  price?: string;
+  price_tp?: string;
+  price_sl?: string;
+}
+⋮----
+export interface TradFiOrderHistoryItem {
+  order_id?: number;
+  symbol?: string;
+  symbol_desc?: string;
+  price_type?: string;
+  order_opt_type?: number;
+  state?: number;
+  state_desc?: string;
+  side?: number;
+  volume?: string;
+  fill_volume?: string;
+  close_pnl?: string;
+  price?: string;
+  trigger_price?: string;
+  price_tp?: string;
+  price_sl?: string;
+  time_setup?: number;
+  time_done?: number;
+}
+⋮----
+export interface TradFiPositionItem {
+  position_id?: number;
+  symbol?: string;
+  symbol_desc?: string;
+  margin?: string;
+  unrealized_pnl?: string;
+  unrealized_pnl_rate?: string;
+  volume?: string;
+  price_open?: string;
+  position_dir?: string;
+  price_tp?: string;
+  price_sl?: string;
+  counterparty_price?: string;
+  time_create?: number;
+}
+⋮----
+export interface TradFiPositionListData {
+  list?: TradFiPositionItem[];
+  timestamp?: number;
+}
+⋮----
+export interface TradFiPositionHistoryItem {
+  position_id?: number;
+  symbol?: string;
+  realized_pnl?: string;
+  realized_pnl_rate?: string;
+  volume?: string;
+  volume_closed?: string;
+  price_open?: string;
+  position_dir?: string;
+  price_tp?: string;
+  price_sl?: string;
+  counterparty_price?: string;
+  close_price?: string;
+  time_create?: string;
+  time_close?: string;
+  position_status?: string;
+  close_detail?: Record<string, unknown> | null;
+  realized_pnl_detail?: {
+    closed_pnl?: string;
+    swap?: string;
+    fee?: string;
+  };
 }
 
 ================
@@ -1864,6 +2475,64 @@ find src -name '*.d.ts' -exec cp {} dist/mjs \;
 find src -name '*.d.ts' -exec cp {} dist/cjs \;
 
 ================
+File: RELEASE_NOTES.md
+================
+# Release Notes
+
+## Unreleased
+
+### Added
+
+#### TradFi API
+- **19 new TradFi endpoints** for MT5/traditional finance trading:
+  - `getTradFiMT5Account()` – Query MT5 account info
+  - `getTradFiSymbolCategories()` – Query symbol categories
+  - `getTradFiSymbols()` – Query symbol list
+  - `getTradFiSymbolDetail(params)` – Query symbol details
+  - `getTradFiKlines(symbol, params)` – Query symbol klines
+  - `getTradFiTicker(symbol)` – Query symbol ticker
+  - `createTradFiUser()` – Create TradFi user
+  - `getTradFiAssets()` – Query account assets
+  - `createTradFiTransaction(params)` – Deposit/withdraw funds
+  - `getTradFiTransactions(params?)` – Query transfer records
+  - `createTradFiOrder(params)` – Create order
+  - `getTradFiOrders()` – Query active orders
+  - `modifyTradFiOrder(orderId, params)` – Modify order
+  - `cancelTradFiOrder(orderId)` – Cancel order
+  - `getTradFiOrderHistory(params?)` – Query historical orders
+  - `getTradFiPositions()` – Query active positions
+  - `modifyTradFiPosition(positionId, params)` – Modify position
+  - `closeTradFiPosition(positionId, params)` – Close position
+  - `getTradFiPositionHistory(params?)` – Query historical positions
+- New request/response types in `types/request/tradfi.ts` and `types/response/tradfi.ts`
+
+#### Futures
+- `getBatchFundingRates(params)` – Batch query historical funding rate data (POST `/futures/{settle}/funding_rates`)
+
+#### Trail Orders (Futures Autoorder)
+- **7 new trail order endpoints**:
+  - `createTrailOrder(params)` – Create trail order
+  - `terminateTrailOrder(params)` – Terminate single trail order
+  - `batchTerminateTrailOrders(params)` – Batch terminate trail orders
+  - `getTrailOrderList(params)` – Get trail order list
+  - `getTrailOrderDetail(params)` – Get trail order details
+  - `updateTrailOrder(params)` – Update trail order
+  - `getTrailOrderChangeLog(params)` – Get trail order modification records
+- New types: `TrailOrder`, `TrailChangeLog`, and request types in `types/request/futures.ts` (CreateTrailOrderReq, TerminateTrailOrderReq, etc.)
+
+### Changed
+
+#### Earn (Dual Investment)
+- `submitDualInvestmentOrder()` – Refactored to use typed `PlaceDualInvestmentOrderParams` for request and return `Promise<DualInvestmentOrder>` instead of `Promise<any>`
+- New request type: `PlaceDualInvestmentOrderParams` (plan_id, amount, copies?, text?)
+
+#### Futures
+- `updateFuturesPriceTriggeredOrder()` – **Breaking change**: Endpoint path updated from `PUT /futures/{settle}/price_orders/{order_id}` to `PUT /futures/{settle}/price_orders/amend/{order_id}`
+
+#### Deprecations
+- `DualInvestmentProduct.per_value` – Marked as deprecated
+
+================
 File: tsconfig.cjs.json
 ================
 {
@@ -2009,6 +2678,84 @@ console.log('Response: ', result); // Log the response to the console
 console.error('Error in execution: ', e); // Log any errors that occur
 ⋮----
 // Execute the function to get futures balances
+
+================
+File: examples/Rest/futures/getContractSize.ts
+================
+/**
+ * Example: Get futures contract size (quanto_multiplier) and convert between
+ * notional (e.g. USDT) and order size in contracts.
+ *
+ * Gate.io futures orders use `size` = number of CONTRACTS, not currency amount.
+ * The contract details endpoint returns `quanto_multiplier`: the amount of
+ * underlying (e.g. BTC) that 1 contract represents. So:
+ *   notional_in_settle = size * quanto_multiplier * price
+ *   size = notional_in_settle / (quanto_multiplier * price)
+ *
+ * This example:
+ * 1) Fetches contract with getFuturesContract
+ * 2) Reads quanto_multiplier and derives "contract size" in quote currency
+ * 3) Converts a desired notional (e.g. 1000 USDT) to order size in contracts
+ */
+⋮----
+import { RestClient } from '../../../src/index.js';
+// import { RestClient } from 'gateio-api';
+⋮----
+async function getContractSizeExample()
+⋮----
+// 1) Get single contract (public, no auth required)
+⋮----
+// 2) Contract size in quote (settle) currency: 1 contract = q * p
+⋮----
+// 3) Convert desired notional (e.g. 1000 USDT) to size in contracts
+⋮----
+// Example: you would pass this size to submitFuturesOrder
+// await client.submitFuturesOrder({
+//   settle: SETTLE,
+//   contract: CONTRACT,
+//   size: size,  // in contracts; positive = long, negative = short
+//   price: markPrice,
+//   tif: 'gtc',
+// });
+
+================
+File: examples/Rest/futures/getContractSizeExample.ts
+================
+/**
+ * Example: Get futures contract size (quanto_multiplier) and convert between
+ * notional (e.g. USDT) and order size in contracts.
+ *
+ * Gate.io futures orders use `size` = number of CONTRACTS, not currency amount.
+ * The contract details endpoint returns `quanto_multiplier`: the amount of
+ * underlying (e.g. BTC) that 1 contract represents. So:
+ *   notional_in_settle = size * quanto_multiplier * price
+ *   size = notional_in_settle / (quanto_multiplier * price)
+ *
+ * This example:
+ * 1) Fetches contract with getFuturesContract
+ * 2) Reads quanto_multiplier and derives "contract size" in quote currency
+ * 3) Converts a desired notional (e.g. 1000 USDT) to order size in contracts
+ */
+⋮----
+import { RestClient } from '../../../src/index.js';
+// import { RestClient } from 'gateio-api';
+⋮----
+async function getContractSizeExample()
+⋮----
+// 1) Get single contract (public, no auth required)
+⋮----
+// 2) Contract size in quote (settle) currency: 1 contract = q * p
+⋮----
+// 3) Convert desired notional (e.g. 1000 USDT) to size in contracts
+⋮----
+// Example: you would pass this size to submitFuturesOrder
+// await client.submitFuturesOrder({
+//   settle: SETTLE,
+//   contract: CONTRACT,
+//   size: size,  // in contracts; positive = long, negative = short
+//   price: markPrice,
+//   tif: 'gtc',
+// });
 
 ================
 File: examples/Rest/futures/getOrders.ts
@@ -7585,6 +8332,11 @@ export interface GetFundingRatesReq {
   to?: number;
 }
 ⋮----
+export interface BatchFundingRatesReq {
+  settle: 'btc' | 'usdt';
+  contracts: string[];
+}
+⋮----
 export interface GetLiquidationHistoryReq {
   settle: 'btc' | 'usdt' | 'usd';
   contract?: string;
@@ -7816,609 +8568,82 @@ export interface UpdateFuturesPriceTriggeredOrderReq {
   contract?: string;
   size?: number;
   price?: string;
+  /** When fully closing in single-position mode, set true */
+  close?: boolean;
   trigger_price?: string;
   price_type?: 0 | 1 | 2; // 0 - Latest trade price, 1 - Mark price, 2 - Index price
   auto_size?: string; // Not required in single position mode
 }
 ⋮----
+/** When fully closing in single-position mode, set true */
+⋮----
 price_type?: 0 | 1 | 2; // 0 - Latest trade price, 1 - Mark price, 2 - Index price
 auto_size?: string; // Not required in single position mode
-
-================
-File: src/types/response/futures.ts
-================
-/**==========================================================================================================================
- * FUTURES
- * ==========================================================================================================================
- */
 ⋮----
-export interface FuturesOrderBook {
-  id?: number;
-  current: number;
-  update: number;
-  asks: { p: string; s: number }[];
-  bids: { p: string; s: number }[];
-}
-⋮----
-export interface FuturesTrade {
-  id: number;
-  create_time: number;
-  create_time_ms: number;
+/** Trail order (autoorder/v1/trail) request types */
+export interface CreateTrailOrderReq {
+  settle: 'btc' | 'usdt';
   contract: string;
-  size: number;
-  price: string;
-  is_internal?: boolean; // Deprecated
-}
-⋮----
-is_internal?: boolean; // Deprecated
-⋮----
-export interface FuturesCandle {
-  t: number;
-  v?: number;
-  c: string;
-  h: string;
-  l: string;
-  o: string;
-  sum: string;
-}
-⋮----
-export interface PremiumIndexKLine {
-  t: number;
-  c: string;
-  h: string;
-  l: string;
-  o: string;
-}
-⋮----
-export interface FuturesTicker {
-  contract: string;
-  last: string;
-  change_percentage: string;
-  total_size: string;
-  low_24h: string;
-  high_24h: string;
-  volume_24h: string;
-  volume_24h_btc?: string;
-  volume_24h_usd?: string;
-  volume_24h_base: string;
-  volume_24h_quote: string;
-  volume_24h_settle: string;
-  mark_price: string;
-  funding_rate: string;
-  funding_rate_indicative: string;
-  index_price: string;
-  quanto_base_rate?: string; // Deprecated
-  basis_rate: string;
-  basis_value: string;
-  lowest_ask: string;
-  highest_bid: string;
-  lowest_size: string;
-  highest_size: string;
-}
-⋮----
-quanto_base_rate?: string; // Deprecated
-⋮----
-export interface FuturesStats {
-  time: number;
-  lsr_taker: number;
-  lsr_account: number;
-  long_liq_size: number;
-  long_liq_amount: number;
-  long_liq_usd: number;
-  short_liq_size: number;
-  short_liq_amount: number;
-  short_liq_usd: number;
-  open_interest: number;
-  open_interest_usd: number;
-  top_lsr_account: number;
-  top_lsr_size: number;
-}
-⋮----
-export interface IndexConstituents {
-  index: string;
-  constituents: {
-    exchange: string;
-    symbols: string[];
-  }[];
-}
-⋮----
-export interface LiquidationHistoryRecord {
-  time: number;
-  contract: string;
-  size: number;
-  order_size: number;
-  order_price: string;
-  fill_price: string;
-  left: number;
-}
-⋮----
-export interface RiskLimitTier {
-  tier: number;
-  risk_limit: string;
-  initial_rate: string;
-  maintenance_rate: string; // First-tier maintenance margin rate requirement
-  leverage_max: string;
-  contract: string;
-}
-⋮----
-maintenance_rate: string; // First-tier maintenance margin rate requirement
-⋮----
-export interface FuturesAccount {
-  total: string; // Balance, only applicable to classic contract account
-  unrealised_pnl: string;
-  position_margin?: string; // Deprecated
-  order_margin: string; // Initial margin for all pending orders
-  available: string;
-  point: string;
-  currency: string;
-  in_dual_mode: boolean;
-  position_mode?: string; // Position mode: single - one-way, dual - dual-side, split - sub-positions (in_dual_mode is deprecated)
-  enable_credit: boolean;
-  position_initial_margin: string;
-  maintenance_margin: string;
-  bonus: string;
-  enable_evolved_classic?: boolean; // Deprecated
-  cross_order_margin: string;
-  cross_initial_margin: string;
-  cross_maintenance_margin: string;
-  cross_unrealised_pnl: string;
-  cross_available: string;
-  cross_margin_balance: string;
-  cross_mmr: string;
-  cross_imr: string;
-  isolated_position_margin: string;
-  enable_new_dual_mode?: boolean; // Deprecated
-  margin_mode: number; // 0: classic future account or Classic Spot Margin Mode of unified account; 1: Multi-Currency Margin Mode; 2: Portfolio Margin Mode; 3: Single-Currency Margin Mode
-  history: {
-    dnw: string;
-    pnl: string;
-    fee: string;
-    refr: string;
-    fund: string;
-    point_dnw: string;
-    point_fee: string;
-    point_refr: string;
-    bonus_dnw: string;
-    bonus_offset: string;
-  };
-  enable_tiered_mm: boolean;
-  funding_balance?: string;
-}
-⋮----
-total: string; // Balance, only applicable to classic contract account
-⋮----
-position_margin?: string; // Deprecated
-order_margin: string; // Initial margin for all pending orders
-⋮----
-position_mode?: string; // Position mode: single - one-way, dual - dual-side, split - sub-positions (in_dual_mode is deprecated)
-⋮----
-enable_evolved_classic?: boolean; // Deprecated
-⋮----
-enable_new_dual_mode?: boolean; // Deprecated
-margin_mode: number; // 0: classic future account or Classic Spot Margin Mode of unified account; 1: Multi-Currency Margin Mode; 2: Portfolio Margin Mode; 3: Single-Currency Margin Mode
-⋮----
-export interface FuturesAccountBookRecord {
-  time: number;
-  change: string;
-  balance: string;
-  type: string;
-  text: string;
-  contract?: string;
-  trade_id: string;
-  id: string;
-}
-⋮----
-export interface FuturesOrder {
-  id?: number;
-  user?: number;
-  create_time?: number;
-  finish_time?: number;
-  finish_as?:
-    | 'filled'
-    | 'cancelled'
-    | 'liquidated'
-    | 'ioc'
-    | 'auto_deleveraged'
-    | 'reduce_only'
-    | 'position_closed'
-    | 'stp';
-  status?: 'open' | 'finished';
-  contract: string;
-  size: number;
-  iceberg?: number;
-  price?: string;
-  close?: boolean;
-  is_close?: boolean;
+  amount: string;
+  activation_price?: string;
+  is_gte?: boolean;
+  price_type?: 1 | 2 | 3;
+  price_offset?: string;
   reduce_only?: boolean;
-  is_reduce_only?: boolean;
-  is_liq?: boolean;
-  tif?: 'gtc' | 'ioc' | 'poc' | 'fok';
-  left?: number;
-  fill_price?: string;
+  position_related?: boolean;
   text?: string;
-  tkfr?: string;
-  mkfr?: string;
-  refu?: number;
-  auto_size?: 'close_long' | 'close_short';
-  stp_id?: number;
-  stp_act?: 'cn' | 'co' | 'cb' | '-';
-  amend_text?: string;
-  biz_info?: string;
+  pos_margin_mode?: string;
+  position_mode?: string;
 }
 ⋮----
-export interface FuturesPosition {
-  user?: number;
-  contract?: string;
-  size?: number;
-  leverage?: string; // Isolated margin leverage, 0 indicates cross margin mode
-  risk_limit?: string;
-  leverage_max?: string; // Max leverage based on current position size
-  maintenance_rate?: string; // Tiered maintenance margin rate calculation
-  value?: string;
-  margin?: string;
-  entry_price?: string;
-  liq_price?: string; // Estimated liquidation price for reference only
-  liquidation_price?: string; // v4.105.7: Add liquidation_price field for better risk management
-  mark_price?: string;
-  initial_margin?: string; // Expanded scope description
-  maintenance_margin?: string; // Expanded scope description
-  unrealised_pnl?: string;
-  realised_pnl?: string; // Detailed breakdown including settlement, funding fees, and trading fees
-  pnl_pnl?: string; // Settlement P&L
-  pnl_fund?: string; // Funding fee P&L
-  pnl_fee?: string; // Total trading fees
-  history_pnl?: string; // All historical settlement P&L
-  last_close_pnl?: string;
-  realised_point?: string;
-  history_point?: string;
-  adl_ranking?: number;
-  pending_orders?: number;
-  close_order?: {
-    id?: number;
-    price?: string;
-    is_liq?: boolean;
-  } | null;
-  mode?: 'single' | 'dual_long' | 'dual_short';
-  cross_leverage_limit?: string; // Simplified description
-  update_time?: number;
-  update_id?: number;
-  open_time?: number;
-  settlement_currency?: string; // v4.105.9: Add settlement_currency field for multi-settlement support
-  isolated_margin?: string; // v4.104.6: Add isolated_margin field
-  pid?: number; // v4.106.0: Sub-position ID
-}
-⋮----
-leverage?: string; // Isolated margin leverage, 0 indicates cross margin mode
-⋮----
-leverage_max?: string; // Max leverage based on current position size
-maintenance_rate?: string; // Tiered maintenance margin rate calculation
-⋮----
-liq_price?: string; // Estimated liquidation price for reference only
-liquidation_price?: string; // v4.105.7: Add liquidation_price field for better risk management
-⋮----
-initial_margin?: string; // Expanded scope description
-maintenance_margin?: string; // Expanded scope description
-⋮----
-realised_pnl?: string; // Detailed breakdown including settlement, funding fees, and trading fees
-pnl_pnl?: string; // Settlement P&L
-pnl_fund?: string; // Funding fee P&L
-pnl_fee?: string; // Total trading fees
-history_pnl?: string; // All historical settlement P&L
-⋮----
-cross_leverage_limit?: string; // Simplified description
-⋮----
-settlement_currency?: string; // v4.105.9: Add settlement_currency field for multi-settlement support
-isolated_margin?: string; // v4.104.6: Add isolated_margin field
-pid?: number; // v4.106.0: Sub-position ID
-⋮----
-export interface FuturesTradingHistoryRecord {
-  id: number;
-  create_time: number;
-  contract: string;
-  order_id: string;
-  size: number;
-  price: string;
-  role: 'taker' | 'maker';
-  text: string;
-  fee: string;
-  point_fee: string;
-  close_size: number;
-}
-⋮----
-export interface FuturesPositionHistoryRecord {
-  time: number;
-  contract: string;
-  side: 'long' | 'short';
-  pnl: string;
-  pnl_pnl: string;
-  pnl_fund: string;
-  pnl_fee: string;
-  text: string;
-  max_size: string;
-  first_open_time: number;
-  long_price: string;
-  short_price: string;
-  accum_size: string;
-}
-⋮----
-export interface FuturesLiquidationHistoryRecord {
-  time: number;
-  contract: string;
-  leverage: string;
-  size: number;
-  margin: string;
-  entry_price: string;
-  liq_price: string;
-  mark_price: string;
-  order_id: number;
-  order_price: string;
-  fill_price: string;
-  left: number;
-}
-export interface FuturesAutoDeleveragingHistoryRecord {
-  time: number;
-  user: number;
-  order_id: number;
-  contract: string;
-  leverage: string; // Clarified for better understanding of margin modes
-  cross_leverage_limit: string; // Clarified for better understanding of margin modes
-  entry_price: string;
-  fill_price: string;
-  trade_size: number;
-  position_size: number;
-}
-⋮----
-leverage: string; // Clarified for better understanding of margin modes
-cross_leverage_limit: string; // Clarified for better understanding of margin modes
-⋮----
-export interface DeleteFuturesBatchOrdersResp {
-  user_id: number;
-  id: string;
-  succeeded: boolean;
-  message: string;
-}
-⋮----
-export interface FuturesContract {
-  name?: string;
-  type?: 'inverse' | 'direct';
-  quanto_multiplier?: string; // Conceptually renamed to "contract multiplier"
-  leverage_min?: string;
-  leverage_max?: string;
-  maintenance_rate?: string; // First-tier maintenance margin rate requirement
-  mark_type?: 'internal' | 'index'; // Deprecated
-  mark_price?: string;
-  index_price?: string;
-  last_price?: string;
-  maker_fee_rate?: string;
-  taker_fee_rate?: string;
-  order_price_round?: string;
-  mark_price_round?: string; // Minimum unit of mark price
-  order_price_deviate?: string;
-  ref_discount_rate?: string;
-  ref_rebate_rate?: string;
-  funding_rate?: string;
-  funding_rate_indicative?: string;
-  funding_interval?: number;
-  funding_next_apply?: number;
-  funding_offset?: number;
-  interest_rate?: string;
-  risk_limit_base?: string;
-  risk_limit_step?: string;
-  risk_limit_max?: string;
-  order_size_min?: string | number; // API returns string e.g. "1"
-  order_size_max?: string | number; // API returns string e.g. "1000000"
-  orderbook_id?: number;
-  trade_id?: number;
-  trade_size?: string | number; // API returns string
-  position_size?: string | number; // API returns string
-  short_users?: number;
-  long_users?: number;
-  funding_impact_value?: string;
-  config_change_time?: number;
-  in_delisting?: boolean;
-  orders_limit?: number;
-  enable_bonus?: boolean;
-  enable_credit?: boolean;
-  enable_decimal?: boolean; // If true, size can be decimal; else integer contracts
-  create_time?: number;
-  launch_time?: number;
-  delisting_time?: number;
-  delisted_time?: number;
-  status?: string; // e.g. "trading"
-  funding_cap_ratio?: string; // Deprecated
-  funding_rate_limit?: string; // v4.106.4: Funding rate cap value
-  market_order_slip_ratio?: string;
-  market_order_size_max?: string;
-}
-⋮----
-quanto_multiplier?: string; // Conceptually renamed to "contract multiplier"
-⋮----
-maintenance_rate?: string; // First-tier maintenance margin rate requirement
-mark_type?: 'internal' | 'index'; // Deprecated
-⋮----
-mark_price_round?: string; // Minimum unit of mark price
-⋮----
-order_size_min?: string | number; // API returns string e.g. "1"
-order_size_max?: string | number; // API returns string e.g. "1000000"
-⋮----
-trade_size?: string | number; // API returns string
-position_size?: string | number; // API returns string
-⋮----
-enable_decimal?: boolean; // If true, size can be decimal; else integer contracts
-⋮----
-status?: string; // e.g. "trading"
-funding_cap_ratio?: string; // Deprecated
-funding_rate_limit?: string; // v4.106.4: Funding rate cap value
-⋮----
-export interface FuturesPriceTriggeredOrder {
-  initial: {
-    contract: string;
-    size?: number;
-    price?: string;
-    close?: boolean;
-    tif?: 'gtc' | 'ioc';
-    text?: string;
-    reduce_only?: boolean;
-    auto_size?: string;
-    is_reduce_only?: boolean;
-    is_close?: boolean;
-  };
-  trigger: {
-    strategy_type?: 0 | 1;
-    price_type?: 0 | 1 | 2;
-    price?: string;
-    rule?: 1 | 2;
-    expiration?: number;
-  };
+export interface TerminateTrailOrderReq {
+  settle: 'btc' | 'usdt';
   id?: number;
-  user?: number;
-  create_time?: number;
-  finish_time?: number;
-  trade_id?: number;
-  status?: 'open' | 'finished' | 'inactive' | 'invalid';
-  finish_as?: 'cancelled' | 'succeeded' | 'failed' | 'expired';
-  reason?: string;
-  order_type?:
-    | 'close-long-order'
-    | 'close-short-order'
-    | 'close-long-position'
-    | 'close-short-position'
-    | 'plan-close-long-position'
-    | 'plan-close-short-position';
-  me_order_id?: number;
+  text?: string;
 }
 ⋮----
-export interface FuturesDeliveryContract {
-  name?: string;
-  underlying?: string;
-  cycle?: 'WEEKLY' | 'BI-WEEKLY' | 'QUARTERLY' | 'BI-QUARTERLY';
-  type?: 'inverse' | 'direct';
-  quanto_multiplier?: string; // Conceptually renamed to "contract multiplier"
-  leverage_min?: string;
-  leverage_max?: string;
-  maintenance_rate?: string; // First-tier maintenance margin rate requirement
-  mark_type?: 'internal' | 'index'; // Deprecated
-  mark_price?: string;
-  index_price?: string;
-  last_price?: string;
-  maker_fee_rate?: string;
-  taker_fee_rate?: string;
-  order_price_round?: string;
-  mark_price_round?: string; // Minimum unit of mark price
-  basis_rate?: string;
-  basis_value?: string;
-  basis_impact_value?: string;
-  settle_price?: string;
-  settle_price_interval?: number;
-  settle_price_duration?: number;
-  expire_time?: number;
-  risk_limit_base?: string;
-  risk_limit_step?: string;
-  risk_limit_max?: string;
-  order_size_min?: number;
-  order_size_max?: number;
-  order_price_deviate?: string;
-  ref_discount_rate?: string;
-  ref_rebate_rate?: string;
-  orderbook_id?: number;
-  trade_id?: number;
-  trade_size?: number;
-  position_size?: number;
-  config_change_time?: number;
-  in_delisting?: boolean;
-  orders_limit?: number;
+export interface BatchTerminateTrailOrdersReq {
+  settle: 'btc' | 'usdt';
+  contract?: string;
+  related_position?: 1 | 2;
 }
 ⋮----
-quanto_multiplier?: string; // Conceptually renamed to "contract multiplier"
+export interface GetTrailOrderListReq {
+  settle: 'btc' | 'usdt';
+  contract?: string;
+  is_finished?: boolean;
+  start_at?: number;
+  end_at?: number;
+  page_num?: number;
+  page_size?: number;
+  sort_by?: 1 | 2;
+  hide_cancel?: boolean;
+  related_position?: 1 | 2;
+  sort_by_trigger?: boolean;
+  reduce_only?: 1 | 2;
+  side?: 1 | 2;
+}
 ⋮----
-maintenance_rate?: string; // First-tier maintenance margin rate requirement
-mark_type?: 'internal' | 'index'; // Deprecated
-⋮----
-mark_price_round?: string; // Minimum unit of mark price
-⋮----
-export interface BatchAmendOrderResp {
-  succeeded: boolean;
-  label?: string;
-  detail?: string;
+export interface GetTrailOrderDetailReq {
+  settle: 'btc' | 'usdt';
   id: number;
-  user: number;
-  create_time: number;
-  finish_time?: number;
-  finish_as?:
-    | 'filled'
-    | 'cancelled'
-    | 'liquidated'
-    | 'ioc'
-    | 'auto_deleveraged'
-    | 'reduce_only'
-    | 'position_closed'
-    | 'reduce_out'
-    | 'stp';
-  status: 'open' | 'finished';
-  contract: string;
-  size: number;
-  iceberg: number;
-  price: string;
-  is_close: boolean;
-  is_reduce_only: boolean;
-  is_liq: boolean;
-  tif: 'gtc' | 'ioc' | 'poc' | 'fok';
-  left: number;
-  fill_price: string;
-  text: string;
-  tkfr: string;
-  mkfr: string;
-  refu: number;
-  stp_act: 'co' | 'cn' | 'cb' | '-';
-  stp_id: number;
 }
 ⋮----
-/**
- * @deprecated - Use FuturesAccount instead
- */
-export interface UpdateFuturesDualModeResp {
-  total: string;
-  unrealised_pnl: string;
-  position_margin: string;
-  order_margin: string;
-  available: string;
-  point: string;
-  currency: string;
-  in_dual_mode: boolean;
-  enable_credit: boolean;
-  position_initial_margin: string;
-  maintenance_margin: string;
-  bonus: string;
-  enable_evolved_classic: boolean;
-  history: {
-    dnw: string;
-    pnl: string;
-    fee: string;
-    refr: string;
-    fund: string;
-    point_dnw: string;
-    point_fee: string;
-    point_refr: string;
-    bonus_dnw: string;
-    bonus_offset: string;
-  };
+export interface UpdateTrailOrderReq {
+  settle: 'btc' | 'usdt';
+  id: number;
+  amount?: string;
+  activation_price?: string;
+  is_gte_str?: string;
+  price_type?: 0 | 1 | 2 | 3;
+  price_offset?: string;
 }
 ⋮----
-export interface RiskLimitTableTier {
-  tier: number;
-  risk_limit: string;
-  initial_rate: string;
-  maintenance_rate: string; // First-tier maintenance margin rate requirement
-  leverage_max: string;
-  deduction: string;
-}
-⋮----
-maintenance_rate: string; // First-tier maintenance margin rate requirement
-⋮----
-// v4.104.6: New GET /futures/{settle}/insurance endpoint types
-export interface FuturesInsuranceHistory {
-  t: number;
-  b: string;
+export interface GetTrailOrderChangeLogReq {
+  settle: 'btc' | 'usdt';
+  id: number;
+  page_num?: number;
+  page_size?: number;
 }
 
 ================
@@ -8640,7 +8865,7 @@ export interface SpotPriceTriggeredOrder {
   trigger: {
     price: string;
     rule: '>=' | '<=';
-    expiration: number;
+    expiration?: number;
   };
   put: {
     type?: 'limit' | 'market';
@@ -8997,6 +9222,663 @@ private async signWSAPIRequest<TRequestParams = object>(
 ): Promise<WSAPIRequest<TRequestParams>>
 
 ================
+File: src/types/response/futures.ts
+================
+/**==========================================================================================================================
+ * FUTURES
+ * ==========================================================================================================================
+ */
+⋮----
+export interface FuturesOrderBook {
+  id?: number;
+  current: number;
+  update: number;
+  asks: { p: string; s: number }[];
+  bids: { p: string; s: number }[];
+}
+⋮----
+export interface FuturesTrade {
+  id: number;
+  create_time: number;
+  create_time_ms: number;
+  contract: string;
+  size: number;
+  price: string;
+  is_internal?: boolean; // Deprecated
+}
+⋮----
+is_internal?: boolean; // Deprecated
+⋮----
+export interface FuturesCandle {
+  t: number;
+  v?: number;
+  c: string;
+  h: string;
+  l: string;
+  o: string;
+  sum: string;
+}
+⋮----
+export interface PremiumIndexKLine {
+  t: number;
+  c: string;
+  h: string;
+  l: string;
+  o: string;
+}
+⋮----
+export interface FuturesTicker {
+  contract: string;
+  last: string;
+  change_percentage: string;
+  total_size: string;
+  low_24h: string;
+  high_24h: string;
+  volume_24h: string;
+  volume_24h_btc?: string;
+  volume_24h_usd?: string;
+  volume_24h_base: string;
+  volume_24h_quote: string;
+  volume_24h_settle: string;
+  mark_price: string;
+  funding_rate: string;
+  funding_rate_indicative: string;
+  index_price: string;
+  quanto_base_rate?: string; // Deprecated
+  basis_rate: string;
+  basis_value: string;
+  lowest_ask: string;
+  highest_bid: string;
+  lowest_size: string;
+  highest_size: string;
+}
+⋮----
+quanto_base_rate?: string; // Deprecated
+⋮----
+export interface BatchFundingRatesResponse {
+  contract?: string;
+  data?: { t: number; r: string }[];
+}
+⋮----
+export interface FuturesStats {
+  time: number;
+  lsr_taker: number;
+  lsr_account: number;
+  long_liq_size: number;
+  long_liq_amount: number;
+  long_liq_usd: number;
+  short_liq_size: number;
+  short_liq_amount: number;
+  short_liq_usd: number;
+  open_interest: number;
+  open_interest_usd: number;
+  top_lsr_account: number;
+  top_lsr_size: number;
+}
+⋮----
+export interface IndexConstituents {
+  index: string;
+  constituents: {
+    exchange: string;
+    symbols: string[];
+  }[];
+}
+⋮----
+export interface LiquidationHistoryRecord {
+  time: number;
+  contract: string;
+  size: number;
+  order_size: number;
+  order_price: string;
+  fill_price: string;
+  left: number;
+}
+⋮----
+export interface RiskLimitTier {
+  tier: number;
+  risk_limit: string;
+  initial_rate: string;
+  maintenance_rate: string; // First-tier maintenance margin rate requirement
+  leverage_max: string;
+  contract: string;
+}
+⋮----
+maintenance_rate: string; // First-tier maintenance margin rate requirement
+⋮----
+export interface FuturesAccount {
+  total: string; // Balance, only applicable to classic contract account
+  unrealised_pnl: string;
+  position_margin?: string; // Deprecated
+  order_margin: string; // Initial margin for all pending orders
+  available: string;
+  point: string;
+  currency: string;
+  in_dual_mode: boolean;
+  position_mode?: string; // Position mode: single - one-way, dual - dual-side, split - sub-positions (in_dual_mode is deprecated)
+  enable_credit: boolean;
+  position_initial_margin: string;
+  maintenance_margin: string;
+  bonus: string;
+  enable_evolved_classic?: boolean; // Deprecated
+  cross_order_margin: string;
+  cross_initial_margin: string;
+  cross_maintenance_margin: string;
+  cross_unrealised_pnl: string;
+  cross_available: string;
+  cross_margin_balance: string;
+  cross_mmr: string;
+  cross_imr: string;
+  isolated_position_margin: string;
+  enable_new_dual_mode?: boolean; // Deprecated
+  margin_mode: number; // 0: classic future account or Classic Spot Margin Mode of unified account; 1: Multi-Currency Margin Mode; 2: Portfolio Margin Mode; 3: Single-Currency Margin Mode
+  history: {
+    dnw: string;
+    pnl: string;
+    fee: string;
+    refr: string;
+    fund: string;
+    point_dnw: string;
+    point_fee: string;
+    point_refr: string;
+    bonus_dnw: string;
+    bonus_offset: string;
+  };
+  enable_tiered_mm: boolean;
+  funding_balance?: string;
+}
+⋮----
+total: string; // Balance, only applicable to classic contract account
+⋮----
+position_margin?: string; // Deprecated
+order_margin: string; // Initial margin for all pending orders
+⋮----
+position_mode?: string; // Position mode: single - one-way, dual - dual-side, split - sub-positions (in_dual_mode is deprecated)
+⋮----
+enable_evolved_classic?: boolean; // Deprecated
+⋮----
+enable_new_dual_mode?: boolean; // Deprecated
+margin_mode: number; // 0: classic future account or Classic Spot Margin Mode of unified account; 1: Multi-Currency Margin Mode; 2: Portfolio Margin Mode; 3: Single-Currency Margin Mode
+⋮----
+export interface FuturesAccountBookRecord {
+  time: number;
+  change: string;
+  balance: string;
+  type: string;
+  text: string;
+  contract?: string;
+  trade_id: string;
+  id: string;
+}
+⋮----
+export interface FuturesOrder {
+  id?: number;
+  user?: number;
+  create_time?: number;
+  finish_time?: number;
+  finish_as?:
+    | 'filled'
+    | 'cancelled'
+    | 'liquidated'
+    | 'ioc'
+    | 'auto_deleveraged'
+    | 'reduce_only'
+    | 'position_closed'
+    | 'stp';
+  status?: 'open' | 'finished';
+  contract: string;
+  size: number;
+  iceberg?: number;
+  price?: string;
+  close?: boolean;
+  is_close?: boolean;
+  reduce_only?: boolean;
+  is_reduce_only?: boolean;
+  is_liq?: boolean;
+  tif?: 'gtc' | 'ioc' | 'poc' | 'fok';
+  left?: number;
+  fill_price?: string;
+  text?: string;
+  tkfr?: string;
+  mkfr?: string;
+  refu?: number;
+  auto_size?: 'close_long' | 'close_short';
+  stp_id?: number;
+  stp_act?: 'cn' | 'co' | 'cb' | '-';
+  amend_text?: string;
+  biz_info?: string;
+}
+⋮----
+export interface FuturesPosition {
+  user?: number;
+  contract?: string;
+  size?: number;
+  leverage?: string; // Isolated margin leverage, 0 indicates cross margin mode
+  risk_limit?: string;
+  leverage_max?: string; // Max leverage based on current position size
+  maintenance_rate?: string; // Tiered maintenance margin rate calculation
+  value?: string;
+  margin?: string;
+  entry_price?: string;
+  liq_price?: string; // Estimated liquidation price for reference only
+  liquidation_price?: string; // v4.105.7: Add liquidation_price field for better risk management
+  mark_price?: string;
+  initial_margin?: string; // Expanded scope description
+  maintenance_margin?: string; // Expanded scope description
+  unrealised_pnl?: string;
+  realised_pnl?: string; // Detailed breakdown including settlement, funding fees, and trading fees
+  pnl_pnl?: string; // Settlement P&L
+  pnl_fund?: string; // Funding fee P&L
+  pnl_fee?: string; // Total trading fees
+  history_pnl?: string; // All historical settlement P&L
+  last_close_pnl?: string;
+  realised_point?: string;
+  history_point?: string;
+  adl_ranking?: number;
+  pending_orders?: number;
+  close_order?: {
+    id?: number;
+    price?: string;
+    is_liq?: boolean;
+  } | null;
+  mode?: 'single' | 'dual_long' | 'dual_short';
+  cross_leverage_limit?: string; // Simplified description
+  update_time?: number;
+  update_id?: number;
+  open_time?: number;
+  settlement_currency?: string; // v4.105.9: Add settlement_currency field for multi-settlement support
+  isolated_margin?: string; // v4.104.6: Add isolated_margin field
+  pid?: number; // v4.106.0: Sub-position ID
+}
+⋮----
+leverage?: string; // Isolated margin leverage, 0 indicates cross margin mode
+⋮----
+leverage_max?: string; // Max leverage based on current position size
+maintenance_rate?: string; // Tiered maintenance margin rate calculation
+⋮----
+liq_price?: string; // Estimated liquidation price for reference only
+liquidation_price?: string; // v4.105.7: Add liquidation_price field for better risk management
+⋮----
+initial_margin?: string; // Expanded scope description
+maintenance_margin?: string; // Expanded scope description
+⋮----
+realised_pnl?: string; // Detailed breakdown including settlement, funding fees, and trading fees
+pnl_pnl?: string; // Settlement P&L
+pnl_fund?: string; // Funding fee P&L
+pnl_fee?: string; // Total trading fees
+history_pnl?: string; // All historical settlement P&L
+⋮----
+cross_leverage_limit?: string; // Simplified description
+⋮----
+settlement_currency?: string; // v4.105.9: Add settlement_currency field for multi-settlement support
+isolated_margin?: string; // v4.104.6: Add isolated_margin field
+pid?: number; // v4.106.0: Sub-position ID
+⋮----
+export interface FuturesTradingHistoryRecord {
+  id: number;
+  create_time: number;
+  contract: string;
+  order_id: string;
+  size: number;
+  price: string;
+  role: 'taker' | 'maker';
+  text: string;
+  fee: string;
+  point_fee: string;
+  close_size: number;
+}
+⋮----
+export interface FuturesPositionHistoryRecord {
+  time: number;
+  contract: string;
+  side: 'long' | 'short';
+  pnl: string;
+  pnl_pnl: string;
+  pnl_fund: string;
+  pnl_fee: string;
+  text: string;
+  max_size: string;
+  first_open_time: number;
+  long_price: string;
+  short_price: string;
+  accum_size: string;
+}
+⋮----
+export interface FuturesLiquidationHistoryRecord {
+  time: number;
+  contract: string;
+  leverage: string;
+  size: number;
+  margin: string;
+  entry_price: string;
+  liq_price: string;
+  mark_price: string;
+  order_id: number;
+  order_price: string;
+  fill_price: string;
+  left: number;
+}
+export interface FuturesAutoDeleveragingHistoryRecord {
+  time: number;
+  user: number;
+  order_id: number;
+  contract: string;
+  leverage: string; // Clarified for better understanding of margin modes
+  cross_leverage_limit: string; // Clarified for better understanding of margin modes
+  entry_price: string;
+  fill_price: string;
+  trade_size: number;
+  position_size: number;
+}
+⋮----
+leverage: string; // Clarified for better understanding of margin modes
+cross_leverage_limit: string; // Clarified for better understanding of margin modes
+⋮----
+export interface DeleteFuturesBatchOrdersResp {
+  user_id: number;
+  id: string;
+  succeeded: boolean;
+  message: string;
+}
+⋮----
+export interface FuturesContract {
+  name?: string;
+  type?: 'inverse' | 'direct';
+  quanto_multiplier?: string; // Conceptually renamed to "contract multiplier"
+  leverage_min?: string;
+  leverage_max?: string;
+  maintenance_rate?: string; // First-tier maintenance margin rate requirement
+  mark_type?: 'internal' | 'index'; // Deprecated
+  mark_price?: string;
+  index_price?: string;
+  last_price?: string;
+  maker_fee_rate?: string;
+  taker_fee_rate?: string;
+  order_price_round?: string;
+  mark_price_round?: string; // Minimum unit of mark price
+  order_price_deviate?: string;
+  ref_discount_rate?: string;
+  ref_rebate_rate?: string;
+  funding_rate?: string;
+  funding_rate_indicative?: string;
+  funding_interval?: number;
+  funding_next_apply?: number;
+  funding_offset?: number;
+  interest_rate?: string;
+  risk_limit_base?: string;
+  risk_limit_step?: string;
+  risk_limit_max?: string;
+  order_size_min?: string | number; // API returns string e.g. "1"
+  order_size_max?: string | number; // API returns string e.g. "1000000"
+  orderbook_id?: number;
+  trade_id?: number;
+  trade_size?: string | number; // API returns string
+  position_size?: string | number; // API returns string
+  short_users?: number;
+  long_users?: number;
+  funding_impact_value?: string;
+  config_change_time?: number;
+  in_delisting?: boolean;
+  orders_limit?: number;
+  enable_bonus?: boolean;
+  enable_credit?: boolean;
+  /** When true, contract supports decimal contract size (size field can use decimal string). When false, size only supports integer type. */
+  enable_decimal?: boolean;
+  create_time?: number;
+  launch_time?: number;
+  delisting_time?: number;
+  delisted_time?: number;
+  status?: string; // e.g. "trading"
+  funding_cap_ratio?: string; // Deprecated
+  funding_rate_limit?: string; // v4.106.4: Funding rate cap value
+  market_order_slip_ratio?: string;
+  market_order_size_max?: string;
+}
+⋮----
+quanto_multiplier?: string; // Conceptually renamed to "contract multiplier"
+⋮----
+maintenance_rate?: string; // First-tier maintenance margin rate requirement
+mark_type?: 'internal' | 'index'; // Deprecated
+⋮----
+mark_price_round?: string; // Minimum unit of mark price
+⋮----
+order_size_min?: string | number; // API returns string e.g. "1"
+order_size_max?: string | number; // API returns string e.g. "1000000"
+⋮----
+trade_size?: string | number; // API returns string
+position_size?: string | number; // API returns string
+⋮----
+/** When true, contract supports decimal contract size (size field can use decimal string). When false, size only supports integer type. */
+⋮----
+status?: string; // e.g. "trading"
+funding_cap_ratio?: string; // Deprecated
+funding_rate_limit?: string; // v4.106.4: Funding rate cap value
+⋮----
+export interface FuturesPriceTriggeredOrder {
+  initial: {
+    contract: string;
+    size?: number;
+    price?: string;
+    close?: boolean;
+    tif?: 'gtc' | 'ioc';
+    text?: string;
+    reduce_only?: boolean;
+    auto_size?: string;
+    is_reduce_only?: boolean;
+    is_close?: boolean;
+  };
+  trigger: {
+    strategy_type?: 0 | 1;
+    price_type?: 0 | 1 | 2;
+    price?: string;
+    rule?: 1 | 2;
+    expiration?: number;
+  };
+  id?: number;
+  user?: number;
+  create_time?: number;
+  finish_time?: number;
+  trade_id?: number;
+  status?: 'open' | 'finished' | 'inactive' | 'invalid';
+  finish_as?: 'cancelled' | 'succeeded' | 'failed' | 'expired';
+  reason?: string;
+  order_type?:
+    | 'close-long-order'
+    | 'close-short-order'
+    | 'close-long-position'
+    | 'close-short-position'
+    | 'plan-close-long-position'
+    | 'plan-close-short-position';
+  me_order_id?: number;
+}
+⋮----
+export interface FuturesDeliveryContract {
+  name?: string;
+  underlying?: string;
+  cycle?: 'WEEKLY' | 'BI-WEEKLY' | 'QUARTERLY' | 'BI-QUARTERLY';
+  type?: 'inverse' | 'direct';
+  quanto_multiplier?: string; // Conceptually renamed to "contract multiplier"
+  leverage_min?: string;
+  leverage_max?: string;
+  maintenance_rate?: string; // First-tier maintenance margin rate requirement
+  mark_type?: 'internal' | 'index'; // Deprecated
+  mark_price?: string;
+  index_price?: string;
+  last_price?: string;
+  maker_fee_rate?: string;
+  taker_fee_rate?: string;
+  order_price_round?: string;
+  mark_price_round?: string; // Minimum unit of mark price
+  basis_rate?: string;
+  basis_value?: string;
+  basis_impact_value?: string;
+  settle_price?: string;
+  settle_price_interval?: number;
+  settle_price_duration?: number;
+  expire_time?: number;
+  risk_limit_base?: string;
+  risk_limit_step?: string;
+  risk_limit_max?: string;
+  order_size_min?: number;
+  order_size_max?: number;
+  order_price_deviate?: string;
+  ref_discount_rate?: string;
+  ref_rebate_rate?: string;
+  orderbook_id?: number;
+  trade_id?: number;
+  trade_size?: number;
+  position_size?: number;
+  config_change_time?: number;
+  in_delisting?: boolean;
+  orders_limit?: number;
+}
+⋮----
+quanto_multiplier?: string; // Conceptually renamed to "contract multiplier"
+⋮----
+maintenance_rate?: string; // First-tier maintenance margin rate requirement
+mark_type?: 'internal' | 'index'; // Deprecated
+⋮----
+mark_price_round?: string; // Minimum unit of mark price
+⋮----
+export interface BatchAmendOrderResp {
+  succeeded: boolean;
+  label?: string;
+  detail?: string;
+  id: number;
+  user: number;
+  create_time: number;
+  finish_time?: number;
+  finish_as?:
+    | 'filled'
+    | 'cancelled'
+    | 'liquidated'
+    | 'ioc'
+    | 'auto_deleveraged'
+    | 'reduce_only'
+    | 'position_closed'
+    | 'reduce_out'
+    | 'stp';
+  status: 'open' | 'finished';
+  contract: string;
+  size: number;
+  iceberg: number;
+  price: string;
+  is_close: boolean;
+  is_reduce_only: boolean;
+  is_liq: boolean;
+  tif: 'gtc' | 'ioc' | 'poc' | 'fok';
+  left: number;
+  fill_price: string;
+  text: string;
+  tkfr: string;
+  mkfr: string;
+  refu: number;
+  stp_act: 'co' | 'cn' | 'cb' | '-';
+  stp_id: number;
+}
+⋮----
+/**
+ * @deprecated - Use FuturesAccount instead
+ */
+export interface UpdateFuturesDualModeResp {
+  total: string;
+  unrealised_pnl: string;
+  position_margin: string;
+  order_margin: string;
+  available: string;
+  point: string;
+  currency: string;
+  in_dual_mode: boolean;
+  enable_credit: boolean;
+  position_initial_margin: string;
+  maintenance_margin: string;
+  bonus: string;
+  enable_evolved_classic: boolean;
+  history: {
+    dnw: string;
+    pnl: string;
+    fee: string;
+    refr: string;
+    fund: string;
+    point_dnw: string;
+    point_fee: string;
+    point_refr: string;
+    bonus_dnw: string;
+    bonus_offset: string;
+  };
+}
+⋮----
+export interface RiskLimitTableTier {
+  tier: number;
+  risk_limit: string;
+  initial_rate: string;
+  maintenance_rate: string; // First-tier maintenance margin rate requirement
+  leverage_max: string;
+  deduction: string;
+}
+⋮----
+maintenance_rate: string; // First-tier maintenance margin rate requirement
+⋮----
+// v4.104.6: New GET /futures/{settle}/insurance endpoint types
+export interface FuturesInsuranceHistory {
+  t: number;
+  b: string;
+}
+⋮----
+/** Trail order (autoorder/v1/trail) response types */
+export interface TrailOrder {
+  id?: number | string;
+  user_id?: number | string;
+  user?: number | string;
+  contract?: string;
+  settle?: string;
+  amount?: string;
+  is_gte?: boolean;
+  activation_price?: string;
+  price_type?: number;
+  price_offset?: string;
+  text?: string;
+  reduce_only?: boolean;
+  position_related?: boolean;
+  created_at?: number | string;
+  activated_at?: number | string;
+  finished_at?: number | string;
+  create_time?: number | string;
+  active_time?: number | string;
+  finish_time?: number | string;
+  reason?: string;
+  suborder_text?: string;
+  is_dual_mode?: boolean;
+  trigger_price?: string;
+  suborder_id?: number | string;
+  side_label?: string;
+  original_status?: number;
+  status?: string;
+  position_side_output?: string;
+  updated_at?: number | string;
+  extremum_price?: string;
+  status_code?: string;
+  created_at_precise?: string;
+  finished_at_precise?: string;
+  activated_at_precise?: string;
+  status_label?: string;
+  pos_margin_mode?: string;
+  position_mode?: string;
+  error_label?: string;
+  leverage?: string;
+  [key: string]: unknown;
+}
+⋮----
+export interface TrailChangeLog {
+  updated_at?: number;
+  amount?: string;
+  is_gte?: boolean;
+  activation_price?: string;
+  price_type?: number;
+  price_offset?: string;
+  is_create?: boolean;
+}
+
+================
 File: src/lib/BaseRestClient.ts
 ================
 import axios, { AxiosRequestConfig, AxiosResponse, Method } from 'axios';
@@ -9243,6 +10125,559 @@ private async buildRequest(
 ): Promise<AxiosRequestConfig>
 
 ================
+File: README.md
+================
+# Node.js & JavaScript SDK for Gate.com (Gate.io) REST APIs, WebSockets & WebSocket API
+
+<p align="center">
+  <a href="https://www.npmjs.com/package/gateio-api">
+    <picture>
+      <source media="(prefers-color-scheme: dark)" srcset="https://github.com/tiagosiebler/gateio-api/blob/master/docs/images/logoDarkMode2.svg?raw=true#gh-dark-mode-only">
+      <img alt="SDK Logo" src="https://github.com/tiagosiebler/gateio-api/blob/master/docs/images/logoBrightMode2.svg?raw=true#gh-light-mode-only">
+    </picture>
+  </a>
+</p>
+
+[![npm version](https://img.shields.io/npm/v/gateio-api)][1]
+[![npm size](https://img.shields.io/bundlephobia/min/gateio-api/latest)][1]
+[![npm downloads](https://img.shields.io/npm/dt/gateio-api)][1]
+[![Build & Test](https://github.com/tiagosiebler/gateio-api/actions/workflows/e2etest.yml/badge.svg?branch=master)](https://github.com/tiagosiebler/gateio-api/actions/workflows/e2etest.yml)
+[![last commit](https://img.shields.io/github/last-commit/tiagosiebler/gateio-api)][1]
+[![Telegram](https://img.shields.io/badge/chat-on%20telegram-blue.svg)](https://t.me/nodetraders)
+
+[1]: https://www.npmjs.com/package/gateio-api
+
+> [!TIP]
+> Upcoming change: As part of the [Siebly.io](https://siebly.io/?ref=ghgate) brand, this SDK will soon be hosted under the [Siebly.io GitHub organisation](https://github.com/sieblyio). The migration is seamless and requires no user changes.
+
+Updated & performant JavaScript & Node.js SDK for the Gate.com (gate.io) REST APIs and WebSockets:
+
+- Professional, robust & performant Gate.com SDK with extensive production use in live trading environments.
+- Extensive integration with Gate.com (Gate.io) REST APIs and WebSockets.
+- Complete TypeScript support (with type declarations for most API requests & responses).
+  - Strongly typed requests and responses.
+  - Automated end-to-end tests ensuring reliability.
+- Actively maintained with a modern, promise-driven interface.
+- Gate.com REST APIs for Gate.com Spot, Margin, Perpetual Futures, Delivery Futures, Options, CrossEx, Alpha & OTC Trading APIs.
+  - Unified RestClient for all Gate.com trading products.
+  - Strongly typed on most requests and responses.
+  - Support for Cross-Exchange (CrossEx) trading across multiple exchanges
+  - Support for Alpha account trading (meme tokens and new listings)
+  - Support for OTC (fiat and stablecoin) trading
+- Support for seamless API authentication for private Gate.com REST API and WebSocket calls.
+- Robust WebSocket integration with configurable connection heartbeats & automatic reconnect then resubscribe workflows.
+  - Event driven messaging.
+  - Smart websocket persistence with automatic reconnection handling.
+    - Automatically handle silent websocket disconnections through timed heartbeats, including the scheduled 24hr disconnect.
+    - Automatically handle listenKey persistence and expiration/refresh.
+    - Emit `reconnected` event when dropped connection is restored.
+  - Support for Gate.com Spot, Margin, Perpetual Futures, Delivery Futures, Options, CrossEx, Alpha & OTC.
+- WebSocket API for Gate.com Spot, Margin, Perpetual Futures, Delivery Futures & CrossEx.
+  - Automatic connectivity via existing WebsocketClient, just call sendWSAPIRequest to trigger a request.
+  - Automatic authentication, just call sendWSAPIRequest with channel & parameters.
+  - Choose between two interfaces for WS API communication:
+    - Event-driven interface, fire & forget via sendWSAPIRequest and receive async replies via wsClient's event emitter.
+    - Promise-driven interface, simply use the WebsocketAPIClient for a REST-like experience. Use the WebSocket API like a REST API! See [examples/ws-api-client.ts](./examples/ws-api-client.ts) for a demonstration.
+- Heavy automated end-to-end testing with real API calls.
+- Proxy support via axios integration.
+- Active community support & collaboration in telegram: [Node.js Algo Traders](https://t.me/nodetraders).
+
+## Table of Contents
+
+- [Installation](#installation)
+- [Examples](#examples)
+- [Issues & Discussion](#issues--discussion)
+- [Related Projects](#related-projects)
+- [Documentation](#documentation)
+- [Structure](#structure)
+- [Usage](#usage)
+  - [REST API Client](#rest-api)
+  - [WebSocket Client](#websockets)
+    - [WebSocket Data Streams](#websocket-data-streams)
+    - [WebSocket API](#websocket-api)
+      - [Event Driven API](#event-driven-api)
+      - [REST-like API](#rest-like-api)
+- [Customise Logging](#customise-logging)
+- [Browser/Frontend Usage](#browserfrontend-usage)
+  - [Webpack](#webpack)
+- [LLMs & AI](#use-with-llms--ai)
+- [Used By](#used-by)
+- [Contributions & Thanks](#contributions--thanks)
+
+## Installation
+
+`npm install --save gateio-api`
+
+## Examples
+
+Refer to the [examples](./examples) folder for implementation demos, including:
+
+- **REST API Examples**: spot trading, futures trading, account management
+- **WebSocket Examples**: public market data streams, private account data, WebSocket API usage
+- **Spot Trading**: comprehensive spot market examples
+- **Futures Trading**: perpetual and delivery futures examples
+- **WebSocket API**: both event-driven and promise-driven approaches
+
+## Issues & Discussion
+
+- Issues? Check the [issues tab](https://github.com/tiagosiebler/gateio-api/issues).
+- Discuss & collaborate with other node devs? Join our [Node.js Algo Traders](https://t.me/nodetraders) engineering community on telegram.
+- Follow our announcement channel for real-time updates on [X/Twitter](https://x.com/sieblyio)
+
+<!-- template_related_projects -->
+
+## Related Projects
+
+Check out our JavaScript/TypeScript/Node.js SDKs & Projects:
+
+- Visit our website: [https://Siebly.io](https://siebly.io/?ref=gh)
+- Try our REST API & WebSocket SDKs published on npmjs:
+  - [Bybit Node.js SDK: bybit-api](https://www.npmjs.com/package/bybit-api)
+  - [Kraken Node.js SDK: @siebly/kraken-api](https://www.npmjs.com/package/@siebly/kraken-api)
+  - [OKX Node.js SDK: okx-api](https://www.npmjs.com/package/okx-api)
+  - [Binance Node.js SDK: binance](https://www.npmjs.com/package/binance)
+  - [Gate (gate.com) Node.js SDK: gateio-api](https://www.npmjs.com/package/gateio-api)
+  - [Bitget Node.js SDK: bitget-api](https://www.npmjs.com/package/bitget-api)
+  - [Kucoin Node.js SDK: kucoin-api](https://www.npmjs.com/package/kucoin-api)
+  - [Coinbase Node.js SDK: coinbase-api](https://www.npmjs.com/package/coinbase-api)
+  - [Bitmart Node.js SDK: bitmart-api](https://www.npmjs.com/package/bitmart-api)
+- Try my misc utilities:
+  - [OrderBooks Node.js: orderbooks](https://www.npmjs.com/package/orderbooks)
+  - [Crypto Exchange Account State Cache: accountstate](https://www.npmjs.com/package/accountstate)
+- Check out my examples:
+  - [awesome-crypto-examples Node.js](https://github.com/tiagosiebler/awesome-crypto-examples)
+  <!-- template_related_projects_end -->
+
+## Documentation
+
+Most methods accept JS objects. These can be populated using parameters specified by Gate.com's API documentation, or check the type definition in each class within this repository.
+
+### API Documentation Links
+
+- [Gate.com/gate.io API Documentation](https://www.gate.com/docs/developers/apiv4/en/)
+  - [Spot Trading API](https://www.gate.com/docs/developers/apiv4/en/#spot-new)
+  - [Margin Trading API](https://www.gate.com/docs/developers/apiv4/en/#margin-new)
+  - [Futures Trading API](https://www.gate.com/docs/developers/apiv4/en/#futures-new)
+  - [Options Trading API](https://www.gate.com/docs/developers/apiv4/en/#options-new)
+  - [CrossEx Trading API](https://www.gate.com/docs/developers/apiv4/en/#crossex)
+  - [Alpha Trading API](https://www.gate.com/docs/developers/apiv4/en/#alpha)
+  - [OTC Trading API](https://www.gate.com/docs/developers/apiv4/en/#otc)
+  - [WebSocket API](https://www.gate.com/docs/developers/apiv4/en/#websocket-api)
+- [REST Endpoint Function List](./docs/endpointFunctionList.md)
+- [TSDoc Documentation (autogenerated using typedoc)](https://tsdocs.dev/docs/gateio-api)
+
+## Structure
+
+This project uses typescript. Resources are stored in 2 key structures:
+
+- [src](./src) - the whole connector written in typescript
+- [examples](./examples) - some implementation examples & demonstrations. Contributions are welcome!
+
+---
+
+# Usage
+
+Create API credentials on Gate.com's website:
+
+- [Gate.com API Key Management](https://www.gate.com/myaccount/api_key_manage)
+
+## REST API
+
+The SDK provides a unified `RestClient` for all Gate.com trading products including Spot, Margin, Perpetual Futures, Delivery Futures, Options, CrossEx, Alpha, and OTC Trading. This single client handles all REST API operations across all trading markets.
+
+To use any of Gate.com's REST APIs in JavaScript/TypeScript/Node.js, import (or require) the `RestClient`:
+
+```javascript
+const { RestClient } = require('gateio-api');
+
+const API_KEY = 'xxx';
+const PRIVATE_KEY = 'yyy';
+
+const client = new RestClient({
+  apiKey: API_KEY,
+  apiSecret: PRIVATE_KEY,
+});
+
+// Spot Trading Example
+client
+  .getSpotTicker()
+  .then((result) => {
+    console.log('all spot tickers result: ', result);
+  })
+  .catch((err) => {
+    console.error('spot ticker error: ', err);
+  });
+
+client
+  .getSpotOrders({
+    currency_pair: 'BTC_USDT',
+    status: 'open',
+  })
+  .then((result) => {
+    console.log('getSpotOrders result: ', result);
+  })
+  .catch((err) => {
+    console.error('getSpotOrders error: ', err);
+  });
+
+// CrossEx Trading Example - Trade across multiple exchanges
+client
+  .getCrossExSymbols()
+  .then((result) => {
+    console.log('CrossEx symbols: ', result);
+  })
+  .catch((err) => {
+    console.error('CrossEx error: ', err);
+  });
+
+// Alpha Trading Example - Trade meme tokens and new listings
+client
+  .getAlphaCurrencies()
+  .then((result) => {
+    console.log('Alpha currencies: ', result);
+  })
+  .catch((err) => {
+    console.error('Alpha error: ', err);
+  });
+
+// OTC Trading Example - Fiat and stablecoin trading
+client
+  .createOTCQuote({
+    side: 'BUY',
+    pay_coin: 'USDT',
+    get_coin: 'USD',
+    pay_amount: '1000',
+    create_quote_token: '1',
+  })
+  .then((result) => {
+    console.log('OTC quote: ', result);
+  })
+  .catch((err) => {
+    console.error('OTC error: ', err);
+  });
+```
+
+See [RestClient](./src/RestClient.ts) for further information, or the [examples](./examples/) for lots of usage examples.
+
+## WebSockets
+
+All WebSocket functionality is supported via the unified `WebsocketClient`. This client handles all Gate.com WebSocket streams with automatic connection management and reconnection.
+
+Key WebSocket features:
+
+- Event driven messaging
+- Smart WebSocket persistence with automatic reconnection
+- Heartbeat mechanisms to detect disconnections
+- Automatic resubscription after reconnection
+- Support for all Gate.com trading products (Spot, Margin, Futures, Options)
+- WebSocket API support for real-time trading operations
+
+### WebSocket Data Streams
+
+All available WebSockets can be used via a shared `WebsocketClient`. The WebSocket client will automatically open/track/manage connections as needed. Each unique connection (one per server URL) is tracked using a WsKey (each WsKey is a string - see [WS_KEY_MAP](src/lib/websocket/websocket-util.ts) for a list of supported values).
+
+Any subscribe/unsubscribe events will need to include a WsKey, so the WebSocket client understands which connection the event should be routed to. See examples below or in the [examples](./examples/) folder on GitHub.
+
+Data events are emitted from the WebsocketClient via the `update` event, see example below:
+
+```javascript
+const { WebsocketClient } = require('gateio-api');
+
+const API_KEY = 'xxx';
+const PRIVATE_KEY = 'yyy';
+
+const wsConfig = {
+  apiKey: API_KEY,
+  apiSecret: PRIVATE_KEY,
+
+  /*
+    The following parameters are optional:
+  */
+
+  // Livenet is used by default, use this to enable testnet:
+  // useTestnet: true
+
+  // how long to wait (in ms) before deciding the connection should be terminated & reconnected
+  // pongTimeout: 1000,
+
+  // how often to check (in ms) that WS connection is still alive
+  // pingInterval: 10000,
+
+  // how long to wait before attempting to reconnect (in ms) after connection is closed
+  // reconnectTimeout: 500,
+
+  // config options sent to RestClient (used for time sync). See RestClient docs.
+  // restOptions: { },
+
+  // config for axios used for HTTP requests. E.g for proxy support
+  // requestOptions: { }
+};
+
+const ws = new WebsocketClient(wsConfig);
+
+/**
+ * Subscribing to data:
+ **/
+
+const userOrders = {
+  topic: 'spot.orders',
+  payload: ['BTC_USDT', 'ETH_USDT', 'MATIC_USDT'],
+};
+
+const userTrades = {
+  topic: 'spot.usertrades',
+  payload: ['BTC_USDT', 'ETH_USDT', 'MATIC_USDT'],
+};
+
+const userPriceOrders = {
+  topic: 'spot.priceorders',
+  payload: ['!all'],
+};
+
+// subscribe to multiple topics at once
+ws.subscribe([userOrders, userTrades, userPriceOrders], 'spotV4');
+
+// and/or subscribe to individual topics on demand
+ws.subscribe(
+  {
+    topic: 'spot.priceorders',
+    payload: ['!all'],
+  },
+  'spotV4',
+);
+
+// Some topics don't need params, for those you can just subscribe with a string (or use a topic + payload object as above)
+ws.subscribe('spot.balances', 'spotV4');
+
+/**
+ * Handling events:
+ **/
+
+// Listen to events coming from websockets. This is the primary data source
+ws.on('update', (data) => {
+  console.log('data', data);
+});
+
+// Optional: Listen to websocket connection open event (automatic after subscribing to one or more topics)
+ws.on('open', ({ wsKey, event }) => {
+  console.log('connection open for websocket with ID: ' + wsKey);
+});
+
+// Optional: Listen to responses to websocket queries (e.g. the reply after subscribing to a topic)
+ws.on('response', (response) => {
+  console.log('response', response);
+});
+
+// Optional: Listen to connection close event. Unexpected connection closes are automatically reconnected.
+ws.on('close', () => {
+  console.log('connection closed');
+});
+
+// Optional: listen to internal exceptions. Useful for debugging if something weird happens
+ws.on('exception', (data) => {
+  console.error('exception: ', data);
+});
+
+// Optional: Listen to raw error events.
+ws.on('error', (err) => {
+  console.error('ERR', err);
+});
+```
+
+See [WebsocketClient](./src/WebsocketClient.ts) for further information and make sure to check the [examples](./examples/) folder for much more detail.
+
+### Websocket API
+
+Gate.com supports sending requests (commands) over an active WebSocket connection. This is called the WebSocket API.
+
+The WebSocket API is available through two approaches, depending on individual preference:
+
+#### Event Driven API
+
+The WebSocket API is available in the [WebsocketClient](./src/WebsocketClient.ts) via the `sendWSAPIRequest(wsKey, channel, params)` method.
+
+Each call to this method is wrapped in a promise, which you can async await for a response, or handle it in a raw event-driven design.
+
+- event-driven:
+  - send requests via `client.sendWSAPIRequest(wsKey, channel, params).catch(e => console.error('WS API exception for channel', channel, e))`, fire and forget, don't use await
+  - handle async replies via event handlers on `client.on('exception', cb)` and `client.on('response', cb)`
+- promise-driven:
+  - send requests via `const result = await client.sendWSAPIRequest(wsKey, channel, params)`, which returns a promise
+  - await each call
+  - use try/catch blocks to handle promise rejections
+
+#### REST-like API
+
+The WebSocket API is also available in a promise-wrapped REST-like format. Either, as above, await any calls to `sendWSAPIRequest(...)`, or directly use the convenient WebsocketAPIClient. This class is very similar to existing REST API classes (such as the RestClient).
+
+It provides one function per endpoint, feels like a REST API and will automatically route your request via an automatically persisted, authenticated and health-checked WebSocket API connection.
+
+Below is an example showing how easy it is to use the WebSocket API without any concern for the complexity of managing WebSockets.
+
+```javascript
+const { WebsocketAPIClient } = require('gateio-api');
+
+const API_KEY = 'xxx';
+const API_SECRET = 'yyy';
+
+async function start() {
+  // Make an instance of the WS API Client
+  const wsClient = new WebsocketAPIClient({
+    apiKey: API_KEY,
+    apiSecret: API_SECRET,
+    // Automatically re-auth WS API, if we were auth'd before and get reconnected
+    reauthWSAPIOnReconnect: true,
+  });
+
+  try {
+    // Connection will authenticate automatically before first request
+    // Make WebSocket API calls, very similar to a REST API:
+
+    /* ============ SPOT TRADING EXAMPLES ============ */
+
+    // Submit a new spot order
+    const newOrder = await wsClient.submitNewSpotOrder({
+      text: 't-my-custom-id',
+      currency_pair: 'BTC_USDT',
+      type: 'limit',
+      account: 'spot',
+      side: 'buy',
+      amount: '1',
+      price: '10000',
+    });
+    console.log('Order result:', newOrder.data);
+
+    // Cancel a spot order
+    const cancelOrder = await wsClient.cancelSpotOrder({
+      order_id: '1700664330',
+      currency_pair: 'BTC_USDT',
+      account: 'spot',
+    });
+    console.log('Cancel result:', cancelOrder.data);
+
+    // Get spot order status
+    const orderStatus = await wsClient.getSpotOrderStatus({
+      order_id: '1700664330',
+      currency_pair: 'BTC_USDT',
+      account: 'spot',
+    });
+    console.log('Order status:', orderStatus.data);
+
+    /* ============ FUTURES TRADING EXAMPLES ============ */
+
+    // Submit a new futures order
+    const newFuturesOrder = await wsClient.submitNewFuturesOrder({
+      contract: 'BTC_USDT',
+      size: 10,
+      price: '31503.28',
+      tif: 'gtc',
+      text: 't-my-custom-id',
+    });
+    console.log('Futures order result:', newFuturesOrder.data);
+
+    // Cancel a futures order
+    const cancelFuturesOrder = await wsClient.cancelFuturesOrder({
+      order_id: '74046514',
+    });
+    console.log('Cancel futures order result:', cancelFuturesOrder.data);
+
+    // Get futures order status
+    const futuresOrderStatus = await wsClient.getFuturesOrderStatus({
+      order_id: '74046543',
+    });
+    console.log('Futures order status:', futuresOrderStatus.data);
+  } catch (e) {
+    console.error('WS API Error:', e);
+  }
+}
+
+start();
+```
+
+For more detailed examples using any approach, refer to the [examples](./examples/) folder (e.g. [ws-api-client.ts](./examples/ws-api-client.ts)).
+
+---
+
+## Customise Logging
+
+Pass a custom logger which supports the log methods `silly`, `debug`, `notice`, `info`, `warning` and `error`, or override methods from the default logger as desired.
+
+```javascript
+const { WebsocketClient, DefaultLogger } = require('gateio-api');
+
+// Disable all logging on the silly level
+DefaultLogger.silly = () => {};
+
+const ws = new WebsocketClient({ key: 'xxx', secret: 'yyy' }, DefaultLogger);
+```
+
+## Browser/Frontend Usage
+
+### Webpack
+
+Build a bundle using webpack:
+
+- `npm install`
+- `npm run build`
+- `npm run pack`
+
+The bundle can be found in `dist/`. Altough usage should be largely consistent, smaller differences will exist. Documentation is still TODO.
+
+## Use with LLMs & AI
+
+This SDK includes a bundled `llms.txt` file in the root of the repository. If you're developing with LLMs, use the included `llms.txt` with your LLM - it will significantly improve the LLMs understanding of how to correctly use this SDK.
+
+This file contains AI optimised structure of all the functions in this package, and their parameters for easier use with any learning models or artificial intelligence.
+
+---
+
+## Used By
+
+[![Repository Users Preview Image](https://dependents.info/tiagosiebler/gateio-api/image)](https://github.com/tiagosiebler/gateio-api/network/dependents)
+
+---
+
+<!-- template_contributions -->
+
+### Contributions & Thanks
+
+Have my projects helped you? Share the love, there are many ways you can show your thanks:
+
+- Star & share my projects.
+- Are my projects useful? Sponsor me on Github and support my effort to maintain & improve them: https://github.com/sponsors/tiagosiebler
+- Have an interesting project? Get in touch & invite me to it.
+- Or buy me all the coffee:
+  - ETH(ERC20): `0xA3Bda8BecaB4DCdA539Dc16F9C54a592553Be06C` <!-- metamask -->
+- Sign up with my referral links:
+  - OKX (receive a 20% fee discount!): https://www.okx.com/join/42013004
+  - Binance (receive a 20% fee discount!): https://accounts.binance.com/register?ref=OKFFGIJJ
+  - HyperLiquid (receive a 4% fee discount!): https://app.hyperliquid.xyz/join/SDK
+  - Gate: https://www.gate.io/signup/NODESDKS?ref_type=103
+
+<!---
+old ones:
+  - BTC: `1C6GWZL1XW3jrjpPTS863XtZiXL1aTK7Jk`
+  - BTC(SegWit): `bc1ql64wr9z3khp2gy7dqlmqw7cp6h0lcusz0zjtls`
+  - ETH(ERC20): `0xe0bbbc805e0e83341fadc210d6202f4022e50992`
+  - USDT(TRC20): `TA18VUywcNEM9ahh3TTWF3sFpt9rkLnnQa
+  - gate: https://www.gate.io/signup/AVNNU1WK?ref_type=103
+
+-->
+<!-- template_contributions_end -->
+
+### Contributions & Pull Requests
+
+Contributions are encouraged, I will review any incoming pull requests. See the issues tab for todo items.
+
+<!-- template_star_history -->
+
+## Star History
+
+[![Star History Chart](https://api.star-history.com/svg?repos=tiagosiebler/bybit-api,tiagosiebler/okx-api,tiagosiebler/binance,tiagosiebler/bitget-api,tiagosiebler/bitmart-api,tiagosiebler/gateio-api,tiagosiebler/kucoin-api,tiagosiebler/coinbase-api,tiagosiebler/orderbooks,tiagosiebler/accountstate,tiagosiebler/awesome-crypto-examples&type=Date)](https://star-history.com/#tiagosiebler/bybit-api&tiagosiebler/okx-api&tiagosiebler/binance&tiagosiebler/bitget-api&tiagosiebler/bitmart-api&tiagosiebler/gateio-api&tiagosiebler/kucoin-api&tiagosiebler/coinbase-api&tiagosiebler/orderbooks&tiagosiebler/accountstate&tiagosiebler/awesome-crypto-examples&Date)
+
+<!-- template_star_history_end -->
+
+================
 File: src/RestClient.ts
 ================
 import { AxiosRequestConfig } from 'axios';
@@ -9263,13 +10698,6 @@ import {
   GetAlphaOrdersReq,
   GetAlphaTickersReq,
 } from './types/request/alpha.js';
-import {
-  GetLoanCollateralRecordsReq,
-  GetLoanOrdersReq,
-  GetLoanRepaymentHistoryReq,
-  SubmitLoanOrderReq,
-  UpdateLoanCollateralReq,
-} from './types/request/collateralLoan.js';
 import {
   CloseCrossExPositionReq,
   CreateCrossExConvertOrderReq,
@@ -9316,6 +10744,7 @@ import {
 import {
   GetStructuredProductListReq,
   GetStructuredProductOrdersReq,
+  PlaceDualInvestmentOrderParams,
 } from './types/request/earn.js';
 import {
   GetLendingInterestRecordsReq,
@@ -9330,6 +10759,9 @@ import {
 } from './types/request/flashswap.js';
 import {
   BatchAmendOrderReq,
+  BatchFundingRatesReq,
+  BatchTerminateTrailOrdersReq,
+  CreateTrailOrderReq,
   DeleteAllFuturesOrdersReq,
   GetFundingRatesReq,
   GetFuturesAccountBookReq,
@@ -9350,12 +10782,17 @@ import {
   GetLiquidationHistoryReq,
   GetRiskLimitTableReq,
   GetRiskLimitTiersReq,
+  GetTrailOrderChangeLogReq,
+  GetTrailOrderDetailReq,
+  GetTrailOrderListReq,
   SubmitFuturesOrderReq,
   SubmitFuturesTriggeredOrderReq,
+  TerminateTrailOrderReq,
   UpdateDualModePositionLeverageReq,
   UpdateDualModePositionMarginReq,
   UpdateFuturesOrderReq,
   UpdateFuturesPriceTriggeredOrderReq,
+  UpdateTrailOrderReq,
 } from './types/request/futures.js';
 import {
   GetCrossMarginAccountHistoryReq,
@@ -9403,6 +10840,24 @@ import {
   MarkOTCOrderAsPaidReq,
 } from './types/request/otc.js';
 import {
+  P2PMerchantAdsDetailReq,
+  P2PMerchantAdsUpdateStatusReq,
+  P2PMerchantCancelTransactionReq,
+  P2PMerchantConfirmPaymentReq,
+  P2PMerchantConfirmReceiptReq,
+  P2PMerchantGetAdsListReq,
+  P2PMerchantGetChatsListReq,
+  P2PMerchantGetCompletedTransactionListReq,
+  P2PMerchantGetCounterpartyUserInfoReq,
+  P2PMerchantGetMyselfPaymentReq,
+  P2PMerchantGetPendingTransactionListReq,
+  P2PMerchantGetTransactionDetailsReq,
+  P2PMerchantMyAdsListReq,
+  P2PMerchantPlaceBizPushOrderReq,
+  P2PMerchantSendChatMessageReq,
+  P2PMerchantUploadChatFileReq,
+} from './types/request/p2pMerchant.js';
+import {
   GetAgencyCommissionHistoryReq,
   GetAgencyTransactionHistoryReq,
   GetBrokerCommissionHistoryReq,
@@ -9432,6 +10887,18 @@ import {
   CreateSubAccountReq,
   UpdateSubAccountApiKeyReq,
 } from './types/request/subaccount.js';
+import {
+  TradFiClosePositionReq,
+  TradFiCreateOrderReq,
+  TradFiCreateTransactionReq,
+  TradFiGetKlinesParams,
+  TradFiGetOrderHistoryParams,
+  TradFiGetPositionHistoryParams,
+  TradFiGetSymbolDetailParams,
+  TradFiGetTransactionsParams,
+  TradFiModifyOrderReq,
+  TradFiModifyPositionReq,
+} from './types/request/tradfi.js';
 import {
   GetUnifiedHistoryLendingRateReq,
   GetUnifiedInterestRecordsReq,
@@ -9469,12 +10936,6 @@ import {
   CreateAlphaOrderResp,
   CreateAlphaQuoteResp,
 } from './types/response/alpha.js';
-import {
-  LoanCollateralRatio,
-  LoanCollateralRecord,
-  LoanOrder,
-  LoanRepaymentHistoryRecord,
-} from './types/response/collateralloan.js';
 import {
   CancelCrossExOrderResp,
   CloseCrossExPositionResp,
@@ -9536,6 +10997,7 @@ import {
 } from './types/response/flashswap.js';
 import {
   BatchAmendOrderResp,
+  BatchFundingRatesResponse,
   DeleteFuturesBatchOrdersResp,
   FuturesAccount,
   FuturesAccountBookRecord,
@@ -9559,6 +11021,8 @@ import {
   PremiumIndexKLine,
   RiskLimitTableTier,
   RiskLimitTier,
+  TrailChangeLog,
+  TrailOrder,
 } from './types/response/futures.js';
 import {
   CrossMarginAccount,
@@ -9616,6 +11080,18 @@ import {
   MarkOTCOrderAsPaidResp,
 } from './types/response/otc.js';
 import {
+  P2PMerchantAdsDetail,
+  P2PMerchantAdsListItem,
+  P2PMerchantApiResp,
+  P2PMerchantChatsListData,
+  P2PMerchantCounterpartyUserInfo,
+  P2PMerchantMyAdsListData,
+  P2PMerchantPaymentMethod,
+  P2PMerchantTransactionDetails,
+  P2PMerchantTransactionListData,
+  P2PMerchantUserInfo,
+} from './types/response/p2pMerchant.js';
+import {
   AgencyCommissionHistoryRecord,
   AgencyTransactionHistoryRecord,
   BrokerCommissionHistoryRecord,
@@ -9647,6 +11123,25 @@ import {
   SubAccountAPIKey,
   SubAccountMode,
 } from './types/response/subaccount.js';
+import {
+  TradFiApiResp,
+  TradFiAssets,
+  TradFiCategoryItem,
+  TradFiCreateOrderResult,
+  TradFiCreateUserResult,
+  TradFiKlineItem,
+  TradFiListData,
+  TradFiModifyOrderResult,
+  TradFiMT5Account,
+  TradFiOrderHistoryItem,
+  TradFiOrderItem,
+  TradFiPositionHistoryItem,
+  TradFiPositionItem,
+  TradFiSymbolDetailItem,
+  TradFiSymbolItem,
+  TradFiTicker,
+  TradFiTransactionListData,
+} from './types/response/tradfi.js';
 import {
   MarginTier,
   PortfolioMarginCalculation,
@@ -11291,6 +12786,16 @@ getFundingRates(params: GetFundingRatesReq): Promise<
 return this.get(`/futures/$
 ⋮----
 /**
+   * Batch query historical funding rate data for perpetual contracts
+   *
+   * @param params settle and array of contract names
+   * @returns Promise<BatchFundingRatesResponse[]>
+   */
+getBatchFundingRates(
+    params: BatchFundingRatesReq,
+): Promise<BatchFundingRatesResponse[]>
+⋮----
+/**
    * Futures insurance balance history
    *
    * @param params Parameters for retrieving futures insurance balance history
@@ -11827,6 +13332,68 @@ cancelFuturesPriceTriggeredOrder(params: {
    */
 updateFuturesPriceTriggeredOrder(
     params: UpdateFuturesPriceTriggeredOrderReq,
+): Promise<
+⋮----
+/**
+   * Create trail order
+   *
+   * @param params settle and trail order parameters
+   * @returns Promise with code, message, data containing id and timestamp
+   */
+createTrailOrder(params: CreateTrailOrderReq): Promise<
+⋮----
+/**
+   * Terminate trail order
+   *
+   * @param params settle and id or text
+   * @returns Promise<TrailOrder>
+   */
+terminateTrailOrder(params: TerminateTrailOrderReq): Promise<TrailOrder>
+⋮----
+/**
+   * Batch terminate trail orders
+   *
+   * @param params settle and optional contract, related_position
+   * @returns Promise<{ orders: TrailOrder[] }>
+   */
+batchTerminateTrailOrders(
+    params: BatchTerminateTrailOrdersReq,
+): Promise<
+⋮----
+/**
+   * Get trail order list
+   *
+   * @param params query parameters
+   * @returns Promise<{ orders: TrailOrder[] }>
+   */
+getTrailOrderList(
+    params: GetTrailOrderListReq,
+): Promise<
+⋮----
+/**
+   * Get trail order details
+   *
+   * @param params settle and order id
+   * @returns Promise with code, message, data.order
+   */
+getTrailOrderDetail(params: GetTrailOrderDetailReq): Promise<
+⋮----
+/**
+   * Update trail order
+   *
+   * @param params settle, id and fields to update
+   * @returns Promise<TrailOrder>
+   */
+updateTrailOrder(params: UpdateTrailOrderReq): Promise<TrailOrder>
+⋮----
+/**
+   * Get trail order user modification records
+   *
+   * @param params settle, id and optional pagination
+   * @returns Promise<{ change_log: TrailChangeLog[] }>
+   */
+getTrailOrderChangeLog(
+    params: GetTrailOrderChangeLogReq,
 ): Promise<
 ⋮----
 getFuturesPositionCloseHistory(
@@ -12561,116 +14128,6 @@ getLendingEstimatedRates(): Promise<
     return this.getPrivate('/earn/uni/rate');
 ⋮----
 /**==========================================================================================================================
-   * COLLATERAL LOAN
-   * ==========================================================================================================================
-   */
-⋮----
-/**
-   * Place order
-   *
-   * @param params Parameters for placing an order
-   * @returns Promise<{ order_id: number }>
-   */
-submitLoanOrder(params: SubmitLoanOrderReq): Promise<
-⋮----
-/**
-   * List Orders
-   *
-   * @param params Parameters for listing orders
-   * @returns Promise<GetLoanOrdersResp[]>
-   */
-getLoanOrders(params?: GetLoanOrdersReq): Promise<LoanOrder[]>
-⋮----
-/**
-   * Get a single order
-   *
-   * @param params Parameters for retrieving a single order
-   * @returns Promise<GetLoanOrdersResp>
-   */
-getLoanOrder(params:
-⋮----
-/**
-   * Repayment
-   *
-   * @param params Parameters for repayment
-   * @returns Promise<{
-   *   repaid_principal: string;
-   *   repaid_interest: string;
-   * }>
-   */
-submitLoanRepay(params: {
-    order_id: number;
-    repay_amount: string;
-    repaid_all: boolean;
-}): Promise<
-⋮----
-/**
-   * Repayment history
-   *
-   * @param params Parameters for retrieving repayment history
-   * @returns Promise<GetLoanRepaymentHistoryResp[]>
-   */
-getLoanRepaymentHistory(
-    params: GetLoanRepaymentHistoryReq,
-): Promise<LoanRepaymentHistoryRecord[]>
-⋮----
-/**
-   * Increase or redeem collateral
-   *
-   * @param params Parameters for increasing or redeeming collateral
-   * @returns Promise<any>
-   */
-updateLoanCollateral(params: UpdateLoanCollateralReq): Promise<any>
-⋮----
-/**
-   * Query collateral adjustment records
-   *
-   * @param params Parameters for querying collateral adjustment records
-   * @returns Promise<GetLoanCollateralRecordsResp[]>
-   */
-getLoanCollateralRecords(
-    params?: GetLoanCollateralRecordsReq,
-): Promise<LoanCollateralRecord[]>
-⋮----
-/**
-   * Query the total borrowing and collateral amount for the user
-   *
-   * @returns Promise<{
-   *   borrow_amount: string;
-   *   collateral_amount: string;
-   * }>
-   */
-getLoanTotalAmount(): Promise<
-⋮----
-/**
-   * Query user's collateralization ratio
-   *
-   * @param params Parameters for querying user's collateralization ratio
-   * @returns Promise<GetLoanCollateralizationRatioResp>
-   */
-getLoanCollateralizationRatio(params: {
-    collateral_currency: string;
-    borrow_currency: string;
-}): Promise<LoanCollateralRatio>
-⋮----
-/**
-   * Query supported borrowing and collateral currencies
-   *
-   * @param params Parameters for querying supported borrowing and collateral currencies
-   * @returns Promise<{
-   *   loan_currency: string;
-   *   collateral_currency: string[];
-   * }[]>
-   */
-getLoanSupportedCurrencies(params?: { loan_currency?: string }): Promise<
-    {
-      loan_currency: string;
-      collateral_currency: string[];
-    }[]
-  > {
-    return this.get('/loan/collateral/currencies', params);
-⋮----
-/**==========================================================================================================================
    * MULTI COLLATERAL LOAN
    * ==========================================================================================================================
    */
@@ -12834,15 +14291,12 @@ getDualInvestmentOrders(
 /**
    * Place Dual Investment order
    *
-   * @param params Parameters for placing a dual investment order
-   * @returns Promise<any>
+   * @param params plan_id, amount (or copies), optional text
+   * @returns Promise<DualInvestmentOrder>
    */
-submitDualInvestmentOrder(params: {
-    plan_id: string;
-    copies: string;
-    is_max: number;
-    amount: string;
-}): Promise<any>
+submitDualInvestmentOrder(
+    params: PlaceDualInvestmentOrderParams,
+): Promise<DualInvestmentOrder>
 ⋮----
 /**
    * Structured Product List
@@ -13200,6 +14654,128 @@ getOTCStablecoinOrderList(
 getOTCFiatOrderDetail(
     params: GetOTCFiatOrderDetailReq,
 ): Promise<GetOTCFiatOrderDetailResp>
+⋮----
+/**==========================================================================================================================
+   * P2P MERCHANT
+   * ==========================================================================================================================
+   */
+⋮----
+/**
+   * Get account information
+   */
+getP2PMerchantUserInfo(): Promise<P2PMerchantApiResp<P2PMerchantUserInfo>>
+⋮----
+/**
+   * Get counterparty information
+   */
+getP2PMerchantCounterpartyUserInfo(
+    params: P2PMerchantGetCounterpartyUserInfoReq,
+): Promise<P2PMerchantApiResp<P2PMerchantCounterpartyUserInfo>>
+⋮----
+/**
+   * Get payment method list
+   */
+getP2PMerchantMyselfPayment(
+    params?: P2PMerchantGetMyselfPaymentReq,
+): Promise<P2PMerchantApiResp<P2PMerchantPaymentMethod[]>>
+⋮----
+/**
+   * Get pending orders
+   */
+getP2PMerchantPendingTransactionList(
+    params: P2PMerchantGetPendingTransactionListReq,
+): Promise<P2PMerchantApiResp<P2PMerchantTransactionListData>>
+⋮----
+/**
+   * Get completed/historical orders
+   */
+getP2PMerchantCompletedTransactionList(
+    params: P2PMerchantGetCompletedTransactionListReq,
+): Promise<P2PMerchantApiResp<P2PMerchantTransactionListData>>
+⋮----
+/**
+   * Get order details
+   */
+getP2PMerchantTransactionDetails(
+    params: P2PMerchantGetTransactionDetailsReq,
+): Promise<P2PMerchantApiResp<P2PMerchantTransactionDetails>>
+⋮----
+/**
+   * Confirm payment
+   */
+confirmP2PMerchantPayment(
+    params: P2PMerchantConfirmPaymentReq,
+): Promise<P2PMerchantApiResp<Record<string, unknown>>>
+⋮----
+/**
+   * Confirm receipt
+   */
+confirmP2PMerchantReceipt(
+    params: P2PMerchantConfirmReceiptReq,
+): Promise<P2PMerchantApiResp<Record<string, unknown>>>
+⋮----
+/**
+   * Cancel order
+   */
+cancelP2PMerchantTransaction(
+    params: P2PMerchantCancelTransactionReq,
+): Promise<P2PMerchantApiResp<Record<string, unknown>>>
+⋮----
+/**
+   * Place ad order
+   */
+placeP2PMerchantBizPushOrder(
+    params: P2PMerchantPlaceBizPushOrderReq,
+): Promise<P2PMerchantApiResp<Record<string, unknown>>>
+⋮----
+/**
+   * Update ad status
+   */
+updateP2PMerchantAdsStatus(
+    params: P2PMerchantAdsUpdateStatusReq,
+): Promise<P2PMerchantApiResp<
+⋮----
+/**
+   * Get ad details
+   */
+getP2PMerchantAdsDetail(
+    params: P2PMerchantAdsDetailReq,
+): Promise<P2PMerchantApiResp<P2PMerchantAdsDetail>>
+⋮----
+/**
+   * Get my ads list
+   */
+getP2PMerchantMyAdsList(
+    params?: P2PMerchantMyAdsListReq,
+): Promise<P2PMerchantApiResp<P2PMerchantMyAdsListData>>
+⋮----
+/**
+   * Get advertisement list
+   */
+getP2PMerchantAdsList(
+    params: P2PMerchantGetAdsListReq,
+): Promise<P2PMerchantApiResp<P2PMerchantAdsListItem[]>>
+⋮----
+/**
+   * Get chat history
+   */
+getP2PMerchantChatsList(
+    params: P2PMerchantGetChatsListReq,
+): Promise<P2PMerchantApiResp<P2PMerchantChatsListData>>
+⋮----
+/**
+   * Send chat message
+   */
+sendP2PMerchantChatMessage(
+    params: P2PMerchantSendChatMessageReq,
+): Promise<P2PMerchantApiResp<
+⋮----
+/**
+   * Upload chat file
+   */
+uploadP2PMerchantChatFile(
+    params: P2PMerchantUploadChatFileReq,
+): Promise<P2PMerchantApiResp<
 ⋮----
 /**==========================================================================================================================
    * CROSSEX
@@ -13650,566 +15226,83 @@ getAlphaCurrencies(params?: GetAlphaCurrenciesReq): Promise<AlphaCurrency[]>
    * @returns Promise with array of ticker information
    */
 getAlphaTickers(params?: GetAlphaTickersReq): Promise<AlphaTicker[]>
-
-================
-File: README.md
-================
-# Node.js & JavaScript SDK for Gate.com (Gate.io) REST APIs, WebSockets & WebSocket API
-
-<p align="center">
-  <a href="https://www.npmjs.com/package/gateio-api">
-    <picture>
-      <source media="(prefers-color-scheme: dark)" srcset="https://github.com/tiagosiebler/gateio-api/blob/master/docs/images/logoDarkMode2.svg?raw=true#gh-dark-mode-only">
-      <img alt="SDK Logo" src="https://github.com/tiagosiebler/gateio-api/blob/master/docs/images/logoBrightMode2.svg?raw=true#gh-light-mode-only">
-    </picture>
-  </a>
-</p>
-
-[![npm version](https://img.shields.io/npm/v/gateio-api)][1]
-[![npm size](https://img.shields.io/bundlephobia/min/gateio-api/latest)][1]
-[![npm downloads](https://img.shields.io/npm/dt/gateio-api)][1]
-[![Build & Test](https://github.com/tiagosiebler/gateio-api/actions/workflows/e2etest.yml/badge.svg?branch=master)](https://github.com/tiagosiebler/gateio-api/actions/workflows/e2etest.yml)
-[![last commit](https://img.shields.io/github/last-commit/tiagosiebler/gateio-api)][1]
-[![Telegram](https://img.shields.io/badge/chat-on%20telegram-blue.svg)](https://t.me/nodetraders)
-
-[1]: https://www.npmjs.com/package/gateio-api
-
-> [!TIP]
-> Upcoming change: As part of the [Siebly.io](https://siebly.io/?ref=ghgate) brand, this SDK will soon be hosted under the [Siebly.io GitHub organisation](https://github.com/sieblyio). The migration is seamless and requires no user changes.
-
-Updated & performant JavaScript & Node.js SDK for the Gate.com (gate.io) REST APIs and WebSockets:
-
-- Professional, robust & performant Gate.com SDK with extensive production use in live trading environments.
-- Extensive integration with Gate.com (Gate.io) REST APIs and WebSockets.
-- Complete TypeScript support (with type declarations for most API requests & responses).
-  - Strongly typed requests and responses.
-  - Automated end-to-end tests ensuring reliability.
-- Actively maintained with a modern, promise-driven interface.
-- Gate.com REST APIs for Gate.com Spot, Margin, Perpetual Futures, Delivery Futures, Options, CrossEx, Alpha & OTC Trading APIs.
-  - Unified RestClient for all Gate.com trading products.
-  - Strongly typed on most requests and responses.
-  - Support for Cross-Exchange (CrossEx) trading across multiple exchanges
-  - Support for Alpha account trading (meme tokens and new listings)
-  - Support for OTC (fiat and stablecoin) trading
-- Support for seamless API authentication for private Gate.com REST API and WebSocket calls.
-- Robust WebSocket integration with configurable connection heartbeats & automatic reconnect then resubscribe workflows.
-  - Event driven messaging.
-  - Smart websocket persistence with automatic reconnection handling.
-    - Automatically handle silent websocket disconnections through timed heartbeats, including the scheduled 24hr disconnect.
-    - Automatically handle listenKey persistence and expiration/refresh.
-    - Emit `reconnected` event when dropped connection is restored.
-  - Support for Gate.com Spot, Margin, Perpetual Futures, Delivery Futures, Options, CrossEx, Alpha & OTC.
-- WebSocket API for Gate.com Spot, Margin, Perpetual Futures, Delivery Futures & CrossEx.
-  - Automatic connectivity via existing WebsocketClient, just call sendWSAPIRequest to trigger a request.
-  - Automatic authentication, just call sendWSAPIRequest with channel & parameters.
-  - Choose between two interfaces for WS API communication:
-    - Event-driven interface, fire & forget via sendWSAPIRequest and receive async replies via wsClient's event emitter.
-    - Promise-driven interface, simply use the WebsocketAPIClient for a REST-like experience. Use the WebSocket API like a REST API! See [examples/ws-api-client.ts](./examples/ws-api-client.ts) for a demonstration.
-- Heavy automated end-to-end testing with real API calls.
-- Proxy support via axios integration.
-- Active community support & collaboration in telegram: [Node.js Algo Traders](https://t.me/nodetraders).
-
-## Table of Contents
-
-- [Installation](#installation)
-- [Examples](#examples)
-- [Issues & Discussion](#issues--discussion)
-- [Related Projects](#related-projects)
-- [Documentation](#documentation)
-- [Structure](#structure)
-- [Usage](#usage)
-  - [REST API Client](#rest-api)
-  - [WebSocket Client](#websockets)
-    - [WebSocket Data Streams](#websocket-data-streams)
-    - [WebSocket API](#websocket-api)
-      - [Event Driven API](#event-driven-api)
-      - [REST-like API](#rest-like-api)
-- [Customise Logging](#customise-logging)
-- [Browser/Frontend Usage](#browserfrontend-usage)
-  - [Webpack](#webpack)
-- [LLMs & AI](#use-with-llms--ai)
-- [Used By](#used-by)
-- [Contributions & Thanks](#contributions--thanks)
-
-## Installation
-
-`npm install --save gateio-api`
-
-## Examples
-
-Refer to the [examples](./examples) folder for implementation demos, including:
-
-- **REST API Examples**: spot trading, futures trading, account management
-- **WebSocket Examples**: public market data streams, private account data, WebSocket API usage
-- **Spot Trading**: comprehensive spot market examples
-- **Futures Trading**: perpetual and delivery futures examples
-- **WebSocket API**: both event-driven and promise-driven approaches
-
-## Issues & Discussion
-
-- Issues? Check the [issues tab](https://github.com/tiagosiebler/gateio-api/issues).
-- Discuss & collaborate with other node devs? Join our [Node.js Algo Traders](https://t.me/nodetraders) engineering community on telegram.
-- Follow our announcement channel for real-time updates on [X/Twitter](https://x.com/sieblyio)
-
-<!-- template_related_projects -->
-
-## Related Projects
-
-Check out our JavaScript/TypeScript/Node.js SDKs & Projects:
-
-- Visit our website: [https://Siebly.io](https://siebly.io/?ref=gh)
-- Try our REST API & WebSocket SDKs published on npmjs:
-  - [Bybit Node.js SDK: bybit-api](https://www.npmjs.com/package/bybit-api)
-  - [Kraken Node.js SDK: @siebly/kraken-api](https://www.npmjs.com/package/@siebly/kraken-api)
-  - [OKX Node.js SDK: okx-api](https://www.npmjs.com/package/okx-api)
-  - [Binance Node.js SDK: binance](https://www.npmjs.com/package/binance)
-  - [Gate (gate.com) Node.js SDK: gateio-api](https://www.npmjs.com/package/gateio-api)
-  - [Bitget Node.js SDK: bitget-api](https://www.npmjs.com/package/bitget-api)
-  - [Kucoin Node.js SDK: kucoin-api](https://www.npmjs.com/package/kucoin-api)
-  - [Coinbase Node.js SDK: coinbase-api](https://www.npmjs.com/package/coinbase-api)
-  - [Bitmart Node.js SDK: bitmart-api](https://www.npmjs.com/package/bitmart-api)
-- Try my misc utilities:
-  - [OrderBooks Node.js: orderbooks](https://www.npmjs.com/package/orderbooks)
-  - [Crypto Exchange Account State Cache: accountstate](https://www.npmjs.com/package/accountstate)
-- Check out my examples:
-  - [awesome-crypto-examples Node.js](https://github.com/tiagosiebler/awesome-crypto-examples)
-  <!-- template_related_projects_end -->
-
-## Documentation
-
-Most methods accept JS objects. These can be populated using parameters specified by Gate.com's API documentation, or check the type definition in each class within this repository.
-
-### API Documentation Links
-
-- [Gate.com/gate.io API Documentation](https://www.gate.com/docs/developers/apiv4/en/)
-  - [Spot Trading API](https://www.gate.com/docs/developers/apiv4/en/#spot-new)
-  - [Margin Trading API](https://www.gate.com/docs/developers/apiv4/en/#margin-new)
-  - [Futures Trading API](https://www.gate.com/docs/developers/apiv4/en/#futures-new)
-  - [Options Trading API](https://www.gate.com/docs/developers/apiv4/en/#options-new)
-  - [CrossEx Trading API](https://www.gate.com/docs/developers/apiv4/en/#crossex)
-  - [Alpha Trading API](https://www.gate.com/docs/developers/apiv4/en/#alpha)
-  - [OTC Trading API](https://www.gate.com/docs/developers/apiv4/en/#otc)
-  - [WebSocket API](https://www.gate.com/docs/developers/apiv4/en/#websocket-api)
-- [REST Endpoint Function List](./docs/endpointFunctionList.md)
-- [TSDoc Documentation (autogenerated using typedoc)](https://tsdocs.dev/docs/gateio-api)
-
-## Structure
-
-This project uses typescript. Resources are stored in 2 key structures:
-
-- [src](./src) - the whole connector written in typescript
-- [examples](./examples) - some implementation examples & demonstrations. Contributions are welcome!
-
----
-
-# Usage
-
-Create API credentials on Gate.com's website:
-
-- [Gate.com API Key Management](https://www.gate.com/myaccount/api_key_manage)
-
-## REST API
-
-The SDK provides a unified `RestClient` for all Gate.com trading products including Spot, Margin, Perpetual Futures, Delivery Futures, Options, CrossEx, Alpha, and OTC Trading. This single client handles all REST API operations across all trading markets.
-
-To use any of Gate.com's REST APIs in JavaScript/TypeScript/Node.js, import (or require) the `RestClient`:
-
-```javascript
-const { RestClient } = require('gateio-api');
-
-const API_KEY = 'xxx';
-const PRIVATE_KEY = 'yyy';
-
-const client = new RestClient({
-  apiKey: API_KEY,
-  apiSecret: PRIVATE_KEY,
-});
-
-// Spot Trading Example
-client
-  .getSpotTicker()
-  .then((result) => {
-    console.log('all spot tickers result: ', result);
-  })
-  .catch((err) => {
-    console.error('spot ticker error: ', err);
-  });
-
-client
-  .getSpotOrders({
-    currency_pair: 'BTC_USDT',
-    status: 'open',
-  })
-  .then((result) => {
-    console.log('getSpotOrders result: ', result);
-  })
-  .catch((err) => {
-    console.error('getSpotOrders error: ', err);
-  });
-
-// CrossEx Trading Example - Trade across multiple exchanges
-client
-  .getCrossExSymbols()
-  .then((result) => {
-    console.log('CrossEx symbols: ', result);
-  })
-  .catch((err) => {
-    console.error('CrossEx error: ', err);
-  });
-
-// Alpha Trading Example - Trade meme tokens and new listings
-client
-  .getAlphaCurrencies()
-  .then((result) => {
-    console.log('Alpha currencies: ', result);
-  })
-  .catch((err) => {
-    console.error('Alpha error: ', err);
-  });
-
-// OTC Trading Example - Fiat and stablecoin trading
-client
-  .createOTCQuote({
-    side: 'BUY',
-    pay_coin: 'USDT',
-    get_coin: 'USD',
-    pay_amount: '1000',
-    create_quote_token: '1',
-  })
-  .then((result) => {
-    console.log('OTC quote: ', result);
-  })
-  .catch((err) => {
-    console.error('OTC error: ', err);
-  });
-```
-
-See [RestClient](./src/RestClient.ts) for further information, or the [examples](./examples/) for lots of usage examples.
-
-## WebSockets
-
-All WebSocket functionality is supported via the unified `WebsocketClient`. This client handles all Gate.com WebSocket streams with automatic connection management and reconnection.
-
-Key WebSocket features:
-
-- Event driven messaging
-- Smart WebSocket persistence with automatic reconnection
-- Heartbeat mechanisms to detect disconnections
-- Automatic resubscription after reconnection
-- Support for all Gate.com trading products (Spot, Margin, Futures, Options)
-- WebSocket API support for real-time trading operations
-
-### WebSocket Data Streams
-
-All available WebSockets can be used via a shared `WebsocketClient`. The WebSocket client will automatically open/track/manage connections as needed. Each unique connection (one per server URL) is tracked using a WsKey (each WsKey is a string - see [WS_KEY_MAP](src/lib/websocket/websocket-util.ts) for a list of supported values).
-
-Any subscribe/unsubscribe events will need to include a WsKey, so the WebSocket client understands which connection the event should be routed to. See examples below or in the [examples](./examples/) folder on GitHub.
-
-Data events are emitted from the WebsocketClient via the `update` event, see example below:
-
-```javascript
-const { WebsocketClient } = require('gateio-api');
-
-const API_KEY = 'xxx';
-const PRIVATE_KEY = 'yyy';
-
-const wsConfig = {
-  apiKey: API_KEY,
-  apiSecret: PRIVATE_KEY,
-
-  /*
-    The following parameters are optional:
-  */
-
-  // Livenet is used by default, use this to enable testnet:
-  // useTestnet: true
-
-  // how long to wait (in ms) before deciding the connection should be terminated & reconnected
-  // pongTimeout: 1000,
-
-  // how often to check (in ms) that WS connection is still alive
-  // pingInterval: 10000,
-
-  // how long to wait before attempting to reconnect (in ms) after connection is closed
-  // reconnectTimeout: 500,
-
-  // config options sent to RestClient (used for time sync). See RestClient docs.
-  // restOptions: { },
-
-  // config for axios used for HTTP requests. E.g for proxy support
-  // requestOptions: { }
-};
-
-const ws = new WebsocketClient(wsConfig);
-
-/**
- * Subscribing to data:
- **/
-
-const userOrders = {
-  topic: 'spot.orders',
-  payload: ['BTC_USDT', 'ETH_USDT', 'MATIC_USDT'],
-};
-
-const userTrades = {
-  topic: 'spot.usertrades',
-  payload: ['BTC_USDT', 'ETH_USDT', 'MATIC_USDT'],
-};
-
-const userPriceOrders = {
-  topic: 'spot.priceorders',
-  payload: ['!all'],
-};
-
-// subscribe to multiple topics at once
-ws.subscribe([userOrders, userTrades, userPriceOrders], 'spotV4');
-
-// and/or subscribe to individual topics on demand
-ws.subscribe(
-  {
-    topic: 'spot.priceorders',
-    payload: ['!all'],
-  },
-  'spotV4',
-);
-
-// Some topics don't need params, for those you can just subscribe with a string (or use a topic + payload object as above)
-ws.subscribe('spot.balances', 'spotV4');
-
-/**
- * Handling events:
- **/
-
-// Listen to events coming from websockets. This is the primary data source
-ws.on('update', (data) => {
-  console.log('data', data);
-});
-
-// Optional: Listen to websocket connection open event (automatic after subscribing to one or more topics)
-ws.on('open', ({ wsKey, event }) => {
-  console.log('connection open for websocket with ID: ' + wsKey);
-});
-
-// Optional: Listen to responses to websocket queries (e.g. the reply after subscribing to a topic)
-ws.on('response', (response) => {
-  console.log('response', response);
-});
-
-// Optional: Listen to connection close event. Unexpected connection closes are automatically reconnected.
-ws.on('close', () => {
-  console.log('connection closed');
-});
-
-// Optional: listen to internal exceptions. Useful for debugging if something weird happens
-ws.on('exception', (data) => {
-  console.error('exception: ', data);
-});
-
-// Optional: Listen to raw error events.
-ws.on('error', (err) => {
-  console.error('ERR', err);
-});
-```
-
-See [WebsocketClient](./src/WebsocketClient.ts) for further information and make sure to check the [examples](./examples/) folder for much more detail.
-
-### Websocket API
-
-Gate.com supports sending requests (commands) over an active WebSocket connection. This is called the WebSocket API.
-
-The WebSocket API is available through two approaches, depending on individual preference:
-
-#### Event Driven API
-
-The WebSocket API is available in the [WebsocketClient](./src/WebsocketClient.ts) via the `sendWSAPIRequest(wsKey, channel, params)` method.
-
-Each call to this method is wrapped in a promise, which you can async await for a response, or handle it in a raw event-driven design.
-
-- event-driven:
-  - send requests via `client.sendWSAPIRequest(wsKey, channel, params).catch(e => console.error('WS API exception for channel', channel, e))`, fire and forget, don't use await
-  - handle async replies via event handlers on `client.on('exception', cb)` and `client.on('response', cb)`
-- promise-driven:
-  - send requests via `const result = await client.sendWSAPIRequest(wsKey, channel, params)`, which returns a promise
-  - await each call
-  - use try/catch blocks to handle promise rejections
-
-#### REST-like API
-
-The WebSocket API is also available in a promise-wrapped REST-like format. Either, as above, await any calls to `sendWSAPIRequest(...)`, or directly use the convenient WebsocketAPIClient. This class is very similar to existing REST API classes (such as the RestClient).
-
-It provides one function per endpoint, feels like a REST API and will automatically route your request via an automatically persisted, authenticated and health-checked WebSocket API connection.
-
-Below is an example showing how easy it is to use the WebSocket API without any concern for the complexity of managing WebSockets.
-
-```javascript
-const { WebsocketAPIClient } = require('gateio-api');
-
-const API_KEY = 'xxx';
-const API_SECRET = 'yyy';
-
-async function start() {
-  // Make an instance of the WS API Client
-  const wsClient = new WebsocketAPIClient({
-    apiKey: API_KEY,
-    apiSecret: API_SECRET,
-    // Automatically re-auth WS API, if we were auth'd before and get reconnected
-    reauthWSAPIOnReconnect: true,
-  });
-
-  try {
-    // Connection will authenticate automatically before first request
-    // Make WebSocket API calls, very similar to a REST API:
-
-    /* ============ SPOT TRADING EXAMPLES ============ */
-
-    // Submit a new spot order
-    const newOrder = await wsClient.submitNewSpotOrder({
-      text: 't-my-custom-id',
-      currency_pair: 'BTC_USDT',
-      type: 'limit',
-      account: 'spot',
-      side: 'buy',
-      amount: '1',
-      price: '10000',
-    });
-    console.log('Order result:', newOrder.data);
-
-    // Cancel a spot order
-    const cancelOrder = await wsClient.cancelSpotOrder({
-      order_id: '1700664330',
-      currency_pair: 'BTC_USDT',
-      account: 'spot',
-    });
-    console.log('Cancel result:', cancelOrder.data);
-
-    // Get spot order status
-    const orderStatus = await wsClient.getSpotOrderStatus({
-      order_id: '1700664330',
-      currency_pair: 'BTC_USDT',
-      account: 'spot',
-    });
-    console.log('Order status:', orderStatus.data);
-
-    /* ============ FUTURES TRADING EXAMPLES ============ */
-
-    // Submit a new futures order
-    const newFuturesOrder = await wsClient.submitNewFuturesOrder({
-      contract: 'BTC_USDT',
-      size: 10,
-      price: '31503.28',
-      tif: 'gtc',
-      text: 't-my-custom-id',
-    });
-    console.log('Futures order result:', newFuturesOrder.data);
-
-    // Cancel a futures order
-    const cancelFuturesOrder = await wsClient.cancelFuturesOrder({
-      order_id: '74046514',
-    });
-    console.log('Cancel futures order result:', cancelFuturesOrder.data);
-
-    // Get futures order status
-    const futuresOrderStatus = await wsClient.getFuturesOrderStatus({
-      order_id: '74046543',
-    });
-    console.log('Futures order status:', futuresOrderStatus.data);
-  } catch (e) {
-    console.error('WS API Error:', e);
-  }
-}
-
-start();
-```
-
-For more detailed examples using any approach, refer to the [examples](./examples/) folder (e.g. [ws-api-client.ts](./examples/ws-api-client.ts)).
-
----
-
-## Customise Logging
-
-Pass a custom logger which supports the log methods `silly`, `debug`, `notice`, `info`, `warning` and `error`, or override methods from the default logger as desired.
-
-```javascript
-const { WebsocketClient, DefaultLogger } = require('gateio-api');
-
-// Disable all logging on the silly level
-DefaultLogger.silly = () => {};
-
-const ws = new WebsocketClient({ key: 'xxx', secret: 'yyy' }, DefaultLogger);
-```
-
-## Browser/Frontend Usage
-
-### Webpack
-
-Build a bundle using webpack:
-
-- `npm install`
-- `npm run build`
-- `npm run pack`
-
-The bundle can be found in `dist/`. Altough usage should be largely consistent, smaller differences will exist. Documentation is still TODO.
-
-## Use with LLMs & AI
-
-This SDK includes a bundled `llms.txt` file in the root of the repository. If you're developing with LLMs, use the included `llms.txt` with your LLM - it will significantly improve the LLMs understanding of how to correctly use this SDK.
-
-This file contains AI optimised structure of all the functions in this package, and their parameters for easier use with any learning models or artificial intelligence.
-
----
-
-## Used By
-
-[![Repository Users Preview Image](https://dependents.info/tiagosiebler/gateio-api/image)](https://github.com/tiagosiebler/gateio-api/network/dependents)
-
----
-
-<!-- template_contributions -->
-
-### Contributions & Thanks
-
-Have my projects helped you? Share the love, there are many ways you can show your thanks:
-
-- Star & share my projects.
-- Are my projects useful? Sponsor me on Github and support my effort to maintain & improve them: https://github.com/sponsors/tiagosiebler
-- Have an interesting project? Get in touch & invite me to it.
-- Or buy me all the coffee:
-  - ETH(ERC20): `0xA3Bda8BecaB4DCdA539Dc16F9C54a592553Be06C` <!-- metamask -->
-- Sign up with my referral links:
-  - OKX (receive a 20% fee discount!): https://www.okx.com/join/42013004
-  - Binance (receive a 20% fee discount!): https://accounts.binance.com/register?ref=OKFFGIJJ
-  - HyperLiquid (receive a 4% fee discount!): https://app.hyperliquid.xyz/join/SDK
-  - Gate: https://www.gate.io/signup/NODESDKS?ref_type=103
-
-<!---
-old ones:
-  - BTC: `1C6GWZL1XW3jrjpPTS863XtZiXL1aTK7Jk`
-  - BTC(SegWit): `bc1ql64wr9z3khp2gy7dqlmqw7cp6h0lcusz0zjtls`
-  - ETH(ERC20): `0xe0bbbc805e0e83341fadc210d6202f4022e50992`
-  - USDT(TRC20): `TA18VUywcNEM9ahh3TTWF3sFpt9rkLnnQa
-  - gate: https://www.gate.io/signup/AVNNU1WK?ref_type=103
-
--->
-<!-- template_contributions_end -->
-
-### Contributions & Pull Requests
-
-Contributions are encouraged, I will review any incoming pull requests. See the issues tab for todo items.
-
-<!-- template_star_history -->
-
-## Star History
-
-[![Star History Chart](https://api.star-history.com/svg?repos=tiagosiebler/bybit-api,tiagosiebler/okx-api,tiagosiebler/binance,tiagosiebler/bitget-api,tiagosiebler/bitmart-api,tiagosiebler/gateio-api,tiagosiebler/kucoin-api,tiagosiebler/coinbase-api,tiagosiebler/orderbooks,tiagosiebler/accountstate,tiagosiebler/awesome-crypto-examples&type=Date)](https://star-history.com/#tiagosiebler/bybit-api&tiagosiebler/okx-api&tiagosiebler/binance&tiagosiebler/bitget-api&tiagosiebler/bitmart-api&tiagosiebler/gateio-api&tiagosiebler/kucoin-api&tiagosiebler/coinbase-api&tiagosiebler/orderbooks&tiagosiebler/accountstate&tiagosiebler/awesome-crypto-examples&Date)
-
-<!-- template_star_history_end -->
+⋮----
+// ============ TradFi ============
+⋮----
+getTradFiMT5Account(): Promise<TradFiApiResp<TradFiMT5Account>>
+⋮----
+getTradFiSymbolCategories(): Promise<
+    TradFiApiResp<TradFiListData<TradFiCategoryItem>>
+  > {
+    return this.get('/tradfi/symbols/categories');
+⋮----
+getTradFiSymbols(): Promise<TradFiApiResp<TradFiListData<TradFiSymbolItem>>>
+⋮----
+getTradFiSymbolDetail(
+    params: TradFiGetSymbolDetailParams,
+): Promise<TradFiApiResp<TradFiListData<TradFiSymbolDetailItem>>>
+⋮----
+getTradFiKlines(
+    symbol: string,
+    params: TradFiGetKlinesParams,
+): Promise<TradFiApiResp<TradFiListData<TradFiKlineItem>>>
+⋮----
+getTradFiTicker(symbol: string): Promise<TradFiApiResp<TradFiTicker>>
+⋮----
+createTradFiUser(): Promise<TradFiApiResp<TradFiCreateUserResult>>
+⋮----
+getTradFiAssets(): Promise<TradFiApiResp<TradFiAssets>>
+⋮----
+createTradFiTransaction(
+    params: TradFiCreateTransactionReq,
+): Promise<TradFiApiResp<Record<string, never>>>
+⋮----
+getTradFiTransactions(
+    params?: TradFiGetTransactionsParams,
+): Promise<TradFiApiResp<TradFiTransactionListData>>
+⋮----
+createTradFiOrder(
+    params: TradFiCreateOrderReq,
+): Promise<TradFiApiResp<TradFiCreateOrderResult>>
+⋮----
+getTradFiOrders(): Promise<TradFiApiResp<TradFiListData<TradFiOrderItem>>>
+⋮----
+modifyTradFiOrder(
+    orderId: number,
+    params: TradFiModifyOrderReq,
+): Promise<TradFiApiResp<TradFiModifyOrderResult>>
+⋮----
+cancelTradFiOrder(orderId: number): Promise<Record<string, never>>
+⋮----
+getTradFiOrderHistory(
+    params?: TradFiGetOrderHistoryParams,
+): Promise<TradFiApiResp<TradFiListData<TradFiOrderHistoryItem>>>
+⋮----
+getTradFiPositions(): Promise<
+    TradFiApiResp<TradFiListData<TradFiPositionItem>>
+  > {
+    return this.getPrivate('/tradfi/positions');
+⋮----
+modifyTradFiPosition(
+    positionId: number,
+    params: TradFiModifyPositionReq,
+): Promise<TradFiApiResp<Record<string, never>>>
+⋮----
+closeTradFiPosition(
+    positionId: number,
+    params: TradFiClosePositionReq,
+): Promise<TradFiApiResp<Record<string, never>>>
+⋮----
+getTradFiPositionHistory(
+    params?: TradFiGetPositionHistoryParams,
+): Promise<TradFiApiResp<TradFiListData<TradFiPositionHistoryItem>>>
 
 ================
 File: package.json
 ================
 {
   "name": "gateio-api",
-  "version": "1.4.2",
+  "version": "1.5.0",
   "description": "Complete & Robust Node.js SDK for Gate.com's REST APIs, WebSockets & WebSocket APIs, with TypeScript declarations.",
   "scripts": {
     "clean": "rm -rf dist/*",

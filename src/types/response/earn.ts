@@ -12,6 +12,7 @@ export interface DualInvestmentProduct {
   delivery_time: number;
   min_copies: number;
   max_copies: number;
+  /** @deprecated */
   per_value: string;
   apy_display: string;
   start_time: number;

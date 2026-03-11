@@ -65,6 +65,11 @@ export interface FuturesTicker {
   highest_size: string;
 }
 
+export interface BatchFundingRatesResponse {
+  contract?: string;
+  data?: { t: number; r: string }[];
+}
+
 export interface FuturesStats {
   time: number;
   lsr_taker: number;
@@ -346,7 +351,8 @@ export interface FuturesContract {
   orders_limit?: number;
   enable_bonus?: boolean;
   enable_credit?: boolean;
-  enable_decimal?: boolean; // If true, size can be decimal; else integer contracts
+  /** When true, contract supports decimal contract size (size field can use decimal string). When false, size only supports integer type. */
+  enable_decimal?: boolean;
   create_time?: number;
   launch_time?: number;
   delisting_time?: number;
@@ -518,4 +524,58 @@ export interface RiskLimitTableTier {
 export interface FuturesInsuranceHistory {
   t: number;
   b: string;
+}
+
+/** Trail order (autoorder/v1/trail) response types */
+export interface TrailOrder {
+  id?: number | string;
+  user_id?: number | string;
+  user?: number | string;
+  contract?: string;
+  settle?: string;
+  amount?: string;
+  is_gte?: boolean;
+  activation_price?: string;
+  price_type?: number;
+  price_offset?: string;
+  text?: string;
+  reduce_only?: boolean;
+  position_related?: boolean;
+  created_at?: number | string;
+  activated_at?: number | string;
+  finished_at?: number | string;
+  create_time?: number | string;
+  active_time?: number | string;
+  finish_time?: number | string;
+  reason?: string;
+  suborder_text?: string;
+  is_dual_mode?: boolean;
+  trigger_price?: string;
+  suborder_id?: number | string;
+  side_label?: string;
+  original_status?: number;
+  status?: string;
+  position_side_output?: string;
+  updated_at?: number | string;
+  extremum_price?: string;
+  status_code?: string;
+  created_at_precise?: string;
+  finished_at_precise?: string;
+  activated_at_precise?: string;
+  status_label?: string;
+  pos_margin_mode?: string;
+  position_mode?: string;
+  error_label?: string;
+  leverage?: string;
+  [key: string]: unknown;
+}
+
+export interface TrailChangeLog {
+  updated_at?: number;
+  amount?: string;
+  is_gte?: boolean;
+  activation_price?: string;
+  price_type?: number;
+  price_offset?: string;
+  is_create?: boolean;
 }
