@@ -5405,7 +5405,7 @@ export class RestClient extends BaseRestClient {
   closeCrossExPosition(
     params: CloseCrossExPositionReq,
   ): Promise<CloseCrossExPositionResp> {
-    return this.deletePrivate('/crossex/position', { body: params });
+    return this.postPrivate('/crossex/position', { body: params });
   }
 
   /**
