@@ -387,7 +387,7 @@ This table includes all endpoints from the official Exchange API docs and corres
 | [getCrossExPositionLeverage()](https://github.com/tiagosiebler/gateio-api/blob/master/src/RestClient.ts#L5361) | :closed_lock_with_key:  | GET | `/crossex/positions/leverage` |
 | [setCrossExMarginPositionLeverage()](https://github.com/tiagosiebler/gateio-api/blob/master/src/RestClient.ts#L5375) | :closed_lock_with_key:  | POST | `/crossex/margin_positions/leverage` |
 | [getCrossExMarginPositionLeverage()](https://github.com/tiagosiebler/gateio-api/blob/master/src/RestClient.ts#L5391) | :closed_lock_with_key:  | GET | `/crossex/margin_positions/leverage` |
-| [closeCrossExPosition()](https://github.com/tiagosiebler/gateio-api/blob/master/src/RestClient.ts#L5405) | :closed_lock_with_key:  | DELETE | `/crossex/position` |
+| [closeCrossExPosition()](https://github.com/tiagosiebler/gateio-api/blob/master/src/RestClient.ts#L5405) | :closed_lock_with_key:  | POST | `/crossex/position` |
 | [getCrossExInterestRate()](https://github.com/tiagosiebler/gateio-api/blob/master/src/RestClient.ts#L5419) | :closed_lock_with_key:  | GET | `/crossex/interest_rate` |
 | [getCrossExFeeRate()](https://github.com/tiagosiebler/gateio-api/blob/master/src/RestClient.ts#L5432) | :closed_lock_with_key:  | GET | `/crossex/fee` |
 | [getCrossExPositions()](https://github.com/tiagosiebler/gateio-api/blob/master/src/RestClient.ts#L5444) | :closed_lock_with_key:  | GET | `/crossex/positions` |
