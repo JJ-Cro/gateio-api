@@ -212,7 +212,7 @@ export interface FixedTermProductSimple {
   sale_status?: number;
 }
 
-export interface ListEarnFixedTermProductsResponse {
+export interface GetEarnFixedTermProductsResponse {
   code: number;
   message: string;
   data: {
@@ -222,7 +222,7 @@ export interface ListEarnFixedTermProductsResponse {
   timestamp: number;
 }
 
-export interface ListEarnFixedTermProductsByAssetResponse {
+export interface GetEarnFixedTermProductsByAssetResponse {
   code: number;
   message: string;
   data: {
@@ -240,7 +240,7 @@ export interface CreateEarnFixedTermLendResponse {
   timestamp?: number;
 }
 
-export interface ListEarnFixedTermLendsResponse {
+export interface GetEarnFixedTermLendsResponse {
   code: number;
   message: string;
   data: {
@@ -276,7 +276,7 @@ export interface FixedTermHistoryRecord {
   lock_up_period?: number;
 }
 
-export interface ListEarnFixedTermHistoryResponse {
+export interface GetEarnFixedTermHistoryResponse {
   code?: number;
   message?: string;
   data?: {

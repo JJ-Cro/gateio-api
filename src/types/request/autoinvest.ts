@@ -57,20 +57,20 @@ export interface GetAutoInvestMinAmountReq {
 }
 
 /** GET /earn/autoinvest/coins */
-export interface ListAutoInvestCoinsReq {
+export interface GetAutoInvestCoinsReq {
   /** Pricing currency: USDT or BTC; default USDT */
   plan_money?: string;
 }
 
 /** GET /earn/autoinvest/plans/records */
-export interface ListAutoInvestPlanRecordsReq {
+export interface GetAutoInvestPlanRecordsReq {
   plan_id: number;
   page?: number;
   page_size?: number;
 }
 
 /** GET /earn/autoinvest/orders */
-export interface ListAutoInvestOrdersReq {
+export interface GetAutoInvestOrdersReq {
   plan_id: number;
   record_id: number;
 }
@@ -81,7 +81,7 @@ export interface GetAutoInvestPlanDetailReq {
 }
 
 /** GET /earn/autoinvest/plans/list_info */
-export interface ListAutoInvestPlansReq {
+export interface GetAutoInvestPlansReq {
   /** Plan status: e.g. History (history) or Active (active) */
   status: string;
   page?: number;

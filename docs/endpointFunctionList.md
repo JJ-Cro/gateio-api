@@ -322,26 +322,26 @@ This table includes all endpoints from the official Exchange API docs and corres
 | [getDualInvestmentOrders()](https://github.com/tiagosiebler/gateio-api/blob/master/src/RestClient.ts#L4562) | :closed_lock_with_key:  | GET | `/earn/dual/orders` |
 | [submitDualInvestmentOrder()](https://github.com/tiagosiebler/gateio-api/blob/master/src/RestClient.ts#L4574) | :closed_lock_with_key:  | POST | `/earn/dual/orders` |
 | [getDualOrderRefundPreview()](https://github.com/tiagosiebler/gateio-api/blob/master/src/RestClient.ts#L4583) | :closed_lock_with_key:  | GET | `/earn/dual/order-refund-preview` |
-| [placeDualOrderRefund()](https://github.com/tiagosiebler/gateio-api/blob/master/src/RestClient.ts#L4592) | :closed_lock_with_key:  | POST | `/earn/dual/order-refund` |
-| [modifyDualOrderReinvest()](https://github.com/tiagosiebler/gateio-api/blob/master/src/RestClient.ts#L4601) | :closed_lock_with_key:  | POST | `/earn/dual/modify-order-reinvest` |
+| [submitDualOrderRefund()](https://github.com/tiagosiebler/gateio-api/blob/master/src/RestClient.ts#L4592) | :closed_lock_with_key:  | POST | `/earn/dual/order-refund` |
+| [updateDualOrderReinvest()](https://github.com/tiagosiebler/gateio-api/blob/master/src/RestClient.ts#L4601) | :closed_lock_with_key:  | POST | `/earn/dual/modify-order-reinvest` |
 | [getDualProjectRecommend()](https://github.com/tiagosiebler/gateio-api/blob/master/src/RestClient.ts#L4612) | :closed_lock_with_key:  | GET | `/earn/dual/project-recommend` |
-| [listEarnFixedTermProducts()](https://github.com/tiagosiebler/gateio-api/blob/master/src/RestClient.ts#L4621) |  | GET | `/earn/fixed-term/product` |
-| [listEarnFixedTermProductsByAsset()](https://github.com/tiagosiebler/gateio-api/blob/master/src/RestClient.ts#L4630) |  | GET | `/earn/fixed-term/product/{asset}/list` |
+| [getEarnFixedTermProducts()](https://github.com/tiagosiebler/gateio-api/blob/master/src/RestClient.ts#L4621) |  | GET | `/earn/fixed-term/product` |
+| [getEarnFixedTermProductsByAsset()](https://github.com/tiagosiebler/gateio-api/blob/master/src/RestClient.ts#L4630) |  | GET | `/earn/fixed-term/product/{asset}/list` |
 | [createEarnFixedTermLend()](https://github.com/tiagosiebler/gateio-api/blob/master/src/RestClient.ts#L4640) | :closed_lock_with_key:  | POST | `/earn/fixed-term/user/lend` |
-| [listEarnFixedTermLends()](https://github.com/tiagosiebler/gateio-api/blob/master/src/RestClient.ts#L4649) | :closed_lock_with_key:  | GET | `/earn/fixed-term/user/lend` |
+| [getEarnFixedTermLends()](https://github.com/tiagosiebler/gateio-api/blob/master/src/RestClient.ts#L4649) | :closed_lock_with_key:  | GET | `/earn/fixed-term/user/lend` |
 | [createEarnFixedTermPreRedeem()](https://github.com/tiagosiebler/gateio-api/blob/master/src/RestClient.ts#L4658) | :closed_lock_with_key:  | POST | `/earn/fixed-term/user/pre-redeem` |
-| [listEarnFixedTermHistory()](https://github.com/tiagosiebler/gateio-api/blob/master/src/RestClient.ts#L4669) | :closed_lock_with_key:  | GET | `/earn/fixed-term/user/history` |
+| [getEarnFixedTermHistory()](https://github.com/tiagosiebler/gateio-api/blob/master/src/RestClient.ts#L4669) | :closed_lock_with_key:  | GET | `/earn/fixed-term/user/history` |
 | [createAutoInvestPlan()](https://github.com/tiagosiebler/gateio-api/blob/master/src/RestClient.ts#L4678) | :closed_lock_with_key:  | POST | `/earn/autoinvest/plans/create` |
 | [updateAutoInvestPlan()](https://github.com/tiagosiebler/gateio-api/blob/master/src/RestClient.ts#L4687) | :closed_lock_with_key:  | POST | `/earn/autoinvest/plans/update` |
 | [stopAutoInvestPlan()](https://github.com/tiagosiebler/gateio-api/blob/master/src/RestClient.ts#L4694) | :closed_lock_with_key:  | POST | `/earn/autoinvest/plans/stop` |
 | [addAutoInvestPlanPosition()](https://github.com/tiagosiebler/gateio-api/blob/master/src/RestClient.ts#L4701) | :closed_lock_with_key:  | POST | `/earn/autoinvest/plans/add_position` |
-| [listAutoInvestCoins()](https://github.com/tiagosiebler/gateio-api/blob/master/src/RestClient.ts#L4712) | :closed_lock_with_key:  | GET | `/earn/autoinvest/coins` |
+| [getAutoInvestCoins()](https://github.com/tiagosiebler/gateio-api/blob/master/src/RestClient.ts#L4712) | :closed_lock_with_key:  | GET | `/earn/autoinvest/coins` |
 | [getAutoInvestMinAmount()](https://github.com/tiagosiebler/gateio-api/blob/master/src/RestClient.ts#L4721) | :closed_lock_with_key:  | POST | `/earn/autoinvest/min_invest_amount` |
-| [listAutoInvestPlanRecords()](https://github.com/tiagosiebler/gateio-api/blob/master/src/RestClient.ts#L4732) | :closed_lock_with_key:  | GET | `/earn/autoinvest/plans/records` |
-| [listAutoInvestOrders()](https://github.com/tiagosiebler/gateio-api/blob/master/src/RestClient.ts#L4741) | :closed_lock_with_key:  | GET | `/earn/autoinvest/orders` |
-| [listAutoInvestConfig()](https://github.com/tiagosiebler/gateio-api/blob/master/src/RestClient.ts#L4750) | :closed_lock_with_key:  | GET | `/earn/autoinvest/config` |
+| [getAutoInvestPlanRecords()](https://github.com/tiagosiebler/gateio-api/blob/master/src/RestClient.ts#L4732) | :closed_lock_with_key:  | GET | `/earn/autoinvest/plans/records` |
+| [getAutoInvestOrders()](https://github.com/tiagosiebler/gateio-api/blob/master/src/RestClient.ts#L4741) | :closed_lock_with_key:  | GET | `/earn/autoinvest/orders` |
+| [getAutoInvestConfig()](https://github.com/tiagosiebler/gateio-api/blob/master/src/RestClient.ts#L4750) | :closed_lock_with_key:  | GET | `/earn/autoinvest/config` |
 | [getAutoInvestPlanDetail()](https://github.com/tiagosiebler/gateio-api/blob/master/src/RestClient.ts#L4757) | :closed_lock_with_key:  | GET | `/earn/autoinvest/plans/detail` |
-| [listAutoInvestPlans()](https://github.com/tiagosiebler/gateio-api/blob/master/src/RestClient.ts#L4766) | :closed_lock_with_key:  | GET | `/earn/autoinvest/plans/list_info` |
+| [getAutoInvestPlans()](https://github.com/tiagosiebler/gateio-api/blob/master/src/RestClient.ts#L4766) | :closed_lock_with_key:  | GET | `/earn/autoinvest/plans/list_info` |
 | [getStakingCoins()](https://github.com/tiagosiebler/gateio-api/blob/master/src/RestClient.ts#L4778) | :closed_lock_with_key:  | GET | `/earn/staking/coins` |
 | [submitStakingSwap()](https://github.com/tiagosiebler/gateio-api/blob/master/src/RestClient.ts#L4791) | :closed_lock_with_key:  | POST | `/earn/staking/swap` |
 | [getAccountDetail()](https://github.com/tiagosiebler/gateio-api/blob/master/src/RestClient.ts#L4810) | :closed_lock_with_key:  | GET | `/account/detail` |

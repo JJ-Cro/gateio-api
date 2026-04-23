@@ -19,12 +19,12 @@ import {
 import {
   AddAutoInvestPlanPositionReq,
   CreateAutoInvestPlanReq,
+  GetAutoInvestCoinsReq,
   GetAutoInvestMinAmountReq,
+  GetAutoInvestOrdersReq,
   GetAutoInvestPlanDetailReq,
-  ListAutoInvestCoinsReq,
-  ListAutoInvestOrdersReq,
-  ListAutoInvestPlanRecordsReq,
-  ListAutoInvestPlansReq,
+  GetAutoInvestPlanRecordsReq,
+  GetAutoInvestPlansReq,
   StopAutoInvestPlanReq,
   UpdateAutoInvestPlanReq,
 } from './types/request/autoinvest.js';
@@ -73,18 +73,18 @@ import {
 } from './types/request/delivery.js';
 import {
   CreateEarnFixedTermLendReq,
-  DualModifyOrderReinvestParams,
-  DualOrderRefundParams,
   EarnFixedTermPreRedeemReq,
+  GetDualInvestmentOrdersReq,
+  GetDualInvestmentPlansReq,
   GetDualOrderRefundPreviewReq,
   GetDualProjectRecommendReq,
-  ListDualInvestmentOrdersReq,
-  ListDualInvestmentPlansReq,
-  ListEarnFixedTermHistoryReq,
-  ListEarnFixedTermLendsReq,
-  ListEarnFixedTermProductsByAssetReq,
-  ListEarnFixedTermProductsReq,
+  GetEarnFixedTermHistoryReq,
+  GetEarnFixedTermLendsReq,
+  GetEarnFixedTermProductsByAssetReq,
+  GetEarnFixedTermProductsReq,
   PlaceDualInvestmentOrderParams,
+  SubmitDualOrderRefundParams,
+  UpdateDualOrderReinvestParams,
 } from './types/request/earn.js';
 import {
   GetLendingInterestRecordsReq,
@@ -340,10 +340,10 @@ import {
   DualInvestmentProduct,
   DualOrderRefundPreview,
   DualProjectRecommend,
-  ListEarnFixedTermHistoryResponse,
-  ListEarnFixedTermLendsResponse,
-  ListEarnFixedTermProductsByAssetResponse,
-  ListEarnFixedTermProductsResponse,
+  GetEarnFixedTermHistoryResponse,
+  GetEarnFixedTermLendsResponse,
+  GetEarnFixedTermProductsByAssetResponse,
+  GetEarnFixedTermProductsResponse,
 } from './types/response/earn.js';
 import {
   LendingCurrency,
@@ -4549,7 +4549,7 @@ export class RestClient extends BaseRestClient {
    * @returns Promise<GetDualInvestmentProductsResp[]>
    */
   getDualInvestmentProducts(
-    params?: ListDualInvestmentPlansReq,
+    params?: GetDualInvestmentPlansReq,
   ): Promise<DualInvestmentProduct[]> {
     return this.get('/earn/dual/investment_plan', params);
   }
@@ -4560,7 +4560,7 @@ export class RestClient extends BaseRestClient {
    * @returns Promise<GetDualInvestmentOrdersResp[]>
    */
   getDualInvestmentOrders(
-    params?: ListDualInvestmentOrdersReq,
+    params?: GetDualInvestmentOrdersReq,
   ): Promise<DualInvestmentOrder[]> {
     return this.getPrivate('/earn/dual/orders', params);
   }
@@ -4589,8 +4589,8 @@ export class RestClient extends BaseRestClient {
   /**
    * Dual-currency order early redemption
    */
-  placeDualOrderRefund(
-    params: DualOrderRefundParams,
+  submitDualOrderRefund(
+    params: SubmitDualOrderRefundParams,
   ): Promise<DualInvestmentOrder> {
     return this.postPrivate('/earn/dual/order-refund', { body: params });
   }
@@ -4598,8 +4598,8 @@ export class RestClient extends BaseRestClient {
   /**
    * Update dual-currency order reinvest settings
    */
-  modifyDualOrderReinvest(
-    params: DualModifyOrderReinvestParams,
+  updateDualOrderReinvest(
+    params: UpdateDualOrderReinvestParams,
   ): Promise<unknown> {
     return this.postPrivate('/earn/dual/modify-order-reinvest', {
       body: params,
@@ -4618,19 +4618,19 @@ export class RestClient extends BaseRestClient {
   /**
    * List fixed-term earn products (public).
    */
-  listEarnFixedTermProducts(
-    params: ListEarnFixedTermProductsReq,
-  ): Promise<ListEarnFixedTermProductsResponse> {
+  getEarnFixedTermProducts(
+    params: GetEarnFixedTermProductsReq,
+  ): Promise<GetEarnFixedTermProductsResponse> {
     return this.get('/earn/fixed-term/product', params);
   }
 
   /**
    * List fixed-term earn products for one asset (public).
    */
-  listEarnFixedTermProductsByAsset(
+  getEarnFixedTermProductsByAsset(
     asset: string,
-    params?: ListEarnFixedTermProductsByAssetReq,
-  ): Promise<ListEarnFixedTermProductsByAssetResponse> {
+    params?: GetEarnFixedTermProductsByAssetReq,
+  ): Promise<GetEarnFixedTermProductsByAssetResponse> {
     return this.get(`/earn/fixed-term/product/${asset}/list`, params);
   }
 
@@ -4646,9 +4646,9 @@ export class RestClient extends BaseRestClient {
   /**
    * List fixed-term earn subscriptions.
    */
-  listEarnFixedTermLends(
-    params: ListEarnFixedTermLendsReq,
-  ): Promise<ListEarnFixedTermLendsResponse> {
+  getEarnFixedTermLends(
+    params: GetEarnFixedTermLendsReq,
+  ): Promise<GetEarnFixedTermLendsResponse> {
     return this.getPrivate('/earn/fixed-term/user/lend', params);
   }
 
@@ -4666,9 +4666,9 @@ export class RestClient extends BaseRestClient {
   /**
    * Fixed-term earn subscription history.
    */
-  listEarnFixedTermHistory(
-    params: ListEarnFixedTermHistoryReq,
-  ): Promise<ListEarnFixedTermHistoryResponse> {
+  getEarnFixedTermHistory(
+    params: GetEarnFixedTermHistoryReq,
+  ): Promise<GetEarnFixedTermHistoryResponse> {
     return this.getPrivate('/earn/fixed-term/user/history', params);
   }
 
@@ -4709,8 +4709,8 @@ export class RestClient extends BaseRestClient {
   /**
    * List currencies supporting auto invest
    */
-  listAutoInvestCoins(
-    params?: ListAutoInvestCoinsReq,
+  getAutoInvestCoins(
+    params?: GetAutoInvestCoinsReq,
   ): Promise<AutoInvestCoinItem[]> {
     return this.getPrivate('/earn/autoinvest/coins', params);
   }
@@ -4729,8 +4729,8 @@ export class RestClient extends BaseRestClient {
   /**
    * List plan execution records
    */
-  listAutoInvestPlanRecords(
-    params: ListAutoInvestPlanRecordsReq,
+  getAutoInvestPlanRecords(
+    params: GetAutoInvestPlanRecordsReq,
   ): Promise<AutoInvestPlanExecutionRecordsPaginated> {
     return this.getPrivate('/earn/autoinvest/plans/records', params);
   }
@@ -4738,8 +4738,8 @@ export class RestClient extends BaseRestClient {
   /**
    * List plan execution order details
    */
-  listAutoInvestOrders(
-    params: ListAutoInvestOrdersReq,
+  getAutoInvestOrders(
+    params: GetAutoInvestOrdersReq,
   ): Promise<AutoInvestOrderItem[]> {
     return this.getPrivate('/earn/autoinvest/orders', params);
   }
@@ -4747,7 +4747,7 @@ export class RestClient extends BaseRestClient {
   /**
    * List investment currency configuration
    */
-  listAutoInvestConfig(): Promise<AutoInvestConfigItem[]> {
+  getAutoInvestConfig(): Promise<AutoInvestConfigItem[]> {
     return this.getPrivate('/earn/autoinvest/config');
   }
 
@@ -4763,8 +4763,8 @@ export class RestClient extends BaseRestClient {
   /**
    * List auto invest plans
    */
-  listAutoInvestPlans(
-    params: ListAutoInvestPlansReq,
+  getAutoInvestPlans(
+    params: GetAutoInvestPlansReq,
   ): Promise<AutoInvestPlansListResp> {
     return this.getPrivate('/earn/autoinvest/plans/list_info', params);
   }

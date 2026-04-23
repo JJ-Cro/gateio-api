@@ -4,7 +4,7 @@
  */
 
 /** GET /earn/dual/investment_plan */
-export interface ListDualInvestmentPlansReq {
+export interface GetDualInvestmentPlansReq {
   plan_id?: number | string;
   coin?: string;
   type?: string;
@@ -16,7 +16,7 @@ export interface ListDualInvestmentPlansReq {
 }
 
 /** GET /earn/dual/orders */
-export interface ListDualInvestmentOrdersReq {
+export interface GetDualInvestmentOrdersReq {
   from?: number;
   to?: number;
   type?: string;
@@ -32,14 +32,14 @@ export interface GetDualOrderRefundPreviewReq {
 }
 
 /** POST /earn/dual/order-refund */
-export interface DualOrderRefundParams {
+export interface SubmitDualOrderRefundParams {
   order_id: string;
   /** From order-refund-preview */
   req_id: string;
 }
 
 /** POST /earn/dual/modify-order-reinvest */
-export interface DualModifyOrderReinvestParams {
+export interface UpdateDualOrderReinvestParams {
   order_id?: number;
   /** 0 off, 1 on */
   status?: number;
@@ -72,14 +72,14 @@ export interface PlaceDualInvestmentOrderParams {
  * ==========================================================================================================================
  */
 
-export interface ListEarnFixedTermProductsReq {
+export interface GetEarnFixedTermProductsReq {
   asset?: string;
   type?: number; // 1 regular, 2 VIP
   page: number;
   limit: number;
 }
 
-export interface ListEarnFixedTermProductsByAssetReq {
+export interface GetEarnFixedTermProductsByAssetReq {
   /** Product type: "" or 1 regular, 2 VIP, 0 all */
   type?: string;
 }
@@ -94,7 +94,7 @@ export interface CreateEarnFixedTermLendReq {
   sub_business?: number;
 }
 
-export interface ListEarnFixedTermLendsReq {
+export interface GetEarnFixedTermLendsReq {
   product_id?: number;
   order_id?: number;
   asset?: string;
@@ -109,7 +109,7 @@ export interface EarnFixedTermPreRedeemReq {
   order_id: string;
 }
 
-export interface ListEarnFixedTermHistoryReq {
+export interface GetEarnFixedTermHistoryReq {
   product_id?: number;
   order_id?: string;
   asset?: string;

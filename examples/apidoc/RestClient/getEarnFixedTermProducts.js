@@ -11,7 +11,7 @@ const client = new RestClient({
   apiSecret: 'insert_api_secret_here',
 });
 
-client.listEarnFixedTermProducts(params)
+client.getEarnFixedTermProducts(params)
   .then((response) => {
     console.log(response);
   })
