@@ -49,6 +49,15 @@ export interface RestClientOptions {
    * Look in the examples folder for a demonstration on using node's createHmac instead.
    */
   customSignMessageFn?: (message: string, secret: string) => Promise<string>;
+
+  /**
+   * When true, integer literals above Number.MAX_SAFE_INTEGER are parsed as strings (REST responses).
+   * Default: false.
+   */
+  keepIdsAsString?: boolean;
+
+  /** Override JSON parsing for REST responses (e.g. custom safe-id parser). */
+  customParseJSONFn?: (text: string) => unknown;
 }
 
 export function serializeParams<T extends Record<string, any> | undefined = {}>(

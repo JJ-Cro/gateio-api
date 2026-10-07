@@ -1,4 +1,5 @@
 import { BaseWebsocketClient, EmittableEvent } from './lib/BaseWSClient.js';
+import { resolveJsonParseFn } from './lib/jsonParse.js';
 import { neverGuard } from './lib/misc-util.js';
 import { CHANNEL_ID, MessageEventLike } from './lib/requestUtils.js';
 import {
@@ -378,7 +379,10 @@ export class WebsocketClient extends BaseWebsocketClient<WsKey> {
     const results: EmittableEvent[] = [];
 
     try {
-      const parsed = JSON.parse(event.data);
+      const parseFn =
+        resolveJsonParseFn(this.options) ??
+        ((text: string) => JSON.parse(text));
+      const parsed = parseFn(event.data);
 
       const responseEvents = ['subscribe', 'unsubscribe'];
       const authenticatedEvents = ['auth'];

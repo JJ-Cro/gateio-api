@@ -58,6 +58,15 @@ export interface WSClientConfigurableOptions {
    * If you authenticated the WS API before, automatically try to re-authenticate the WS API if you're disconnected/reconnected for any reason.
    */
   reauthWSAPIOnReconnect?: boolean;
+
+  /**
+   * When true, integer literals above Number.MAX_SAFE_INTEGER are parsed as strings (WS messages).
+   * Default: false.
+   */
+  keepIdsAsString?: boolean;
+
+  /** Override JSON parsing for WS messages (e.g. custom safe-id parser). */
+  customParseJSONFn?: (text: string) => unknown;
 }
 
 /**
