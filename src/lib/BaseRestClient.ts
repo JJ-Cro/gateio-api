@@ -3,6 +3,7 @@ import axios, { AxiosRequestConfig, AxiosResponse, Method } from 'axios';
 // Browser builds (via webpack) exclude this module - see webpack.config.js fallback settings
 import https from 'https';
 
+import { resolveJsonParseFn } from './jsonParse.js';
 import { neverGuard } from './misc-util.js';
 import {
   CHANNEL_ID,
@@ -173,6 +174,19 @@ export abstract class BaseRestClient {
     // NOTE: This is Node.js-only functionality. In browser environments, this code is skipped
     // as the 'https' module is excluded via webpack fallback configuration.
     // Browser connection pooling is handled automatically by the browser itself.
+    const jsonParseFn = resolveJsonParseFn(this.options);
+    if (jsonParseFn) {
+      this.globalRequestOptions.responseType = 'text';
+      this.globalRequestOptions.transformResponse = [
+        (data: string) => {
+          if (typeof data === 'string') {
+            return jsonParseFn(data);
+          }
+          return data;
+        },
+      ];
+    }
+
     if (this.options.keepAlive) {
       // Extract existing https agent parameters, if provided, to prevent the keepAlive flag from overwriting an existing https agent completely
       const existingHttpsAgent = this.globalRequestOptions.httpsAgent as
