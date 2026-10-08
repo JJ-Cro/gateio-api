@@ -173,6 +173,14 @@ export abstract class BaseWebsocketClient<
 
   protected abstract getWsUrl(wsKey: TWSKey): string;
 
+  /** Optional headers for the WebSocket HTTP upgrade request (e.g. Gate size-decimal mode). */
+  protected getWsConnectRequestHeaders(
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    _wsKey: TWSKey,
+  ): Record<string, string> {
+    return {};
+  }
+
   protected abstract getMaxTopicsPerSubscribeEvent(
     wsKey: TWSKey,
   ): number | null;
@@ -446,8 +454,24 @@ export abstract class BaseWebsocketClient<
       wsKey,
     });
 
-    const { protocols = [], ...wsOptions } = this.options.wsOptions || {};
-    const ws = new WebSocket(url, protocols, wsOptions);
+    const { protocols = [], headers: wsOptionHeaders, ...wsOptions } =
+      this.options.wsOptions || {};
+    const normalizedWsOptionHeaders =
+      typeof wsOptionHeaders === 'object' &&
+      wsOptionHeaders !== null &&
+      !Array.isArray(wsOptionHeaders)
+        ? (wsOptionHeaders as Record<string, string>)
+        : {};
+    const connectHeaders: Record<string, string> = {
+      ...normalizedWsOptionHeaders,
+      ...this.getWsConnectRequestHeaders(wsKey),
+    };
+    const ws = new WebSocket(url, protocols, {
+      ...wsOptions,
+      ...(Object.keys(connectHeaders).length
+        ? { headers: connectHeaders }
+        : {}),
+    });
 
     ws.onopen = (event: any) => this.onWsOpen(event, wsKey, url, ws);
     ws.onmessage = (event: any) => this.onWsMessage(event, wsKey, ws);

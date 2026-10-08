@@ -1,4 +1,5 @@
 import { WsKey } from '../../lib/websocket/websocket-util.js';
+import { FuturesContractSize } from '../shared.js';
 
 export type SpotWSAPITopic =
   | 'spot.login'
@@ -104,8 +105,10 @@ export interface WSAPISpotOrderListReq {
 
 export interface WSAPIFuturesOrderPlaceReq {
   contract: string;
-  size: number;
-  iceberg?: number;
+  /** String when `futuresSizeDecimal` is enabled on the client. */
+  size: FuturesContractSize;
+  /** String when `futuresSizeDecimal` is enabled on the client. */
+  iceberg?: FuturesContractSize;
   price?: string;
   close?: boolean;
   reduce_only?: boolean;
@@ -127,7 +130,8 @@ export interface WSAPIFuturesOrderCancelCPReq {
 export interface WSAPIFuturesOrderAmendReq {
   order_id: string;
   price?: string;
-  size?: number;
+  /** String when `futuresSizeDecimal` is enabled on the client. */
+  size?: FuturesContractSize;
   amend_text?: string;
 }
 
@@ -203,10 +207,14 @@ export interface WSAPIFuturesOrder {
   finish_as?: string;
   status: string;
   contract: string;
-  size: number;
+  /** String when `futuresSizeDecimal` is enabled on the client. */
+  size: FuturesContractSize;
   price: string;
   tif: string;
-  left?: number;
+  /** String when `futuresSizeDecimal` is enabled on the client. */
+  left?: FuturesContractSize;
+  /** String when `futuresSizeDecimal` is enabled on the client. */
+  iceberg?: FuturesContractSize;
   fill_price: string;
   text: string;
   tkfr: string;

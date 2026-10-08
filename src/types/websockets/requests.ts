@@ -39,6 +39,7 @@ export interface WSAPIRequest<
     req_param?: TRequestParams | string;
     req_header: {
       'X-Gate-Channel-Id': typeof CHANNEL_ID;
+      'X-Gate-Size-Decimal'?: '1';
     };
     api_key?: string;
     signature?: string;

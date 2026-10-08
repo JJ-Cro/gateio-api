@@ -1,3 +1,5 @@
+import { FuturesContractSize } from '../shared.js';
+
 /**==========================================================================================================================
  * DELIVERY
  * ==========================================================================================================================
@@ -7,8 +9,8 @@ export interface DeliveryOrderBook {
   id?: number;
   current: number;
   update: number;
-  asks: { p: string; s: number }[];
-  bids: { p: string; s: number }[];
+  asks: { p: string; s: FuturesContractSize }[];
+  bids: { p: string; s: FuturesContractSize }[];
 }
 
 export interface DeliveryTrade {
@@ -16,14 +18,16 @@ export interface DeliveryTrade {
   create_time: number;
   create_time_ms: number;
   contract: string;
-  size: number;
+  /** String when `futuresSizeDecimal` is enabled on the client. */
+  size: FuturesContractSize;
   price: string;
   is_internal?: boolean; // Deprecated
 }
 
 export interface DeliveryCandle {
   t: number;
-  v?: number;
+  /** String when `futuresSizeDecimal` is enabled on the client. */
+  v?: FuturesContractSize;
   c: string;
   h: string;
   l: string;
@@ -116,7 +120,8 @@ export interface DeliveryTradingHistoryRecord {
   create_time: number;
   contract: string;
   order_id: string;
-  size: number;
+  /** String when `futuresSizeDecimal` is enabled on the client. */
+  size: FuturesContractSize;
   price: string;
   role: 'taker' | 'maker';
   text: string;
@@ -143,7 +148,8 @@ export interface DeliveryLiquidationHistoryRecord {
   time: number;
   contract: string;
   leverage?: string;
-  size: number;
+  /** String when `futuresSizeDecimal` is enabled on the client. */
+  size: FuturesContractSize;
   margin?: string;
   entry_price?: string;
   liq_price?: string;
@@ -151,14 +157,16 @@ export interface DeliveryLiquidationHistoryRecord {
   order_id?: number;
   order_price: string;
   fill_price: string;
-  left: number;
+  /** String when `futuresSizeDecimal` is enabled on the client. */
+  left: FuturesContractSize;
 }
 
 export interface DeliverySettlementHistoryRecord {
   time: number;
   contract: string;
   leverage: string;
-  size: number;
+  /** String when `futuresSizeDecimal` is enabled on the client. */
+  size: FuturesContractSize;
   margin: string;
   entry_price: string;
   settle_price: string;

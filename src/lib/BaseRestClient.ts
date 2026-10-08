@@ -6,7 +6,9 @@ import https from 'https';
 import { neverGuard } from './misc-util.js';
 import {
   CHANNEL_ID,
+  getFuturesSizeDecimalHeaders,
   getRestBaseUrl,
+  isFuturesMarketRestEndpoint,
   RestClientOptions,
   serializeParams,
 } from './requestUtils.js';
@@ -517,6 +519,10 @@ export abstract class BaseRestClient {
     params?: ParamsInQueryBodyOrHeader,
     isPublicApi?: boolean,
   ): Promise<AxiosRequestConfig> {
+    const futuresSizeDecimalHeaders = isFuturesMarketRestEndpoint(endpoint)
+      ? getFuturesSizeDecimalHeaders(this.options.futuresSizeDecimal)
+      : {};
+
     const options: AxiosRequestConfig = {
       ...this.globalRequestOptions,
       url: url,
@@ -524,6 +530,7 @@ export abstract class BaseRestClient {
       headers: {
         ...params?.headers,
         ...this.globalRequestOptions.headers,
+        ...futuresSizeDecimalHeaders,
       },
     };
 

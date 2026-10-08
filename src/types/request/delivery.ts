@@ -1,3 +1,5 @@
+import { FuturesContractSize } from '../shared.js';
+
 /**==========================================================================================================================
  * DELIVERY
  * ==========================================================================================================================
@@ -65,8 +67,10 @@ export interface GetDeliveryBookReq {
 export interface SubmitDeliveryFuturesOrderReq {
   settle: 'usdt';
   contract: string;
-  size: number;
-  iceberg?: number;
+  /** String when `futuresSizeDecimal` is enabled on the client. */
+  size: FuturesContractSize;
+  /** String when `futuresSizeDecimal` is enabled on the client. */
+  iceberg?: FuturesContractSize;
   price?: string;
   close?: boolean;
   reduce_only?: boolean;

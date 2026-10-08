@@ -58,6 +58,12 @@ export interface WSClientConfigurableOptions {
    * If you authenticated the WS API before, automatically try to re-authenticate the WS API if you're disconnected/reconnected for any reason.
    */
   reauthWSAPIOnReconnect?: boolean;
+
+  /**
+   * When true, sends `X-Gate-Size-Decimal: 1` on futures/delivery WebSocket connections and WS API requests so size-related fields are returned as decimal strings instead of integers rounded down.
+   * @default false
+   */
+  futuresSizeDecimal?: boolean;
 }
 
 /**

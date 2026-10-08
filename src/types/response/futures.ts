@@ -1,3 +1,5 @@
+import { FuturesContractSize } from '../shared.js';
+
 /**==========================================================================================================================
  * FUTURES
  * ==========================================================================================================================
@@ -7,8 +9,8 @@ export interface FuturesOrderBook {
   id?: number;
   current: number;
   update: number;
-  asks: { p: string; s: number }[];
-  bids: { p: string; s: number }[];
+  asks: { p: string; s: FuturesContractSize }[];
+  bids: { p: string; s: FuturesContractSize }[];
 }
 
 export interface FuturesTrade {
@@ -16,14 +18,16 @@ export interface FuturesTrade {
   create_time: number;
   create_time_ms: number;
   contract: string;
-  size: number;
+  /** String when `futuresSizeDecimal` is enabled on the client. */
+  size: FuturesContractSize;
   price: string;
   is_internal?: boolean; // Deprecated
 }
 
 export interface FuturesCandle {
   t: number;
-  v?: number;
+  /** String when `futuresSizeDecimal` is enabled on the client. */
+  v?: FuturesContractSize;
   c: string;
   h: string;
   l: string;
@@ -74,22 +78,30 @@ export interface FuturesStats {
   time: number;
   lsr_taker: number;
   lsr_account: number;
-  long_liq_size: number;
+  /** String when `futuresSizeDecimal` is enabled on the client. */
+  long_liq_size: FuturesContractSize;
   long_liq_amount: number;
   long_liq_usd: number;
   long_liq_usd_new?: number;
-  short_liq_size: number;
+  /** String when `futuresSizeDecimal` is enabled on the client. */
+  short_liq_size: FuturesContractSize;
   short_liq_amount: number;
   short_liq_usd: number;
   short_liq_usd_new?: number;
-  open_interest: number;
+  /** String when `futuresSizeDecimal` is enabled on the client. */
+  open_interest: FuturesContractSize;
   open_interest_usd: number;
   top_lsr_account: number;
-  top_lsr_size: number;
-  top_long_size?: number;
-  top_short_size?: number;
-  long_taker_size?: number;
-  short_taker_size?: number;
+  /** String when `futuresSizeDecimal` is enabled on the client. */
+  top_lsr_size: FuturesContractSize;
+  /** String when `futuresSizeDecimal` is enabled on the client. */
+  top_long_size?: FuturesContractSize;
+  /** String when `futuresSizeDecimal` is enabled on the client. */
+  top_short_size?: FuturesContractSize;
+  /** String when `futuresSizeDecimal` is enabled on the client. */
+  long_taker_size?: FuturesContractSize;
+  /** String when `futuresSizeDecimal` is enabled on the client. */
+  short_taker_size?: FuturesContractSize;
   top_long_account?: number;
   top_short_account?: number;
   long_users?: number;
@@ -107,11 +119,14 @@ export interface IndexConstituents {
 export interface LiquidationHistoryRecord {
   time: number;
   contract: string;
-  size: number;
-  order_size: number;
+  /** String when `futuresSizeDecimal` is enabled on the client. */
+  size: FuturesContractSize;
+  /** String when `futuresSizeDecimal` is enabled on the client. */
+  order_size: FuturesContractSize;
   order_price: string;
   fill_price: string;
-  left: number;
+  /** String when `futuresSizeDecimal` is enabled on the client. */
+  left: FuturesContractSize;
 }
 
 export interface RiskLimitTier {
@@ -196,8 +211,10 @@ export interface FuturesOrder {
     | 'stp';
   status?: 'open' | 'finished';
   contract: string;
-  size: number;
-  iceberg?: number;
+  /** String when `futuresSizeDecimal` is enabled on the client. */
+  size: FuturesContractSize;
+  /** String when `futuresSizeDecimal` is enabled on the client. */
+  iceberg?: FuturesContractSize;
   price?: string;
   close?: boolean;
   is_close?: boolean;
@@ -205,7 +222,8 @@ export interface FuturesOrder {
   is_reduce_only?: boolean;
   is_liq?: boolean;
   tif?: 'gtc' | 'ioc' | 'poc' | 'fok';
-  left?: number;
+  /** String when `futuresSizeDecimal` is enabled on the client. */
+  left?: FuturesContractSize;
   fill_price?: string;
   text?: string;
   tkfr?: string;
@@ -255,7 +273,8 @@ export interface FuturesOrderTimerange {
 export interface FuturesPosition {
   user?: number;
   contract?: string;
-  size?: number;
+  /** String when `futuresSizeDecimal` is enabled on the client. */
+  size?: FuturesContractSize;
   leverage?: string; // Isolated margin leverage, 0 indicates cross margin mode
   risk_limit?: string;
   leverage_max?: string; // Max leverage based on current position size
@@ -302,13 +321,15 @@ export interface FuturesTradingHistoryRecord {
   create_time: number;
   contract: string;
   order_id: string;
-  size: number;
+  /** String when `futuresSizeDecimal` is enabled on the client. */
+  size: FuturesContractSize;
   price: string;
   role: 'taker' | 'maker';
   text: string;
   fee: string;
   point_fee: string;
-  close_size: number;
+  /** String when `futuresSizeDecimal` is enabled on the client. */
+  close_size: FuturesContractSize;
 }
 
 export interface FuturesPositionHistoryRecord {
@@ -331,7 +352,8 @@ export interface FuturesLiquidationHistoryRecord {
   time: number;
   contract: string;
   leverage: string;
-  size: number;
+  /** String when `futuresSizeDecimal` is enabled on the client. */
+  size: FuturesContractSize;
   margin: string;
   entry_price: string;
   liq_price: string;
@@ -339,7 +361,8 @@ export interface FuturesLiquidationHistoryRecord {
   order_id: number;
   order_price: string;
   fill_price: string;
-  left: number;
+  /** String when `futuresSizeDecimal` is enabled on the client. */
+  left: FuturesContractSize;
 }
 export interface FuturesAutoDeleveragingHistoryRecord {
   time: number;
@@ -350,8 +373,10 @@ export interface FuturesAutoDeleveragingHistoryRecord {
   cross_leverage_limit: string; // Clarified for better understanding of margin modes
   entry_price: string;
   fill_price: string;
-  trade_size: number;
-  position_size: number;
+  /** String when `futuresSizeDecimal` is enabled on the client. */
+  trade_size: FuturesContractSize;
+  /** String when `futuresSizeDecimal` is enabled on the client. */
+  position_size: FuturesContractSize;
 }
 
 export interface DeleteFuturesBatchOrdersResp {
@@ -391,12 +416,16 @@ export interface FuturesContract {
   risk_limit_base?: string;
   risk_limit_step?: string;
   risk_limit_max?: string;
-  order_size_min?: string | number; // API returns string e.g. "1"
-  order_size_max?: string | number; // API returns string e.g. "1000000"
+  /** String when `futuresSizeDecimal` is enabled on the client. */
+  order_size_min?: FuturesContractSize; // API returns string e.g. "1"
+  /** String when `futuresSizeDecimal` is enabled on the client. */
+  order_size_max?: FuturesContractSize; // API returns string e.g. "1000000"
   orderbook_id?: number;
   trade_id?: number;
-  trade_size?: string | number; // API returns string
-  position_size?: string | number; // API returns string
+  /** String when `futuresSizeDecimal` is enabled on the client. */
+  trade_size?: FuturesContractSize; // API returns string
+  /** String when `futuresSizeDecimal` is enabled on the client. */
+  position_size?: FuturesContractSize; // API returns string
   short_users?: number;
   long_users?: number;
   funding_impact_value?: string;
@@ -448,7 +477,8 @@ export interface TriggerOrderResponse {
 export interface FuturesPriceTriggeredOrder {
   initial: {
     contract: string;
-    size?: number;
+    /** String when `futuresSizeDecimal` is enabled on the client. */
+    size?: FuturesContractSize;
     price?: string;
     close?: boolean;
     tif?: 'gtc' | 'ioc';
@@ -516,15 +546,19 @@ export interface FuturesDeliveryContract {
   risk_limit_base?: string;
   risk_limit_step?: string;
   risk_limit_max?: string;
-  order_size_min?: number;
-  order_size_max?: number;
+  /** String when `futuresSizeDecimal` is enabled on the client. */
+  order_size_min?: FuturesContractSize;
+  /** String when `futuresSizeDecimal` is enabled on the client. */
+  order_size_max?: FuturesContractSize;
   order_price_deviate?: string;
   ref_discount_rate?: string;
   ref_rebate_rate?: string;
   orderbook_id?: number;
   trade_id?: number;
-  trade_size?: number;
-  position_size?: number;
+  /** String when `futuresSizeDecimal` is enabled on the client. */
+  trade_size?: FuturesContractSize;
+  /** String when `futuresSizeDecimal` is enabled on the client. */
+  position_size?: FuturesContractSize;
   config_change_time?: number;
   in_delisting?: boolean;
   orders_limit?: number;
@@ -554,14 +588,17 @@ export interface BatchAmendOrderResp {
     | 'stp';
   status: 'open' | 'finished';
   contract: string;
-  size: number;
-  iceberg: number;
+  /** String when `futuresSizeDecimal` is enabled on the client. */
+  size: FuturesContractSize;
+  /** String when `futuresSizeDecimal` is enabled on the client. */
+  iceberg: FuturesContractSize;
   price: string;
   is_close: boolean;
   is_reduce_only: boolean;
   is_liq: boolean;
   tif: 'gtc' | 'ioc' | 'poc' | 'fok';
-  left: number;
+  /** String when `futuresSizeDecimal` is enabled on the client. */
+  left: FuturesContractSize;
   fill_price: string;
   text: string;
   tkfr: string;

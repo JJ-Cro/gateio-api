@@ -1,3 +1,5 @@
+import { FuturesContractSize } from '../shared.js';
+
 /**==========================================================================================================================
  * FUTURES
  * ==========================================================================================================================
@@ -124,8 +126,10 @@ export interface SubmitFuturesOrderReq {
   xGateExptime?: number;
   settle: FuturesSettle;
   contract: string;
-  size: number;
-  iceberg?: number;
+  /** String when `futuresSizeDecimal` is enabled on the client. */
+  size: FuturesContractSize;
+  /** String when `futuresSizeDecimal` is enabled on the client. */
+  iceberg?: FuturesContractSize;
   price?: string;
   close?: boolean;
   reduce_only?: boolean;
@@ -169,7 +173,8 @@ export interface UpdateFuturesOrderReq {
   xGateExptime?: number;
   settle: FuturesSettle;
   order_id: string;
-  size?: number;
+  /** String when `futuresSizeDecimal` is enabled on the client. */
+  size?: FuturesContractSize;
   price?: string;
   amend_text?: string;
 }
@@ -214,7 +219,8 @@ export interface GetFuturesLiquidationHistoryReq {
 export interface SubmitFuturesTriggeredOrderReq {
   initial: {
     contract: string;
-    size?: number;
+    /** String when `futuresSizeDecimal` is enabled on the client. */
+    size?: FuturesContractSize;
     /** Decimal contract size; if both `size` and `amount` are set, `amount` takes precedence */
     amount?: string;
     price: string; // Required: Order price. Set to 0 to use market price
@@ -255,7 +261,8 @@ export interface GetFuturesAutoOrdersReq {
 export interface BatchAmendOrderReq {
   order_id?: number; // Order id, order_id and text must contain at least one
   text?: string; // User-defined order text, at least one of order_id and text must be passed
-  size?: number; // The new order size, including the executed order size
+  /** String when `futuresSizeDecimal` is enabled on the client. */
+  size?: FuturesContractSize; // The new order size, including the executed order size
   price?: string; // New order price
   amend_text?: string; // Custom info during amending order
 }
@@ -280,7 +287,8 @@ export interface UpdateFuturesPriceTriggeredOrderReq {
   settle: FuturesSettle;
   order_id: number | string;
   contract?: string;
-  size?: number;
+  /** String when `futuresSizeDecimal` is enabled on the client. */
+  size?: FuturesContractSize;
   /** Same semantics as `size` (decimal contract size) */
   amount?: string;
   price?: string;

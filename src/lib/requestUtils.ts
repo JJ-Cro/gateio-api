@@ -49,6 +49,37 @@ export interface RestClientOptions {
    * Look in the examples folder for a demonstration on using node's createHmac instead.
    */
   customSignMessageFn?: (message: string, secret: string) => Promise<string>;
+
+  /**
+   * When true, sends `X-Gate-Size-Decimal: 1` on futures/delivery REST and WebSocket traffic so size-related fields are returned as decimal strings instead of integers rounded down.
+   * @default false
+   */
+  futuresSizeDecimal?: boolean;
+}
+
+export const FUTURES_SIZE_DECIMAL_HEADER = 'X-Gate-Size-Decimal';
+
+export function isFuturesMarketRestEndpoint(endpoint: string): boolean {
+  return /^\/futures\//.test(endpoint) || /^\/delivery\//.test(endpoint);
+}
+
+export function isFuturesMarketWsKey(wsKey: string): boolean {
+  return (
+    wsKey === 'perpFuturesUSDTV4' ||
+    wsKey === 'perpFuturesBTCV4' ||
+    wsKey === 'deliveryFuturesUSDTV4' ||
+    wsKey === 'deliveryFuturesBTCV4'
+  );
+}
+
+/** Request headers for REST or WS when `futuresSizeDecimal` is enabled. */
+export function getFuturesSizeDecimalHeaders(
+  futuresSizeDecimal?: boolean,
+): Record<string, string> {
+  if (!futuresSizeDecimal) {
+    return {};
+  }
+  return { [FUTURES_SIZE_DECIMAL_HEADER]: '1' };
 }
 
 export function serializeParams<T extends Record<string, any> | undefined = {}>(

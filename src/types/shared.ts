@@ -3,6 +3,12 @@ export type GateBaseUrlKey =
   | 'futuresLiveAlternative'
   | 'futuresTestnet';
 
+/**
+ * Futures or delivery contract size (in contracts).
+ * Integer when the client option `futuresSizeDecimal` is off (default); decimal string when `futuresSizeDecimal` is enabled (`X-Gate-Size-Decimal: 1`).
+ */
+export type FuturesContractSize = number | string;
+
 // interfaces
 
 export interface FromToPageLimit {

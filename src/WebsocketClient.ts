@@ -1,6 +1,11 @@
 import { BaseWebsocketClient, EmittableEvent } from './lib/BaseWSClient.js';
 import { neverGuard } from './lib/misc-util.js';
-import { CHANNEL_ID, MessageEventLike } from './lib/requestUtils.js';
+import {
+  CHANNEL_ID,
+  getFuturesSizeDecimalHeaders,
+  isFuturesMarketWsKey,
+  MessageEventLike,
+} from './lib/requestUtils.js';
 import {
   SignAlgorithm,
   SignEncodeMethod,
@@ -44,6 +49,26 @@ export interface WSAPIRequestFlags {
 export type WsTopic = string;
 
 export class WebsocketClient extends BaseWebsocketClient<WsKey> {
+  protected getWsConnectRequestHeaders(wsKey: WsKey): Record<string, string> {
+    if (!isFuturesMarketWsKey(wsKey)) {
+      return {};
+    }
+    return getFuturesSizeDecimalHeaders(this.options.futuresSizeDecimal);
+  }
+
+  private getFuturesWsApiReqHeader(): {
+    'X-Gate-Channel-Id': typeof CHANNEL_ID;
+    'X-Gate-Size-Decimal'?: '1';
+  } {
+    return {
+      'X-Gate-Channel-Id': CHANNEL_ID,
+      ...getFuturesSizeDecimalHeaders(this.options.futuresSizeDecimal),
+    } as {
+      'X-Gate-Channel-Id': typeof CHANNEL_ID;
+      'X-Gate-Size-Decimal'?: '1';
+    };
+  }
+
   /**
    * Request connection of all dependent (public & private) websockets, instead of waiting for automatic connection by library.
    *
@@ -197,9 +222,11 @@ export class WebsocketClient extends BaseWebsocketClient<WsKey> {
       event: 'api',
       payload: {
         req_id: this.getNewRequestId(),
-        req_header: {
-          'X-Gate-Channel-Id': CHANNEL_ID,
-        },
+        req_header: isFuturesMarketWsKey(wsKey)
+          ? this.getFuturesWsApiReqHeader()
+          : {
+              'X-Gate-Channel-Id': CHANNEL_ID,
+            },
         api_key: this.options.apiKey,
         req_param: params ? params : '',
         timestamp: `${timeInSeconds}`,
@@ -802,9 +829,11 @@ export class WebsocketClient extends BaseWebsocketClient<WsKey> {
       event: 'api',
       payload: {
         req_id: this.getNewRequestId(),
-        req_header: {
-          'X-Gate-Channel-Id': CHANNEL_ID,
-        },
+        req_header: isFuturesMarketWsKey(wsKey)
+          ? this.getFuturesWsApiReqHeader()
+          : {
+              'X-Gate-Channel-Id': CHANNEL_ID,
+            },
         api_key: this.options.apiKey,
         req_param: '',
         timestamp: `${timeInSeconds}`,
@@ -844,6 +873,7 @@ export class WebsocketClient extends BaseWebsocketClient<WsKey> {
       payload: {
         ...requestEvent.payload,
         req_header: {
+          ...requestEvent.payload.req_header,
           'X-Gate-Channel-Id': CHANNEL_ID,
         },
         signature: await this.signMessage(
