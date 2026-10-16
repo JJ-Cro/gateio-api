@@ -228,6 +228,8 @@ client
   });
 ```
 
+TestNet REST for spot and futures is `baseUrlKey: 'testnet'` (`https://api-testnet.gateapi.io/api/v4`). `baseUrlKey: 'futuresTestnet'` is that same host, kept so older configs keep working. WebSocket TestNet is `useTestnet: true` on `WebsocketClient`.
+
 See [RestClient](./src/RestClient.ts) for further information, or the [examples](./examples/) for lots of usage examples.
 
 ## WebSockets

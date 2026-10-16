@@ -147,7 +147,8 @@ export interface GetOTCFiatOrderListResp {
     ps: number;
     total_pn: number;
     count: number;
-    list: OTCFiatOrderListItem[];
+    /** v4.106.158: was `list` */
+    lists: OTCFiatOrderListItem[];
   };
 }
 
@@ -175,7 +176,8 @@ export interface GetOTCStablecoinOrderListResp {
     page_size: number;
     page_number: number;
     total_page: number;
-    list: OTCStablecoinOrderListItem[];
+    /** v4.106.158: was `list` */
+    lists: OTCStablecoinOrderListItem[];
   };
 }
 

@@ -1738,11 +1738,12 @@ Gate TestNet is a separate environment with separate credentials. Use it for all
 | REST API                 | `https://api-testnet.gateapi.io/api/v4`        |
 | Spot WebSocket           | `wss://ws-testnet.gate.com/v4/ws/spot`         |
 | USDT perpetual WebSocket | `wss://ws-testnet.gate.com/v4/ws/futures/usdt` |
+| Options WebSocket        | `wss://ws-testnet.gate.com/v4/ws/options`      |
 
-Set the REST API host with `baseUrl` and the WebSocket host with `wsUrl`. Prefer explicit hosts for TestNet examples:
+Set the REST API host with `baseUrl` or `baseUrlKey`, and the WebSocket host with `wsUrl` or `useTestnet: true`. Prefer explicit hosts for TestNet examples:
 
-- Spot WebSocket TestNet is not wired through `useTestnet: true` in this SDK. The Spot testnet map entry is a stub (`NoTestnetForSpotWebsockets!`), so set `wsUrl` to the Spot TestNet host above.
-- For Futures-only REST TestNet, the SDK also accepts `baseUrlKey: 'futuresTestnet'`, which resolves to `https://fx-api-testnet.gateio.ws/api/v4`. The Global TestNet REST host in the table is the host used by the Spot and Futures order examples in this guide.
+- `baseUrlKey: 'testnet'` uses `https://api-testnet.gateapi.io/api/v4` for spot and futures. `baseUrlKey: 'futuresTestnet'` is the same host, kept so older configs keep working.
+- `useTestnet: true` selects the TestNet WebSocket host for that connection, including Spot and Options. BTC perpetual and delivery TestNet hosts stay on the URLs in the current Gate docs (`wss://fx-ws-testnet.gateio.ws/...`). Announcements still have no TestNet host.
 
 ```javascript
 import { RestClient, WebsocketClient } from 'gateio-api';

@@ -19,8 +19,10 @@ const gateRestClient = new RestClient({
    */
 
   /*
-   * Futures TestNet trading:
-   * 'https://fx-api-testnet.gateio.ws/api/v4'
+   * Futures TestNet trading (alias of `testnet`, spot and futures):
+   * 'https://api-testnet.gateapi.io/api/v4'
+   * Older host https://fx-api-testnet.gateio.ws/api/v4 now returns 502.
+   * baseUrlKey: 'testnet' is the same host.
    */
   baseUrlKey: 'futuresTestnet',
 

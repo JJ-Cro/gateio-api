@@ -3,6 +3,8 @@
  * ==========================================================================================================================
  */
 
+import type { FuturesAccountBookType } from '../request/futures.js';
+
 export interface FuturesOrderBook {
   id?: number;
   current: number;
@@ -169,7 +171,8 @@ export interface FuturesAccountBookRecord {
   time: number;
   change: string;
   balance: string;
-  type: string;
+  /** v4.106.147: includes `dividend` (dividend payout) */
+  type: FuturesAccountBookType;
   text: string;
   contract?: string;
   trade_id: string;

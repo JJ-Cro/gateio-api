@@ -73,6 +73,19 @@ export interface GetRiskLimitTableReq {
   table_id: string;
 }
 
+/** Change types for `GET /futures/{settle}/account_book`. */
+export type FuturesAccountBookType =
+  | 'dnw'
+  | 'pnl'
+  | 'fee'
+  | 'refr'
+  | 'fund'
+  | 'point_dnw'
+  | 'point_fee'
+  | 'point_refr'
+  | 'bonus_offset'
+  | 'dividend'; // v4.106.147: dividend payout
+
 export interface GetFuturesAccountBookReq {
   settle: FuturesSettle;
   contract?: string;
@@ -80,16 +93,7 @@ export interface GetFuturesAccountBookReq {
   offset?: number;
   from?: number;
   to?: number;
-  type?:
-    | 'dnw'
-    | 'pnl'
-    | 'fee'
-    | 'refr'
-    | 'fund'
-    | 'point_dnw'
-    | 'point_fee'
-    | 'point_refr'
-    | 'bonus_offset';
+  type?: FuturesAccountBookType;
 }
 
 export interface GetFuturesADLRiskStatesReq {
@@ -136,6 +140,10 @@ export interface SubmitFuturesOrderReq {
   action_mode?: 'ACK' | 'RESULT' | 'FULL';
   tpsl_tp_trigger_price?: string;
   tpsl_sl_trigger_price?: string;
+  /** BBO price type for the take-profit leg */
+  tpsl_tp_bbo_type?: string;
+  /** BBO price type for the stop-loss leg */
+  tpsl_sl_bbo_type?: string;
   pos_margin_mode?: 'isolated' | 'cross';
 }
 

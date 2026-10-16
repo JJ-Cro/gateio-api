@@ -3548,16 +3548,22 @@ export class RestClient extends BaseRestClient {
   /**
    * Update a single price-triggered order
    *
+   * v4.106.160: `PUT /futures/{settle}/price_orders/amend/{order_id}`.
+   * `order_id` is required in the path and is still sent in the JSON body.
+   *
    * @param params Parameters for updating a price-triggered order
    * @returns Promise<TriggerOrderResponse>
    */
   updateFuturesPriceTriggeredOrder(
     params: UpdateFuturesPriceTriggeredOrderReq,
   ): Promise<TriggerOrderResponse> {
-    const { settle, ...body } = params;
-    return this.putPrivate(`/futures/${settle}/price_orders/amend`, {
-      body: body,
-    });
+    const { settle, order_id, ...rest } = params;
+    return this.putPrivate(
+      `/futures/${settle}/price_orders/amend/${order_id}`,
+      {
+        body: { order_id, ...rest },
+      },
+    );
   }
 
   /**

@@ -24,7 +24,11 @@ export interface RestClientOptions {
    **/
   baseUrl?: string;
 
-  // manually override with one of the known base URLs in the library
+  /**
+   * Built-in Gate API v4 host.
+   * `testnet` and `futuresTestnet` both use https://api-testnet.gateapi.io/api/v4
+   * (spot and futures). `futuresTestnet` is kept as an alias of `testnet`.
+   */
   baseUrlKey?: GateBaseUrlKey;
 
   /** Default: true. whether to try and post-process request exceptions (and throw them). */
@@ -79,10 +83,15 @@ export function serializeParams<T extends Record<string, any> | undefined = {}>(
   return queryString ? prefixWith + queryString : queryString;
 }
 
+/** Global TestNet REST host. Gate docs: spot and futures. */
+const GATE_TESTNET_REST_URL = 'https://api-testnet.gateapi.io/api/v4';
+
 const GATE_BASE_URLS: Record<GateBaseUrlKey, string> = {
   live: 'https://api.gateio.ws/api/v4',
   futuresLiveAlternative: 'https://fx-api.gateio.ws/api/v4',
-  futuresTestnet: 'https://fx-api-testnet.gateio.ws/api/v4',
+  testnet: GATE_TESTNET_REST_URL,
+  // Alias of `testnet`. Previously https://fx-api-testnet.gateio.ws/api/v4 (HTTP 502).
+  futuresTestnet: GATE_TESTNET_REST_URL,
 };
 
 export function getRestBaseUrl(restClientOptions: RestClientOptions): string {
