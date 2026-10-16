@@ -3,8 +3,6 @@
  * ==========================================================================================================================
  */
 
-import type { FuturesAccountBookType } from '../request/futures.js';
-
 export interface FuturesOrderBook {
   id?: number;
   current: number;
@@ -167,12 +165,25 @@ export interface FuturesAccount {
   funding_balance?: string;
 }
 
+/** v4.106.147: includes `dividend` (dividend payout) */
+export type FuturesAccountBookRecordType =
+  | 'dnw'
+  | 'pnl'
+  | 'fee'
+  | 'refr'
+  | 'fund'
+  | 'point_dnw'
+  | 'point_fee'
+  | 'point_refr'
+  | 'bonus_offset'
+  | 'dividend';
+
 export interface FuturesAccountBookRecord {
   time: number;
   change: string;
   balance: string;
   /** v4.106.147: includes `dividend` (dividend payout) */
-  type: FuturesAccountBookType;
+  type: FuturesAccountBookRecordType;
   text: string;
   contract?: string;
   trade_id: string;
