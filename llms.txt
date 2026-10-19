@@ -951,6 +951,193 @@ export interface LoanCollateralRatio {
 }
 
 ================
+File: src/types/response/delivery.ts
+================
+/**==========================================================================================================================
+ * DELIVERY
+ * ==========================================================================================================================
+ */
+⋮----
+export interface DeliveryOrderBook {
+  id?: number;
+  current: number;
+  update: number;
+  asks: { p: string; s: number }[];
+  bids: { p: string; s: number }[];
+}
+⋮----
+export interface DeliveryTrade {
+  id: number;
+  create_time: number;
+  create_time_ms: number;
+  contract: string;
+  size: number;
+  price: string;
+  is_internal?: boolean; // Deprecated
+}
+⋮----
+is_internal?: boolean; // Deprecated
+⋮----
+export interface DeliveryCandle {
+  t: number;
+  v?: number;
+  c: string;
+  h: string;
+  l: string;
+  o: string;
+}
+⋮----
+export interface DeliveryTicker {
+  contract: string;
+  last: string;
+  change_percentage: string;
+  total_size: string;
+  low_24h: string;
+  high_24h: string;
+  volume_24h: string;
+  volume_24h_btc?: string;
+  volume_24h_usd?: string;
+  volume_24h_base: string;
+  volume_24h_quote: string;
+  volume_24h_settle: string;
+  mark_price: string;
+  funding_rate: string;
+  funding_rate_indicative: string;
+  index_price: string;
+  quanto_base_rate?: string; // Deprecated
+  basis_rate: string;
+  basis_value: string;
+  lowest_ask: string;
+  highest_bid: string;
+}
+⋮----
+quanto_base_rate?: string; // Deprecated
+⋮----
+export interface DeliveryAccount {
+  total: string; // Balance, only applicable to classic contract account
+  unrealised_pnl: string;
+  position_margin?: string; // Deprecated
+  order_margin: string; // Initial margin for all pending orders
+  available: string;
+  point: string;
+  currency: string;
+  in_dual_mode: boolean;
+  position_mode?: string; // Position mode: single - one-way, dual - dual-side, split - sub-positions (in_dual_mode is deprecated)
+  enable_credit: boolean;
+  position_initial_margin: string;
+  maintenance_margin: string;
+  bonus: string;
+  enable_evolved_classic?: boolean; // Deprecated
+  cross_order_margin: string;
+  cross_initial_margin: string;
+  cross_maintenance_margin: string;
+  cross_unrealised_pnl: string;
+  cross_available: string;
+  isolated_position_margin: string;
+  enable_new_dual_mode?: boolean; // Deprecated
+  margin_mode?: number; // 0: classic delivery account; 1: Multi-Currency Margin Mode; 2: Portfolio Margin Mode; 3: Single-Currency Margin Mode
+  history: {
+    dnw: string;
+    pnl: string;
+    fee: string;
+    refr: string;
+    fund: string;
+    point_dnw: string;
+    point_fee: string;
+    point_refr: string;
+    bonus_dnw: string;
+    bonus_offset: string;
+  };
+  enable_tiered_mm: boolean;
+}
+⋮----
+total: string; // Balance, only applicable to classic contract account
+⋮----
+position_margin?: string; // Deprecated
+order_margin: string; // Initial margin for all pending orders
+⋮----
+position_mode?: string; // Position mode: single - one-way, dual - dual-side, split - sub-positions (in_dual_mode is deprecated)
+⋮----
+enable_evolved_classic?: boolean; // Deprecated
+⋮----
+enable_new_dual_mode?: boolean; // Deprecated
+margin_mode?: number; // 0: classic delivery account; 1: Multi-Currency Margin Mode; 2: Portfolio Margin Mode; 3: Single-Currency Margin Mode
+⋮----
+export interface DeliveryBook {
+  time: number;
+  change: string;
+  balance: string;
+  type:
+    | 'dnw'
+    | 'pnl'
+    | 'fee'
+    | 'refr'
+    | 'fund'
+    | 'point_dnw'
+    | 'point_fee'
+    | 'point_refr'
+    | 'bonus_offset';
+  text: string;
+  contract?: string;
+  trade_id?: string;
+}
+⋮----
+export interface DeliveryTradingHistoryRecord {
+  id: number;
+  create_time: number;
+  contract: string;
+  order_id: string;
+  size: number;
+  price: string;
+  role: 'taker' | 'maker';
+  text: string;
+  fee: string;
+  point_fee: string;
+}
+⋮----
+export interface DeliveryClosedPosition {
+  time: number;
+  contract: string;
+  side: 'long' | 'short';
+  pnl: string;
+  pnl_pnl: string;
+  pnl_fund: string;
+  pnl_fee: string;
+  text: string;
+  max_size: string;
+  first_open_time: number;
+  long_price: string;
+  short_price: string;
+}
+⋮----
+export interface DeliveryLiquidationHistoryRecord {
+  time: number;
+  contract: string;
+  leverage?: string;
+  size: number;
+  margin?: string;
+  entry_price?: string;
+  liq_price?: string;
+  mark_price?: string;
+  order_id?: number;
+  order_price: string;
+  fill_price: string;
+  left: number;
+}
+⋮----
+export interface DeliverySettlementHistoryRecord {
+  time: number;
+  contract: string;
+  leverage: string;
+  size: number;
+  margin: string;
+  entry_price: string;
+  settle_price: string;
+  profit: string;
+  fee: string;
+}
+
+================
 File: src/types/response/earnuni.ts
 ================
 /**==========================================================================================================================
@@ -1036,6 +1223,396 @@ export interface SubmitFlashSwapOrderPreviewResp {
   buy_amount: string;
   price: string;
 }
+
+================
+File: src/types/response/margin.ts
+================
+/**==========================================================================================================================
+ * MARGIN
+ * ==========================================================================================================================
+ */
+⋮----
+export interface MarginAccount {
+  currency_pair: string;
+  locked: boolean;
+  risk: string;
+  base: {
+    currency: string;
+    available: string;
+    locked: string;
+    borrowed: string;
+    interest: string;
+  };
+  quote: {
+    currency: string;
+    available: string;
+    locked: string;
+    borrowed: string;
+    interest: string;
+  };
+}
+⋮----
+export interface MarginBalanceHistoryRecord {
+  id: string;
+  time: string;
+  time_ms: number;
+  currency: string;
+  currency_pair: string;
+  change: string;
+  balance: string;
+  type: string;
+}
+⋮----
+export interface CrossMarginCurrency {
+  name: string;
+  rate: string;
+  prec: string;
+  discount: string;
+  min_borrow_amount: string;
+  user_max_borrow_amount: string;
+  total_max_borrow_amount: string;
+  price: string;
+  loanable: boolean;
+  status: number;
+}
+⋮----
+export interface CrossMarginAccount {
+  user_id: number;
+  refresh_time: number;
+  locked: boolean;
+  balances: {
+    [currency: string]: {
+      available: string;
+      freeze: string;
+      borrowed: string;
+      interest: string;
+      negative_liab: string;
+      futures_pos_liab: string;
+      equity: string;
+      total_freeze: string;
+      total_liab: string;
+    };
+  };
+  total: string;
+  borrowed: string;
+  interest: string;
+  risk: string;
+  total_initial_margin: string;
+  total_margin_balance: string;
+  total_maintenance_margin: string;
+  total_initial_margin_rate: string;
+  total_maintenance_margin_rate: string;
+  total_available_margin: string;
+  portfolio_margin_total: string;
+  portfolio_margin_total_liab: string;
+  portfolio_margin_total_equity: string;
+}
+⋮----
+export interface CrossMarginAccountHistoryRecord {
+  id: string;
+  time: number;
+  currency: string;
+  change: string;
+  balance: string;
+  type: string;
+}
+⋮----
+export interface CrossMarginMorrowLoanRecord {
+  id: string;
+  create_time: number;
+  update_time: number;
+  currency: string;
+  amount: string;
+  text?: string;
+  status: number;
+  repaid: string;
+  repaid_interest: string;
+  unpaid_interest: string;
+}
+⋮----
+export interface MarginUserAccount {
+  currency_pair: string;
+  account_type: string; // Description updated to remove "risk" option
+  leverage: string;
+  locked: boolean;
+  risk?: string; // Deprecated
+  mmr?: string; // Refined description
+  base: {
+    currency: string;
+    available: string;
+    locked: string;
+    borrowed: string;
+    interest: string;
+  };
+  quote: {
+    currency: string;
+    available: string;
+    locked: string;
+    borrowed: string;
+    interest: string;
+  };
+}
+⋮----
+account_type: string; // Description updated to remove "risk" option
+⋮----
+risk?: string; // Deprecated
+mmr?: string; // Refined description
+
+================
+File: src/types/response/options.ts
+================
+/**==========================================================================================================================
+ * OPTIONS
+ * ==========================================================================================================================
+ */
+⋮----
+export interface OptionsContract {
+  name: string;
+  tag: string; // Expiry period: day, week, month
+  create_time: number;
+  expiration_time: number;
+  is_call: boolean;
+  strike_price: string;
+  last_price: string;
+  mark_price: string;
+  orderbook_id: number;
+  trade_id?: number; // Deprecated
+  trade_size: number;
+  position_size: number;
+  underlying: string;
+  underlying_price: string; // Forward futures price for the delivery date
+  multiplier: string; // Option contract multiplier
+  order_price_round: string;
+  mark_price_round: string; // Minimum unit of mark price
+  maker_fee_rate: string;
+  taker_fee_rate: string;
+  price_limit_fee_rate: string;
+  ref_discount_rate: string;
+  ref_rebate_rate: string;
+  order_price_deviate?: string; // Deprecated
+  order_size_min: number;
+  order_size_max: number;
+  orders_limit: number; // Maximum number of orders per user in this market
+}
+⋮----
+tag: string; // Expiry period: day, week, month
+⋮----
+trade_id?: number; // Deprecated
+⋮----
+underlying_price: string; // Forward futures price for the delivery date
+multiplier: string; // Option contract multiplier
+⋮----
+mark_price_round: string; // Minimum unit of mark price
+⋮----
+order_price_deviate?: string; // Deprecated
+⋮----
+orders_limit: number; // Maximum number of orders per user in this market
+⋮----
+export interface OptionsSettlementHistoryRecord {
+  time: number;
+  contract: string;
+  profit: string;
+  fee: string;
+  strike_price: string;
+  settle_price: string;
+}
+⋮----
+export interface OptionsUserSettlement {
+  time: number;
+  underlying: string;
+  contract: string;
+  strike_price: string;
+  settle_price: string;
+  size: number;
+  settle_profit: string;
+  fee: string;
+  realised_pnl: string;
+}
+⋮----
+export interface OptionsOrderBook {
+  id?: number;
+  current: number;
+  update: number;
+  asks: { p: string; s: number }[];
+  bids: { p: string; s: number }[];
+}
+⋮----
+export interface OptionsTicker {
+  name: string;
+  last_price: string;
+  mark_price: string;
+  index_price: string;
+  ask1_size: number;
+  ask1_price: string;
+  bid1_size: number;
+  bid1_price: string;
+  position_size: number;
+  mark_iv: string;
+  bid_iv: string;
+  ask_iv: string;
+  leverage: string; // Leverage calculation formula updated with reference note
+  delta: string;
+  gamma: string;
+  vega: string;
+  theta: string;
+  rho: string;
+}
+⋮----
+leverage: string; // Leverage calculation formula updated with reference note
+⋮----
+export interface OptionsCandle {
+  t: number;
+  v?: number;
+  c: string;
+  h: string;
+  l: string;
+  o: string;
+}
+⋮----
+export interface OptionsUnderlyingCandle {
+  t: number;
+  v?: number;
+  c: string;
+  h: string;
+  l: string;
+  o: string;
+  sum: string;
+}
+⋮----
+export interface OptionsTrade {
+  id: number;
+  create_time: number;
+  create_time_ms: number;
+  contract: string;
+  size: number;
+  price: string;
+  is_internal?: boolean; // Deprecated
+}
+⋮----
+is_internal?: boolean; // Deprecated
+⋮----
+export interface OptionsAccount {
+  user: number;
+  total?: string; // Only applicable to classic options accounts (unified account limitation)
+  equity?: string; // Only applicable to classic options accounts (unified account limitation)
+  short_enabled: boolean;
+  unrealised_pnl: string; // Enhanced with calculation formula
+  init_margin: string;
+  maint_margin: string;
+  order_margin: string;
+  available: string;
+  point: string;
+  currency: string;
+  liq_triggered?: boolean; // Whether account is in liquidation status
+  margin_mode?: number; // 0: classic options account; 1: Multi-Currency Margin Mode; 2: Portfolio Margin Mode; 3: Single-Currency Margin Mode
+}
+⋮----
+total?: string; // Only applicable to classic options accounts (unified account limitation)
+equity?: string; // Only applicable to classic options accounts (unified account limitation)
+⋮----
+unrealised_pnl: string; // Enhanced with calculation formula
+⋮----
+liq_triggered?: boolean; // Whether account is in liquidation status
+margin_mode?: number; // 0: classic options account; 1: Multi-Currency Margin Mode; 2: Portfolio Margin Mode; 3: Single-Currency Margin Mode
+⋮----
+export interface OptionsAccountChangeRecord {
+  time: number;
+  change: string;
+  balance: string;
+  type: 'dnw' | 'prem' | 'fee' | 'refr' | 'set';
+  text: string;
+}
+⋮----
+export interface OptionsPositionsUnderlying {
+  user: number;
+  underlying: string;
+  underlying_price: string; // Forward futures price for the delivery date
+  contract: string;
+  size: number;
+  entry_price: string;
+  mark_price: string;
+  mark_iv: string;
+  realised_pnl: string;
+  unrealised_pnl: string;
+  pending_orders: number;
+  close_order: {
+    id: number;
+    price: string;
+    is_liq: boolean;
+  } | null;
+  delta: string;
+  gamma: string;
+  vega: string;
+  theta: string;
+}
+⋮----
+underlying_price: string; // Forward futures price for the delivery date
+⋮----
+export interface GetOptionsLiquidationResp {
+  time: number;
+  contract: string;
+  side: 'long' | 'short';
+  pnl: string;
+  text: string;
+  settle_size: string;
+}
+⋮----
+export interface SubmitOptionsOrderResp {
+  id: number;
+  user: number;
+  create_time: number;
+  finish_time: number;
+  finish_as:
+    | 'filled'
+    | 'cancelled'
+    | 'liquidated'
+    | 'ioc'
+    | 'auto_deleveraged'
+    | 'reduce_only'
+    | 'position_closed';
+  status: 'open' | 'finished';
+  contract: string;
+  size: number;
+  iceberg: number;
+  price: string;
+  is_close: boolean;
+  is_reduce_only: boolean;
+  is_liq: boolean;
+  tif: 'gtc' | 'ioc' | 'poc';
+  left: number;
+  fill_price: string;
+  text: string;
+  tkfr: string;
+  mkfr: string;
+  refu: number;
+  refr: string;
+}
+⋮----
+export interface OptionsUserHistoryRecord {
+  id: number;
+  create_time: number;
+  contract: string;
+  order_id: number;
+  size: number;
+  price: string;
+  underlying_price: string; // Forward futures price for the delivery date
+  role: 'taker' | 'maker';
+}
+⋮----
+underlying_price: string; // Forward futures price for the delivery date
+⋮----
+export interface OptionsMMPSettings {
+  underlying: string;
+  window: number;
+  frozen_period: number;
+  qty_limit: string;
+  delta_limit: string;
+  trigger_time_ms: number; // Trigger freeze time in milliseconds, 0 means no freeze triggered
+  frozen_until_ms: number; // Unfreeze time in milliseconds, if no frozen period is configured, no unfreeze time after freeze is triggered
+}
+⋮----
+trigger_time_ms: number; // Trigger freeze time in milliseconds, 0 means no freeze triggered
+frozen_until_ms: number; // Unfreeze time in milliseconds, if no frozen period is configured, no unfreeze time after freeze is triggered
 
 ================
 File: src/types/response/subaccount.ts
@@ -4769,325 +5346,58 @@ export interface AutoInvestPlansListResp {
 }
 
 ================
-File: src/types/response/delivery.ts
+File: src/types/response/marginuni.ts
 ================
 /**==========================================================================================================================
- * DELIVERY
+ * MARGIN UNI
  * ==========================================================================================================================
  */
 ⋮----
-export interface DeliveryOrderBook {
-  id?: number;
-  current: number;
-  update: number;
-  asks: { p: string; s: number }[];
-  bids: { p: string; s: number }[];
-}
-⋮----
-export interface DeliveryTrade {
-  id: number;
-  create_time: number;
-  create_time_ms: number;
-  contract: string;
-  size: number;
-  price: string;
-  is_internal?: boolean; // Deprecated
-}
-⋮----
-is_internal?: boolean; // Deprecated
-⋮----
-export interface DeliveryCandle {
-  t: number;
-  v?: number;
-  c: string;
-  h: string;
-  l: string;
-  o: string;
-}
-⋮----
-export interface DeliveryTicker {
-  contract: string;
-  last: string;
-  change_percentage: string;
-  total_size: string;
-  low_24h: string;
-  high_24h: string;
-  volume_24h: string;
-  volume_24h_btc?: string;
-  volume_24h_usd?: string;
-  volume_24h_base: string;
-  volume_24h_quote: string;
-  volume_24h_settle: string;
-  mark_price: string;
-  funding_rate: string;
-  funding_rate_indicative: string;
-  index_price: string;
-  quanto_base_rate?: string; // Deprecated
-  basis_rate: string;
-  basis_value: string;
-  lowest_ask: string;
-  highest_bid: string;
-}
-⋮----
-quanto_base_rate?: string; // Deprecated
-⋮----
-export interface DeliveryAccount {
-  total: string; // Balance, only applicable to classic contract account
-  unrealised_pnl: string;
-  position_margin?: string; // Deprecated
-  order_margin: string; // Initial margin for all pending orders
-  available: string;
-  point: string;
-  currency: string;
-  in_dual_mode: boolean;
-  position_mode?: string; // Position mode: single - one-way, dual - dual-side, split - sub-positions (in_dual_mode is deprecated)
-  enable_credit: boolean;
-  position_initial_margin: string;
-  maintenance_margin: string;
-  bonus: string;
-  enable_evolved_classic?: boolean; // Deprecated
-  cross_order_margin: string;
-  cross_initial_margin: string;
-  cross_maintenance_margin: string;
-  cross_unrealised_pnl: string;
-  cross_available: string;
-  isolated_position_margin: string;
-  enable_new_dual_mode?: boolean; // Deprecated
-  margin_mode?: number; // 0: classic delivery account; 1: Multi-Currency Margin Mode; 2: Portfolio Margin Mode; 3: Single-Currency Margin Mode
-  history: {
-    dnw: string;
-    pnl: string;
-    fee: string;
-    refr: string;
-    fund: string;
-    point_dnw: string;
-    point_fee: string;
-    point_refr: string;
-    bonus_dnw: string;
-    bonus_offset: string;
-  };
-  enable_tiered_mm: boolean;
-}
-⋮----
-total: string; // Balance, only applicable to classic contract account
-⋮----
-position_margin?: string; // Deprecated
-order_margin: string; // Initial margin for all pending orders
-⋮----
-position_mode?: string; // Position mode: single - one-way, dual - dual-side, split - sub-positions (in_dual_mode is deprecated)
-⋮----
-enable_evolved_classic?: boolean; // Deprecated
-⋮----
-enable_new_dual_mode?: boolean; // Deprecated
-margin_mode?: number; // 0: classic delivery account; 1: Multi-Currency Margin Mode; 2: Portfolio Margin Mode; 3: Single-Currency Margin Mode
-⋮----
-export interface DeliveryBook {
-  time: number;
-  change: string;
-  balance: string;
-  type:
-    | 'dnw'
-    | 'pnl'
-    | 'fee'
-    | 'refr'
-    | 'fund'
-    | 'point_dnw'
-    | 'point_fee'
-    | 'point_refr'
-    | 'bonus_offset';
-  text: string;
-  contract?: string;
-  trade_id?: string;
-}
-⋮----
-export interface DeliveryTradingHistoryRecord {
-  id: number;
-  create_time: number;
-  contract: string;
-  order_id: string;
-  size: number;
-  price: string;
-  role: 'taker' | 'maker';
-  text: string;
-  fee: string;
-  point_fee: string;
-}
-⋮----
-export interface DeliveryClosedPosition {
-  time: number;
-  contract: string;
-  side: 'long' | 'short';
-  pnl: string;
-  pnl_pnl: string;
-  pnl_fund: string;
-  pnl_fee: string;
-  text: string;
-  max_size: string;
-  first_open_time: number;
-  long_price: string;
-  short_price: string;
-}
-⋮----
-export interface DeliveryLiquidationHistoryRecord {
-  time: number;
-  contract: string;
-  leverage?: string;
-  size: number;
-  margin?: string;
-  entry_price?: string;
-  liq_price?: string;
-  mark_price?: string;
-  order_id?: number;
-  order_price: string;
-  fill_price: string;
-  left: number;
-}
-⋮----
-export interface DeliverySettlementHistoryRecord {
-  time: number;
-  contract: string;
+export interface LendingMarket {
+  currency_pair: string;
+  base_min_borrow_amount: string;
+  quote_min_borrow_amount: string;
   leverage: string;
-  size: number;
-  margin: string;
-  entry_price: string;
-  settle_price: string;
-  profit: string;
-  fee: string;
-}
-
-================
-File: src/types/response/margin.ts
-================
-/**==========================================================================================================================
- * MARGIN
- * ==========================================================================================================================
- */
-⋮----
-export interface MarginAccount {
-  currency_pair: string;
-  locked: boolean;
-  risk: string;
-  base: {
-    currency: string;
-    available: string;
-    locked: string;
-    borrowed: string;
-    interest: string;
-  };
-  quote: {
-    currency: string;
-    available: string;
-    locked: string;
-    borrowed: string;
-    interest: string;
-  };
+  status?: string | number;
+  delisted_time?: number;
 }
 ⋮----
-export interface MarginBalanceHistoryRecord {
-  id: string;
-  time: string;
-  time_ms: number;
+export interface MarginUNILoan {
   currency: string;
   currency_pair: string;
-  change: string;
-  balance: string;
-  type: string;
-}
-⋮----
-export interface CrossMarginCurrency {
-  name: string;
-  rate: string;
-  prec: string;
-  discount: string;
-  min_borrow_amount: string;
-  user_max_borrow_amount: string;
-  total_max_borrow_amount: string;
-  price: string;
-  loanable: boolean;
-  status: number;
-}
-⋮----
-export interface CrossMarginAccount {
-  user_id: number;
-  refresh_time: number;
-  locked: boolean;
-  balances: {
-    [currency: string]: {
-      available: string;
-      freeze: string;
-      borrowed: string;
-      interest: string;
-      negative_liab: string;
-      futures_pos_liab: string;
-      equity: string;
-      total_freeze: string;
-      total_liab: string;
-    };
-  };
-  total: string;
-  borrowed: string;
-  interest: string;
-  risk: string;
-  total_initial_margin: string;
-  total_margin_balance: string;
-  total_maintenance_margin: string;
-  total_initial_margin_rate: string;
-  total_maintenance_margin_rate: string;
-  total_available_margin: string;
-  portfolio_margin_total: string;
-  portfolio_margin_total_liab: string;
-  portfolio_margin_total_equity: string;
-}
-⋮----
-export interface CrossMarginAccountHistoryRecord {
-  id: string;
-  time: number;
-  currency: string;
-  change: string;
-  balance: string;
-  type: string;
-}
-⋮----
-export interface CrossMarginMorrowLoanRecord {
-  id: string;
+  amount: string;
+  type: string; // Lending type, margin indicates margin borrowing
   create_time: number;
   update_time: number;
+}
+⋮----
+type: string; // Lending type, margin indicates margin borrowing
+⋮----
+export interface MarginUNILoanRecord {
+  type: string;
+  currency_pair: string;
   currency: string;
   amount: string;
-  text?: string;
-  status: number;
-  repaid: string;
-  repaid_interest: string;
-  unpaid_interest: string;
+  create_time: number;
 }
 ⋮----
-export interface MarginUserAccount {
+export interface MarginUNIInterestRecord {
+  currency: string;
   currency_pair: string;
-  account_type: string; // Description updated to remove "risk" option
-  leverage: string;
-  locked: boolean;
-  risk?: string; // Deprecated
-  mmr?: string; // Refined description
-  base: {
-    currency: string;
-    available: string;
-    locked: string;
-    borrowed: string;
-    interest: string;
-  };
-  quote: {
-    currency: string;
-    available: string;
-    locked: string;
-    borrowed: string;
-    interest: string;
-  };
+  actual_rate: string;
+  interest: string;
+  status: number;
+  type: string; // Lending type, margin indicates margin borrowing
+  create_time: number;
 }
 ⋮----
-account_type: string; // Description updated to remove "risk" option
+type: string; // Lending type, margin indicates margin borrowing
 ⋮----
-risk?: string; // Deprecated
-mmr?: string; // Refined description
+export interface MarginUNIMaxBorrowable {
+  currency: string;
+  currency_pair: string;
+  borrowable: string;
+}
 
 ================
 File: src/types/response/multicollateralLoan.ts
@@ -5260,262 +5570,6 @@ export interface MultiLoanFixedRate {
   rate_30d: string;
   update_time: number;
 }
-
-================
-File: src/types/response/options.ts
-================
-/**==========================================================================================================================
- * OPTIONS
- * ==========================================================================================================================
- */
-⋮----
-export interface OptionsContract {
-  name: string;
-  tag: string; // Expiry period: day, week, month
-  create_time: number;
-  expiration_time: number;
-  is_call: boolean;
-  strike_price: string;
-  last_price: string;
-  mark_price: string;
-  orderbook_id: number;
-  trade_id?: number; // Deprecated
-  trade_size: number;
-  position_size: number;
-  underlying: string;
-  underlying_price: string; // Forward futures price for the delivery date
-  multiplier: string; // Option contract multiplier
-  order_price_round: string;
-  mark_price_round: string; // Minimum unit of mark price
-  maker_fee_rate: string;
-  taker_fee_rate: string;
-  price_limit_fee_rate: string;
-  ref_discount_rate: string;
-  ref_rebate_rate: string;
-  order_price_deviate?: string; // Deprecated
-  order_size_min: number;
-  order_size_max: number;
-  orders_limit: number; // Maximum number of orders per user in this market
-}
-⋮----
-tag: string; // Expiry period: day, week, month
-⋮----
-trade_id?: number; // Deprecated
-⋮----
-underlying_price: string; // Forward futures price for the delivery date
-multiplier: string; // Option contract multiplier
-⋮----
-mark_price_round: string; // Minimum unit of mark price
-⋮----
-order_price_deviate?: string; // Deprecated
-⋮----
-orders_limit: number; // Maximum number of orders per user in this market
-⋮----
-export interface OptionsSettlementHistoryRecord {
-  time: number;
-  contract: string;
-  profit: string;
-  fee: string;
-  strike_price: string;
-  settle_price: string;
-}
-⋮----
-export interface OptionsUserSettlement {
-  time: number;
-  underlying: string;
-  contract: string;
-  strike_price: string;
-  settle_price: string;
-  size: number;
-  settle_profit: string;
-  fee: string;
-  realised_pnl: string;
-}
-⋮----
-export interface OptionsOrderBook {
-  id?: number;
-  current: number;
-  update: number;
-  asks: { p: string; s: number }[];
-  bids: { p: string; s: number }[];
-}
-⋮----
-export interface OptionsTicker {
-  name: string;
-  last_price: string;
-  mark_price: string;
-  index_price: string;
-  ask1_size: number;
-  ask1_price: string;
-  bid1_size: number;
-  bid1_price: string;
-  position_size: number;
-  mark_iv: string;
-  bid_iv: string;
-  ask_iv: string;
-  leverage: string; // Leverage calculation formula updated with reference note
-  delta: string;
-  gamma: string;
-  vega: string;
-  theta: string;
-  rho: string;
-}
-⋮----
-leverage: string; // Leverage calculation formula updated with reference note
-⋮----
-export interface OptionsCandle {
-  t: number;
-  v?: number;
-  c: string;
-  h: string;
-  l: string;
-  o: string;
-}
-⋮----
-export interface OptionsUnderlyingCandle {
-  t: number;
-  v?: number;
-  c: string;
-  h: string;
-  l: string;
-  o: string;
-  sum: string;
-}
-⋮----
-export interface OptionsTrade {
-  id: number;
-  create_time: number;
-  create_time_ms: number;
-  contract: string;
-  size: number;
-  price: string;
-  is_internal?: boolean; // Deprecated
-}
-⋮----
-is_internal?: boolean; // Deprecated
-⋮----
-export interface OptionsAccount {
-  user: number;
-  total?: string; // Only applicable to classic options accounts (unified account limitation)
-  equity?: string; // Only applicable to classic options accounts (unified account limitation)
-  short_enabled: boolean;
-  unrealised_pnl: string; // Enhanced with calculation formula
-  init_margin: string;
-  maint_margin: string;
-  order_margin: string;
-  available: string;
-  point: string;
-  currency: string;
-  liq_triggered?: boolean; // Whether account is in liquidation status
-  margin_mode?: number; // 0: classic options account; 1: Multi-Currency Margin Mode; 2: Portfolio Margin Mode; 3: Single-Currency Margin Mode
-}
-⋮----
-total?: string; // Only applicable to classic options accounts (unified account limitation)
-equity?: string; // Only applicable to classic options accounts (unified account limitation)
-⋮----
-unrealised_pnl: string; // Enhanced with calculation formula
-⋮----
-liq_triggered?: boolean; // Whether account is in liquidation status
-margin_mode?: number; // 0: classic options account; 1: Multi-Currency Margin Mode; 2: Portfolio Margin Mode; 3: Single-Currency Margin Mode
-⋮----
-export interface OptionsAccountChangeRecord {
-  time: number;
-  change: string;
-  balance: string;
-  type: 'dnw' | 'prem' | 'fee' | 'refr' | 'set';
-  text: string;
-}
-⋮----
-export interface OptionsPositionsUnderlying {
-  user: number;
-  underlying: string;
-  underlying_price: string; // Forward futures price for the delivery date
-  contract: string;
-  size: number;
-  entry_price: string;
-  mark_price: string;
-  mark_iv: string;
-  realised_pnl: string;
-  unrealised_pnl: string;
-  pending_orders: number;
-  close_order: {
-    id: number;
-    price: string;
-    is_liq: boolean;
-  } | null;
-  delta: string;
-  gamma: string;
-  vega: string;
-  theta: string;
-}
-⋮----
-underlying_price: string; // Forward futures price for the delivery date
-⋮----
-export interface GetOptionsLiquidationResp {
-  time: number;
-  contract: string;
-  side: 'long' | 'short';
-  pnl: string;
-  text: string;
-  settle_size: string;
-}
-⋮----
-export interface SubmitOptionsOrderResp {
-  id: number;
-  user: number;
-  create_time: number;
-  finish_time: number;
-  finish_as:
-    | 'filled'
-    | 'cancelled'
-    | 'liquidated'
-    | 'ioc'
-    | 'auto_deleveraged'
-    | 'reduce_only'
-    | 'position_closed';
-  status: 'open' | 'finished';
-  contract: string;
-  size: number;
-  iceberg: number;
-  price: string;
-  is_close: boolean;
-  is_reduce_only: boolean;
-  is_liq: boolean;
-  tif: 'gtc' | 'ioc' | 'poc';
-  left: number;
-  fill_price: string;
-  text: string;
-  tkfr: string;
-  mkfr: string;
-  refu: number;
-  refr: string;
-}
-⋮----
-export interface OptionsUserHistoryRecord {
-  id: number;
-  create_time: number;
-  contract: string;
-  order_id: number;
-  size: number;
-  price: string;
-  underlying_price: string; // Forward futures price for the delivery date
-  role: 'taker' | 'maker';
-}
-⋮----
-underlying_price: string; // Forward futures price for the delivery date
-⋮----
-export interface OptionsMMPSettings {
-  underlying: string;
-  window: number;
-  frozen_period: number;
-  qty_limit: string;
-  delta_limit: string;
-  trigger_time_ms: number; // Trigger freeze time in milliseconds, 0 means no freeze triggered
-  frozen_until_ms: number; // Unfreeze time in milliseconds, if no frozen period is configured, no unfreeze time after freeze is triggered
-}
-⋮----
-trigger_time_ms: number; // Trigger freeze time in milliseconds, 0 means no freeze triggered
-frozen_until_ms: number; // Unfreeze time in milliseconds, if no frozen period is configured, no unfreeze time after freeze is triggered
 
 ================
 File: src/types/response/rebate.ts
@@ -6218,60 +6272,6 @@ export interface CreateStockTransactionReq {
 }
 
 ================
-File: src/types/response/marginuni.ts
-================
-/**==========================================================================================================================
- * MARGIN UNI
- * ==========================================================================================================================
- */
-⋮----
-export interface LendingMarket {
-  currency_pair: string;
-  base_min_borrow_amount: string;
-  quote_min_borrow_amount: string;
-  leverage: string;
-  status?: string | number;
-  delisted_time?: number;
-}
-⋮----
-export interface MarginUNILoan {
-  currency: string;
-  currency_pair: string;
-  amount: string;
-  type: string; // Lending type, margin indicates margin borrowing
-  create_time: number;
-  update_time: number;
-}
-⋮----
-type: string; // Lending type, margin indicates margin borrowing
-⋮----
-export interface MarginUNILoanRecord {
-  type: string;
-  currency_pair: string;
-  currency: string;
-  amount: string;
-  create_time: number;
-}
-⋮----
-export interface MarginUNIInterestRecord {
-  currency: string;
-  currency_pair: string;
-  actual_rate: string;
-  interest: string;
-  status: number;
-  type: string; // Lending type, margin indicates margin borrowing
-  create_time: number;
-}
-⋮----
-type: string; // Lending type, margin indicates margin borrowing
-⋮----
-export interface MarginUNIMaxBorrowable {
-  currency: string;
-  currency_pair: string;
-  borrowable: string;
-}
-
-================
 File: src/types/response/p2pMerchant.ts
 ================
 /** P2P Merchant API response types */
@@ -6525,6 +6525,59 @@ export interface P2PMerchantChatsListData {
 }
 
 ================
+File: src/types/shared.ts
+================
+/**
+ * Built-in Gate API v4 hosts.
+ * `testnet` is the global TestNet host (spot and futures).
+ * `futuresTestnet` is the same host, kept so older `baseUrlKey` values keep working.
+ */
+export type GateBaseUrlKey =
+  | 'live'
+  | 'futuresLiveAlternative'
+  | 'testnet'
+  | 'futuresTestnet';
+⋮----
+// interfaces
+⋮----
+export interface FromToPageLimit {
+  from: number;
+  to: number;
+  page: number;
+  limit: number;
+}
+⋮----
+// Used for spot and flash swap
+export interface CurrencyPair {
+  id?: string;
+  base?: string;
+  base_name?: string;
+  quote?: string;
+  quote_name?: string;
+  trade_quotes?: string[] | null;
+  fee?: string;
+  min_base_amount?: string;
+  min_quote_amount?: string;
+  max_base_amount?: string;
+  max_quote_amount?: string;
+  amount_precision?: number;
+  precision?: number;
+  trade_status?: 'untradable' | 'buyable' | 'sellable' | 'tradable';
+  sell_start?: number;
+  buy_start?: number;
+  type: string;
+  delisting_time?: number;
+  trade_url?: string;
+  up_rate?: string; // v4.106.4: Maximum price increase percentage
+  down_rate?: string; // v4.106.4: Maximum price decrease percentage
+  market_order_max_stock?: string | null;
+  market_order_max_money?: string | null;
+}
+⋮----
+up_rate?: string; // v4.106.4: Maximum price increase percentage
+down_rate?: string; // v4.106.4: Maximum price decrease percentage
+
+================
 File: .gitignore
 ================
 !.gitkeep
@@ -6565,161 +6618,6 @@ privaterepotracker
 restClientRegex.ts
 
 testfile.ts
-
-================
-File: src/types/request/earn.ts
-================
-/**==========================================================================================================================
- * EARN
- * ==========================================================================================================================
- */
-⋮----
-/** GET /earn/dual/investment_plan */
-export interface GetDualInvestmentPlansReq {
-  plan_id?: number | string;
-  coin?: string;
-  type?: string;
-  quote_currency?: string;
-  /** `apy` | `short-period` | `multiple` */
-  sort?: string;
-  page?: number;
-  page_size?: number;
-}
-⋮----
-/** `apy` | `short-period` | `multiple` */
-⋮----
-/** GET /earn/dual/orders */
-export interface GetDualInvestmentOrdersReq {
-  from?: number;
-  to?: number;
-  type?: string;
-  status?: string;
-  coin?: string;
-  page?: number;
-  limit?: number;
-}
-⋮----
-/** GET /earn/dual/order-refund-preview */
-export interface GetDualOrderRefundPreviewReq {
-  order_id: string;
-}
-⋮----
-/** POST /earn/dual/order-refund */
-export interface SubmitDualOrderRefundParams {
-  order_id: string;
-  /** From order-refund-preview */
-  req_id: string;
-}
-⋮----
-/** From order-refund-preview */
-⋮----
-/** POST /earn/dual/modify-order-reinvest */
-export interface UpdateDualOrderReinvestParams {
-  order_id?: number;
-  /** 0 off, 1 on */
-  status?: number;
-  /** Effective duration in seconds; default 86400 */
-  effective_time_duration?: number;
-}
-⋮----
-/** 0 off, 1 on */
-⋮----
-/** Effective duration in seconds; default 86400 */
-⋮----
-/** GET /earn/dual/project-recommend */
-export interface GetDualProjectRecommendReq {
-  mode?: string;
-  coin?: string;
-  type?: string;
-  /** Comma-separated project IDs to exclude */
-  history_pids?: string;
-}
-⋮----
-/** Comma-separated project IDs to exclude */
-⋮----
-/** Request params for POST /earn/dual/orders */
-export interface PlaceDualInvestmentOrderParams {
-  plan_id: string;
-  /** Subscription amount. Mutually exclusive with copies. */
-  amount: string;
-  /** Units. Mutually exclusive with amount. */
-  copies?: string;
-  /** Custom order info, must start with t- */
-  text?: string;
-}
-⋮----
-/** Subscription amount. Mutually exclusive with copies. */
-⋮----
-/** Units. Mutually exclusive with amount. */
-⋮----
-/** Custom order info, must start with t- */
-⋮----
-/**==========================================================================================================================
- * EARN FIXED-TERM
- * ==========================================================================================================================
- */
-⋮----
-export interface GetEarnFixedTermProductsReq {
-  asset?: string;
-  type?: number; // 1 regular, 2 VIP
-  page: number;
-  limit: number;
-}
-⋮----
-type?: number; // 1 regular, 2 VIP
-⋮----
-export interface GetEarnFixedTermProductsByAssetReq {
-  /** Product type: "" or 1 regular, 2 VIP, 0 all */
-  type?: string;
-}
-⋮----
-/** Product type: "" or 1 regular, 2 VIP, 0 all */
-⋮----
-export interface CreateEarnFixedTermLendReq {
-  product_id: number;
-  amount: string;
-  year_rate?: string;
-  reinvest_status?: number; // 0 off, 1 on
-  redeem_account_type?: number; // 1 spot
-  financial_rate_id?: number; // interest boost coupon id, 0 = none
-  sub_business?: number;
-}
-⋮----
-reinvest_status?: number; // 0 off, 1 on
-redeem_account_type?: number; // 1 spot
-financial_rate_id?: number; // interest boost coupon id, 0 = none
-⋮----
-export interface GetEarnFixedTermLendsReq {
-  product_id?: number;
-  order_id?: number;
-  asset?: string;
-  order_type: '1' | '2'; // 1 current, 2 historical
-  page: number;
-  limit: number;
-  sub_business?: number;
-  business_filter?: string;
-}
-⋮----
-order_type: '1' | '2'; // 1 current, 2 historical
-⋮----
-export interface EarnFixedTermPreRedeemReq {
-  order_id: string;
-}
-⋮----
-export interface GetEarnFixedTermHistoryReq {
-  product_id?: number;
-  order_id?: string;
-  asset?: string;
-  type: '1' | '2' | '3' | '4'; // 1 subscribe, 2 redeem, 3 interest, 4 bonus
-  page: number;
-  limit: number;
-  start_at?: number;
-  end_at?: number;
-  sub_business?: number;
-  business_filter?: string;
-}
-⋮----
-type: '1' | '2' | '3' | '4'; // 1 subscribe, 2 redeem, 3 interest, 4 bonus
 
 ================
 File: src/types/request/unified.ts
@@ -7567,59 +7465,6 @@ export interface WebsocketClientOptions extends WSClientConfigurableOptions {
   authPrivateRequests: boolean;
   reauthWSAPIOnReconnect: boolean;
 }
-
-================
-File: src/types/shared.ts
-================
-/**
- * Built-in Gate API v4 hosts.
- * `testnet` is the global TestNet host (spot and futures).
- * `futuresTestnet` is the same host, kept so older `baseUrlKey` values keep working.
- */
-export type GateBaseUrlKey =
-  | 'live'
-  | 'futuresLiveAlternative'
-  | 'testnet'
-  | 'futuresTestnet';
-⋮----
-// interfaces
-⋮----
-export interface FromToPageLimit {
-  from: number;
-  to: number;
-  page: number;
-  limit: number;
-}
-⋮----
-// Used for spot and flash swap
-export interface CurrencyPair {
-  id?: string;
-  base?: string;
-  base_name?: string;
-  quote?: string;
-  quote_name?: string;
-  trade_quotes?: string[] | null;
-  fee?: string;
-  min_base_amount?: string;
-  min_quote_amount?: string;
-  max_base_amount?: string;
-  max_quote_amount?: string;
-  amount_precision?: number;
-  precision?: number;
-  trade_status?: 'untradable' | 'buyable' | 'sellable' | 'tradable';
-  sell_start?: number;
-  buy_start?: number;
-  type: string;
-  delisting_time?: number;
-  trade_url?: string;
-  up_rate?: string; // v4.106.4: Maximum price increase percentage
-  down_rate?: string; // v4.106.4: Maximum price decrease percentage
-  market_order_max_stock?: string | null;
-  market_order_max_money?: string | null;
-}
-⋮----
-up_rate?: string; // v4.106.4: Maximum price increase percentage
-down_rate?: string; // v4.106.4: Maximum price decrease percentage
 
 ================
 File: webpack/webpack.config.cjs
@@ -9873,6 +9718,508 @@ Common causes are a drifting system clock, the wrong API secret, credentials fro
 - Report SDK issues in the [`gateio-api` GitHub repository](https://github.com/sieblyio/gateio-api/issues).
 
 ================
+File: src/lib/BaseRestClient.ts
+================
+import axios, { AxiosRequestConfig, AxiosResponse, Method } from 'axios';
+// NOTE: https.Agent is Node.js-only and not available in browser environments
+// Browser builds (via webpack) exclude this module - see webpack.config.js fallback settings
+import https from 'https';
+⋮----
+import { neverGuard } from './misc-util.js';
+import {
+  CHANNEL_ID,
+  getRestBaseUrl,
+  RestClientOptions,
+  serializeParams,
+} from './requestUtils.js';
+import {
+  checkWebCryptoAPISupported,
+  hashMessage,
+  SignAlgorithm,
+  SignEncodeMethod,
+  signMessage,
+} from './webCryptoAPI.js';
+⋮----
+/**
+ * Used to switch how authentication/requests work under the hood
+ */
+⋮----
+export type RestClientType =
+  (typeof REST_CLIENT_TYPE_ENUM)[keyof typeof REST_CLIENT_TYPE_ENUM];
+⋮----
+interface SignedRequest<T extends object | undefined = {}> {
+  originalParams: T;
+  paramsWithSign?: T & { sign: string };
+  serializedParams: string;
+  sign: string;
+  queryParamsWithSign: string;
+  timestamp: number;
+  recvWindow: number;
+}
+⋮----
+interface UnsignedRequest<T extends object | undefined = {}> {
+  originalParams: T;
+  paramsWithSign: T;
+}
+⋮----
+type SignMethod = 'gateV4';
+⋮----
+/**
+ * Some requests require some params to be in the query string and some in the body. Some even support passing params via headers.
+ * This type anticipates these are possible in any combination.
+ *
+ * The request builder will automatically handle where parameters should go.
+ */
+type ParamsInQueryBodyOrHeader = {
+  query?: object;
+  body?: object;
+  headers?: object;
+  /** multipart/form-data body; mutually exclusive with `body` */
+  multipart?: FormData;
+};
+⋮----
+/** multipart/form-data body; mutually exclusive with `body` */
+⋮----
+/**
+ * Enables:
+ * - Detailed request/response logging
+ * - Full request dump in any exceptions thrown from API responses
+ */
+⋮----
+// request: {
+//   url: response.config.url,
+//   method: response.config.method,
+//   data: response.config.data,
+//   headers: response.config.headers,
+// },
+⋮----
+/**
+ * Impure, mutates params to remove any values that have a key but are undefined.
+ */
+function deleteUndefinedValues(params?: any): void
+⋮----
+export abstract class BaseRestClient
+⋮----
+/** Defines the client type (affecting how requests & signatures behave) */
+abstract getClientType(): RestClientType;
+⋮----
+/**
+   * Create an instance of the REST client. Pass API credentials in the object in the first parameter.
+   * @param {RestClientOptions} [restClientOptions={}] options to configure REST API connectivity
+   * @param {AxiosRequestConfig} [networkOptions={}] HTTP networking options for axios
+   */
+constructor(
+    restClientOptions: RestClientOptions = {},
+    networkOptions: AxiosRequestConfig = {},
+)
+⋮----
+/** Throw errors if any request params are empty */
+⋮----
+/** in ms == 5 minutes by default */
+⋮----
+/** inject custom rquest options based on axios specs - see axios docs for more guidance on AxiosRequestConfig: https://github.com/axios/axios#request-config */
+⋮----
+// If enabled, configure a https agent with keepAlive enabled
+// NOTE: This is Node.js-only functionality. In browser environments, this code is skipped
+// as the 'https' module is excluded via webpack fallback configuration.
+// Browser connection pooling is handled automatically by the browser itself.
+⋮----
+// Extract existing https agent parameters, if provided, to prevent the keepAlive flag from overwriting an existing https agent completely
+⋮----
+// For more advanced configuration, raise an issue on GitHub or use the "networkOptions"
+// parameter to define a custom httpsAgent with the desired properties
+⋮----
+// Check Web Crypto API support when credentials are provided and no custom sign function is used
+⋮----
+// Throw if one of the 3 values is missing, but at least one of them is set
+⋮----
+/**
+   * Timestamp used to sign the request. Override this method to implement your own timestamp/sync mechanism
+   */
+getSignTimestampMs(): number
+⋮----
+protected get(endpoint: string, params?: object)
+⋮----
+// GET only supports params in the query string
+⋮----
+protected post(endpoint: string, params?: ParamsInQueryBodyOrHeader)
+⋮----
+protected getPrivate(endpoint: string, params?: object)
+⋮----
+// GET only supports params in the query string
+⋮----
+protected postPrivate(endpoint: string, params?: ParamsInQueryBodyOrHeader)
+⋮----
+/** POST private endpoint with multipart/form-data (empty body hash for signing) */
+protected postPrivateMultipart(
+    endpoint: string,
+    formData: FormData,
+    query?: object,
+)
+⋮----
+protected deletePrivate(
+    endpoint: string,
+    params?: ParamsInQueryBodyOrHeader,
+)
+⋮----
+protected putPrivate(endpoint: string, params?: ParamsInQueryBodyOrHeader)
+⋮----
+// protected patchPrivate(endpoint: string, params?: any) {
+protected patchPrivate(endpoint: string, params?: ParamsInQueryBodyOrHeader)
+⋮----
+/**
+   * @private Make a HTTP request to a specific endpoint. Private endpoint API calls are automatically signed.
+   */
+private async _call(
+    method: Method,
+    endpoint: string,
+    params?: ParamsInQueryBodyOrHeader,
+    isPublicApi?: boolean,
+): Promise<any>
+⋮----
+// Sanity check to make sure it's only ever prefixed by one forward slash
+⋮----
+// Build a request and handle signature process
+⋮----
+// Dispatch request
+⋮----
+// See: https://www.gate.io/docs/developers/apiv4/en/#return-format
+⋮----
+// Throw API rejections by parsing the response code from the body
+⋮----
+/**
+   * @private generic handler to parse request exceptions
+   */
+parseException(e: any, request: AxiosRequestConfig<any>): unknown
+⋮----
+// Something happened in setting up the request that triggered an error
+⋮----
+// request made but no response received
+⋮----
+// The request was made and the server responded with a status code
+// that falls out of the range of 2xx
+⋮----
+// console.error('err: ', response?.data);
+⋮----
+// Prevent credentials from leaking into error messages
+⋮----
+/**
+   * @private sign request and set recv window
+   */
+private async signRequest<
+    T extends ParamsInQueryBodyOrHeader | undefined = {},
+  >(
+    data: T,
+    endpoint: string,
+    method: Method,
+    signMethod: SignMethod,
+): Promise<SignedRequest<T>>
+⋮----
+const timestamp = +(this.getSignTimestampMs() / 1000).toFixed(0); // in seconds
+⋮----
+// recvWindow: this.options.recvWindow,
+⋮----
+// It's possible to override the recv window on a per rquest level
+⋮----
+// console.log('sign params: ', {
+//   requestBodyToHash,
+//   paramsStr: toSign,
+//   url: this.baseUrl,
+//   urlPath: this.baseUrlPath,
+// });
+⋮----
+private async signMessage(
+    paramsStr: string,
+    secret: string,
+    method: 'hex' | 'base64',
+    algorithm: SignAlgorithm,
+): Promise<string>
+⋮----
+private async prepareSignParams<
+    TParams extends ParamsInQueryBodyOrHeader | undefined,
+  >(
+    method: Method,
+    endpoint: string,
+    signMethod: SignMethod,
+    params?: TParams,
+    isPublicApi?: true,
+  ): Promise<UnsignedRequest<TParams>>;
+⋮----
+private async prepareSignParams<
+    TParams extends ParamsInQueryBodyOrHeader | undefined,
+  >(
+    method: Method,
+    endpoint: string,
+    signMethod: SignMethod,
+    params?: TParams,
+    isPublicApi?: false | undefined,
+  ): Promise<SignedRequest<TParams>>;
+⋮----
+private async prepareSignParams<
+    TParams extends ParamsInQueryBodyOrHeader | undefined,
+  >(
+    method: Method,
+    endpoint: string,
+    signMethod: SignMethod,
+    params?: TParams,
+    isPublicApi?: boolean,
+)
+⋮----
+/** Returns an axios request object. Handles signing process automatically if this is a private API call */
+private async buildRequest(
+    method: Method,
+    endpoint: string,
+    url: string,
+    params?: ParamsInQueryBodyOrHeader,
+    isPublicApi?: boolean,
+): Promise<AxiosRequestConfig>
+
+================
+File: src/types/request/earn.ts
+================
+/**==========================================================================================================================
+ * EARN
+ * ==========================================================================================================================
+ */
+⋮----
+/** GET /earn/dual/investment_plan */
+export interface GetDualInvestmentPlansReq {
+  plan_id?: number | string;
+  coin?: string;
+  type?: string;
+  quote_currency?: string;
+  /** `apy` | `short-period` | `multiple` */
+  sort?: string;
+  page?: number;
+  page_size?: number;
+}
+⋮----
+/** `apy` | `short-period` | `multiple` */
+⋮----
+/** GET /earn/dual/orders */
+export interface GetDualInvestmentOrdersReq {
+  from?: number;
+  to?: number;
+  type?: string;
+  status?: string;
+  coin?: string;
+  page?: number;
+  limit?: number;
+}
+⋮----
+/** GET /earn/dual/order-refund-preview */
+export interface GetDualOrderRefundPreviewReq {
+  order_id: string;
+}
+⋮----
+/** POST /earn/dual/order-refund */
+export interface SubmitDualOrderRefundParams {
+  order_id: string;
+  /** From order-refund-preview */
+  req_id: string;
+}
+⋮----
+/** From order-refund-preview */
+⋮----
+/** POST /earn/dual/modify-order-reinvest */
+export interface UpdateDualOrderReinvestParams {
+  order_id?: number;
+  /** 0 off, 1 on */
+  status?: number;
+  /** Effective duration in seconds; default 86400 */
+  effective_time_duration?: number;
+}
+⋮----
+/** 0 off, 1 on */
+⋮----
+/** Effective duration in seconds; default 86400 */
+⋮----
+/** GET /earn/dual/project-recommend */
+export interface GetDualProjectRecommendReq {
+  mode?: string;
+  coin?: string;
+  type?: string;
+  /** Comma-separated project IDs to exclude */
+  history_pids?: string;
+}
+⋮----
+/** Comma-separated project IDs to exclude */
+⋮----
+/** GET /earn/dual/stock/investment_plan (public) */
+export interface GetDualStockInvestmentPlansReq {
+  plan_id?: string;
+  coin?: string;
+  /** `call` sell high, `put` buy low */
+  type?: 'call' | 'put';
+  /** Settlement currency. Default USDT */
+  quote_currency?: string;
+  /** `apy` | `short-period` | `multiple` */
+  sort?: string;
+  page?: number;
+  /** Max 100 */
+  page_size?: number;
+}
+⋮----
+/** `call` sell high, `put` buy low */
+⋮----
+/** Settlement currency. Default USDT */
+⋮----
+/** `apy` | `short-period` | `multiple` */
+⋮----
+/** Max 100 */
+⋮----
+/** GET /earn/dual/stock/orders */
+export interface GetDualStockOrdersReq {
+  coin?: string;
+  /**
+   * HOLD current, REPAY historical, PROCESSING, SETTLEMENT_PROCESSING, ALL.
+   * Default ALL.
+   */
+  status?: string;
+  /** `call` sell high, `put` buy low */
+  type?: 'call' | 'put';
+  /** Unix seconds */
+  from?: number;
+  /** Unix seconds */
+  to?: number;
+  page?: number;
+  /** Max 100. Defaults to 100 when omitted */
+  page_size?: number;
+  limit?: number;
+}
+⋮----
+/**
+   * HOLD current, REPAY historical, PROCESSING, SETTLEMENT_PROCESSING, ALL.
+   * Default ALL.
+   */
+⋮----
+/** `call` sell high, `put` buy low */
+⋮----
+/** Unix seconds */
+⋮----
+/** Unix seconds */
+⋮----
+/** Max 100. Defaults to 100 when omitted */
+⋮----
+/** POST /earn/dual/stock/orders */
+export interface PlaceDualStockInvestmentOrderParams {
+  plan_id: string;
+  amount: string;
+  /**
+   * Custom id. Must start with `t-`, at most 28 bytes after that prefix,
+   * and only numbers, letters, underscore, hyphen, or dot.
+   */
+  text?: string;
+  /**
+   * 1 uses the spot account to fund a buy-low (put) subscription.
+   * Omit, or any value other than 1, leaves it unselected.
+   */
+  hit_spot?: 0 | 1;
+  /** 1 uses the stock account to fund a buy-low (put) subscription. */
+  hit_stock?: 0 | 1;
+  /** 1 uses the Simple Earn account to fund a buy-low (put) subscription. */
+  hit_simple?: 0 | 1;
+}
+⋮----
+/**
+   * Custom id. Must start with `t-`, at most 28 bytes after that prefix,
+   * and only numbers, letters, underscore, hyphen, or dot.
+   */
+⋮----
+/**
+   * 1 uses the spot account to fund a buy-low (put) subscription.
+   * Omit, or any value other than 1, leaves it unselected.
+   */
+⋮----
+/** 1 uses the stock account to fund a buy-low (put) subscription. */
+⋮----
+/** 1 uses the Simple Earn account to fund a buy-low (put) subscription. */
+⋮----
+/** Request params for POST /earn/dual/orders */
+export interface PlaceDualInvestmentOrderParams {
+  plan_id: string;
+  /** Subscription amount. Mutually exclusive with copies. */
+  amount: string;
+  /** Units. Mutually exclusive with amount. */
+  copies?: string;
+  /** Custom order info, must start with t- */
+  text?: string;
+}
+⋮----
+/** Subscription amount. Mutually exclusive with copies. */
+⋮----
+/** Units. Mutually exclusive with amount. */
+⋮----
+/** Custom order info, must start with t- */
+⋮----
+/**==========================================================================================================================
+ * EARN FIXED-TERM
+ * ==========================================================================================================================
+ */
+⋮----
+export interface GetEarnFixedTermProductsReq {
+  asset?: string;
+  type?: number; // 1 regular, 2 VIP
+  page: number;
+  limit: number;
+}
+⋮----
+type?: number; // 1 regular, 2 VIP
+⋮----
+export interface GetEarnFixedTermProductsByAssetReq {
+  /** Product type: "" or 1 regular, 2 VIP, 0 all */
+  type?: string;
+}
+⋮----
+/** Product type: "" or 1 regular, 2 VIP, 0 all */
+⋮----
+export interface CreateEarnFixedTermLendReq {
+  product_id: number;
+  amount: string;
+  year_rate?: string;
+  reinvest_status?: number; // 0 off, 1 on
+  redeem_account_type?: number; // 1 spot
+  financial_rate_id?: number; // interest boost coupon id, 0 = none
+  sub_business?: number;
+}
+⋮----
+reinvest_status?: number; // 0 off, 1 on
+redeem_account_type?: number; // 1 spot
+financial_rate_id?: number; // interest boost coupon id, 0 = none
+⋮----
+export interface GetEarnFixedTermLendsReq {
+  product_id?: number;
+  order_id?: number;
+  asset?: string;
+  order_type: '1' | '2'; // 1 current, 2 historical
+  page: number;
+  limit: number;
+  sub_business?: number;
+  business_filter?: string;
+}
+⋮----
+order_type: '1' | '2'; // 1 current, 2 historical
+⋮----
+export interface EarnFixedTermPreRedeemReq {
+  order_id: string;
+}
+⋮----
+export interface GetEarnFixedTermHistoryReq {
+  product_id?: number;
+  order_id?: string;
+  asset?: string;
+  type: '1' | '2' | '3' | '4'; // 1 subscribe, 2 redeem, 3 interest, 4 bonus
+  page: number;
+  limit: number;
+  start_at?: number;
+  end_at?: number;
+  sub_business?: number;
+  business_filter?: string;
+}
+⋮----
+type: '1' | '2' | '3' | '4'; // 1 subscribe, 2 redeem, 3 interest, 4 bonus
+
+================
 File: src/types/request/otc.ts
 ================
 import { GateMultipartFile } from '../../lib/multipartUtil.js';
@@ -10259,6 +10606,289 @@ export interface CancelSpotPovOrdersReq {
 }
 
 ================
+File: src/types/response/unified.ts
+================
+export interface UnifiedAccountInfo {
+  mode: 'classic' | 'multi_currency' | 'portfolio' | 'single_currency'; // classic: Classic account; multi_currency: Multi-currency margin; portfolio: Portfolio margin; single_currency: Single-currency margin
+  user_id: number;
+  refresh_time: number;
+  locked: boolean; // Whether the account is locked; valid in cross-currency/combined margin mode, false in other modes such as single-currency margin
+  balances: {
+    [key: string]: {
+      available: string; // Cross available balance, after deducting futures isolated margin occupation and frozen amount (futures isolated occupation = futures isolated balance); effective in single-currency/multi-currency/portfolio margin mode
+      freeze: string; // Frozen amount; effective in single-currency/multi-currency/portfolio margin mode
+      borrowed: string; // Borrowed amount; valid in cross-currency/combined margin mode, 0 in other modes such as single-currency margin
+      negative_liab: string; // Negative balance borrowing; valid in cross-currency/combined margin mode, 0 in other modes such as single-currency margin
+      futures_pos_liab: string; // Contract opening position borrowing currency (abandoned, to be removed)
+      equity: string; // Currency equity amount (cross); effective in single-currency/multi-currency/portfolio margin mode
+      total_freeze: string; // Total frozen (deprecated, to be removed)
+      total_liab: string; // Total borrowed amount; valid in cross-currency/combined margin mode, 0 in other modes such as single-currency margin
+      spot_in_use: string; // Spot hedging amount; valid in combined (portfolio) margin mode, 0 in single-currency and cross-currency margin modes
+      funding: string; // Uniloan / Earn amount; effective when Earn is enabled as unified account margin
+      funding_version: string; // Funding version
+      cross_balance: string; // Full margin balance; valid in single-currency margin mode, 0 in cross-currency/combined margin mode
+      iso_balance: string; // Futures isolated balance; effective in single-currency and multi-currency margin mode, 0 in portfolio margin mode
+      im: string; // Cross initial margin; only effective for USDT in single-currency margin mode, 0 in multi-currency/portfolio margin mode
+      mm: string; // Cross maintenance margin; only effective for USDT in single-currency margin mode, 0 in multi-currency/portfolio margin mode
+      mmr: string; // Cross maintenance margin rate; only effective for USDT in single-currency margin mode, 0 in multi-currency/portfolio margin mode
+      margin_balance: string; // Cross margin balance; only effective for USDT in single-currency margin mode, 0 in multi-currency/portfolio margin mode
+      available_margin: string; // Cross available margin; only effective for USDT in single-currency margin mode, 0 in multi-currency/portfolio margin mode
+      imr?: string; // Cross initial margin rate; only effective for USDT in single-currency margin mode, 0 in multi-currency/portfolio margin mode
+      enabled_collateral?: boolean; // Currency enabled as margin: true — enabled, false — disabled
+      balance_version?: number; // Balance version number (int64)
+    };
+  };
+  total: string; // Total account assets in USD: sum of (available + freeze) * price per currency (deprecated; use unified_account_total)
+  borrowed: string; // Total borrowed in USD: sum of borrowed * price (excluding point cards); valid in cross-currency/combined margin mode, 0 in single-currency margin mode
+  total_initial_margin: string; // Total initial margin (cross); effective in multi-currency/portfolio margin mode, 0 in single-currency margin mode
+  total_margin_balance: string; // Total margin balance (cross); effective in multi-currency/portfolio margin mode, 0 in single-currency margin mode
+  total_maintenance_margin: string; // Total maintenance margin (cross); effective in multi-currency/portfolio margin mode, 0 in single-currency margin mode
+  total_initial_margin_rate: string; // Total initial margin rate (cross); effective in multi-currency/portfolio margin mode, 0 in single-currency margin mode
+  total_maintenance_margin_rate: string; // Total maintenance margin rate (cross); effective in multi-currency/portfolio margin mode, 0 in single-currency margin mode
+  total_available_margin: string; // Available margin; valid in cross-currency/combined margin mode, 0 in single-currency margin mode
+  unified_account_total: string; // Total unified account assets: cross + isolated in single/multi-currency mode; cross only in portfolio margin mode
+  unified_account_total_liab: string; // Total unified borrowed (cross); effective in multi-currency/portfolio margin mode, 0 in single-currency margin mode
+  unified_account_total_equity: string; // Total unified equity: cross + isolated in single/multi-currency mode; cross only in portfolio margin mode
+  leverage: string; // Account leverage; effective in multi-currency/portfolio margin mode (deprecated; prefer GET /unified/leverage/user_currency_setting)
+  spot_order_loss: string; // Spot pending order loss (USDT); only in cross-currency and portfolio margin mode
+  options_order_loss?: string; // v4.105.29: Option pending order loss (USDT); only in portfolio margin mode
+  spot_hedge: boolean; // Spot hedging: true — enabled, false — disabled
+  margin_mode?: string;
+  total_balance?: string;
+  cross_leverage?: string;
+  portfolio_margin?: string;
+  risk_level?: string;
+  is_all_collateral?: boolean; // Whether all currencies are used as margin: true — all as margin, false — not all
+  borrow_amount?: string;
+  cross_margin_leverage?: string;
+  use_funding?: boolean; // Whether Earn funds are used as margin
+}
+⋮----
+mode: 'classic' | 'multi_currency' | 'portfolio' | 'single_currency'; // classic: Classic account; multi_currency: Multi-currency margin; portfolio: Portfolio margin; single_currency: Single-currency margin
+⋮----
+locked: boolean; // Whether the account is locked; valid in cross-currency/combined margin mode, false in other modes such as single-currency margin
+⋮----
+available: string; // Cross available balance, after deducting futures isolated margin occupation and frozen amount (futures isolated occupation = futures isolated balance); effective in single-currency/multi-currency/portfolio margin mode
+freeze: string; // Frozen amount; effective in single-currency/multi-currency/portfolio margin mode
+borrowed: string; // Borrowed amount; valid in cross-currency/combined margin mode, 0 in other modes such as single-currency margin
+negative_liab: string; // Negative balance borrowing; valid in cross-currency/combined margin mode, 0 in other modes such as single-currency margin
+futures_pos_liab: string; // Contract opening position borrowing currency (abandoned, to be removed)
+equity: string; // Currency equity amount (cross); effective in single-currency/multi-currency/portfolio margin mode
+total_freeze: string; // Total frozen (deprecated, to be removed)
+total_liab: string; // Total borrowed amount; valid in cross-currency/combined margin mode, 0 in other modes such as single-currency margin
+spot_in_use: string; // Spot hedging amount; valid in combined (portfolio) margin mode, 0 in single-currency and cross-currency margin modes
+funding: string; // Uniloan / Earn amount; effective when Earn is enabled as unified account margin
+funding_version: string; // Funding version
+cross_balance: string; // Full margin balance; valid in single-currency margin mode, 0 in cross-currency/combined margin mode
+iso_balance: string; // Futures isolated balance; effective in single-currency and multi-currency margin mode, 0 in portfolio margin mode
+im: string; // Cross initial margin; only effective for USDT in single-currency margin mode, 0 in multi-currency/portfolio margin mode
+mm: string; // Cross maintenance margin; only effective for USDT in single-currency margin mode, 0 in multi-currency/portfolio margin mode
+mmr: string; // Cross maintenance margin rate; only effective for USDT in single-currency margin mode, 0 in multi-currency/portfolio margin mode
+margin_balance: string; // Cross margin balance; only effective for USDT in single-currency margin mode, 0 in multi-currency/portfolio margin mode
+available_margin: string; // Cross available margin; only effective for USDT in single-currency margin mode, 0 in multi-currency/portfolio margin mode
+imr?: string; // Cross initial margin rate; only effective for USDT in single-currency margin mode, 0 in multi-currency/portfolio margin mode
+enabled_collateral?: boolean; // Currency enabled as margin: true — enabled, false — disabled
+balance_version?: number; // Balance version number (int64)
+⋮----
+total: string; // Total account assets in USD: sum of (available + freeze) * price per currency (deprecated; use unified_account_total)
+borrowed: string; // Total borrowed in USD: sum of borrowed * price (excluding point cards); valid in cross-currency/combined margin mode, 0 in single-currency margin mode
+total_initial_margin: string; // Total initial margin (cross); effective in multi-currency/portfolio margin mode, 0 in single-currency margin mode
+total_margin_balance: string; // Total margin balance (cross); effective in multi-currency/portfolio margin mode, 0 in single-currency margin mode
+total_maintenance_margin: string; // Total maintenance margin (cross); effective in multi-currency/portfolio margin mode, 0 in single-currency margin mode
+total_initial_margin_rate: string; // Total initial margin rate (cross); effective in multi-currency/portfolio margin mode, 0 in single-currency margin mode
+total_maintenance_margin_rate: string; // Total maintenance margin rate (cross); effective in multi-currency/portfolio margin mode, 0 in single-currency margin mode
+total_available_margin: string; // Available margin; valid in cross-currency/combined margin mode, 0 in single-currency margin mode
+unified_account_total: string; // Total unified account assets: cross + isolated in single/multi-currency mode; cross only in portfolio margin mode
+unified_account_total_liab: string; // Total unified borrowed (cross); effective in multi-currency/portfolio margin mode, 0 in single-currency margin mode
+unified_account_total_equity: string; // Total unified equity: cross + isolated in single/multi-currency mode; cross only in portfolio margin mode
+leverage: string; // Account leverage; effective in multi-currency/portfolio margin mode (deprecated; prefer GET /unified/leverage/user_currency_setting)
+spot_order_loss: string; // Spot pending order loss (USDT); only in cross-currency and portfolio margin mode
+options_order_loss?: string; // v4.105.29: Option pending order loss (USDT); only in portfolio margin mode
+spot_hedge: boolean; // Spot hedging: true — enabled, false — disabled
+⋮----
+is_all_collateral?: boolean; // Whether all currencies are used as margin: true — all as margin, false — not all
+⋮----
+use_funding?: boolean; // Whether Earn funds are used as margin
+⋮----
+export interface UnifiedLoan {
+  currency: string;
+  currency_pair: string;
+  amount: string;
+  type: 'platform' | 'margin';
+  create_time: number;
+  update_time: number;
+}
+⋮----
+export interface UnifiedLoanRecord {
+  id: number;
+  type: 'borrow' | 'repay';
+  repayment_type: 'none' | 'manual_repay' | 'auto_repay' | 'cancel_auto_repay';
+  currency_pair: string;
+  currency: string;
+  amount: string;
+  create_time: number;
+  borrow_type: string;
+}
+export interface UnifiedInterestRecord {
+  currency: string;
+  currency_pair: string;
+  actual_rate: string;
+  interest: string;
+  status: number;
+  type: 'platform' | 'margin';
+  create_time: number;
+}
+⋮----
+export interface UnifiedRiskUnitDetails {
+  user_id: number;
+  spot_hedge: boolean;
+  risk_units: {
+    symbol: string;
+    spot_in_use: string;
+    maintain_margin: string;
+    initial_margin: string;
+    delta: string;
+    gamma: string;
+    theta: string;
+    vega: string;
+  }[];
+}
+⋮----
+export interface UnifiedCurrencyDiscountTiers {
+  currency: string;
+  discount_tiers: {
+    tier: string;
+    discount: string;
+    lower_limit: string;
+    upper_limit: string;
+    leverage: string;
+  }[];
+}
+⋮----
+export interface UserCurrencyLeverageConfig {
+  current_leverage: string;
+  min_leverage: string;
+  max_leverage: string;
+  debit: string;
+  available_margin: string;
+  borrowable: string;
+  except_leverage_borrowable: string;
+}
+⋮----
+export interface UnifiedLoanCurrency {
+  name: string;
+  prec: string;
+  min_borrow_amount: string;
+  user_max_borrow_amount: string;
+  total_max_borrow_amount: string;
+  loan_status: string;
+}
+⋮----
+export interface UnifiedHistoryLendingRate {
+  currency: string;
+  tier: string;
+  tier_up_rate: string;
+  rates: {
+    time: number;
+    rate: string;
+  }[];
+}
+⋮----
+export interface MarginTier {
+  tier: string;
+  margin_rate: string;
+  lower_limit: string;
+  upper_limit: string;
+}
+⋮----
+export interface PortfolioMarginCalculation {
+  maintain_margin_total: string;
+  initial_margin_total: string;
+  calculate_time: number;
+  risk_unit: {
+    symbol: string;
+    spot_in_use: string;
+    maintain_margin: string;
+    initial_margin: string;
+    margin_result: {
+      type:
+        | 'original_position'
+        | 'long_delta_original_position'
+        | 'short_delta_original_position';
+      profit_loss_ranges: {
+        price_percentage: string;
+        implied_volatility_percentage: string;
+        profit_loss: string;
+      }[];
+      max_loss: {
+        price_percentage: string;
+        implied_volatility_percentage: string;
+        profit_loss: string;
+      };
+      mr1: string;
+      mr2: string;
+      mr3: string;
+      mr4: string;
+      delta: string;
+      gamma: string;
+      theta: string;
+      vega: string;
+    }[];
+  }[];
+}
+⋮----
+export interface UnifiedCollateralCurrenciesResp {
+  is_success: boolean;
+}
+⋮----
+export interface UnifiedQuickRepayDebtItem {
+  currency?: string;
+  debt_amount?: string;
+  estimated_usd?: string;
+  borrowed?: string;
+  neg_balance?: string;
+}
+⋮----
+export interface UnifiedQuickRepayAvailableItem {
+  currency?: string;
+  available?: string;
+  estimated_usd?: string;
+}
+⋮----
+export interface QuickEstimatedRepayment {
+  debt_currencies?: UnifiedQuickRepayDebtItem[];
+  available_currencies?: UnifiedQuickRepayAvailableItem[];
+}
+⋮----
+export interface QuickRepayRepaidInfo {
+  currency: string;
+  repaid: string;
+  left: string;
+}
+⋮----
+export interface QuickRepayUsedInfo {
+  currency: string;
+  used: string;
+}
+⋮----
+export interface QuickRepaymentResp {
+  order_id: string;
+  repaid_infos: QuickRepayRepaidInfo[];
+  used_infos: QuickRepayUsedInfo[];
+}
+⋮----
+/** GET/POST /unified/delta_neutral — v4.106.97 */
+export interface DeltaNeutralEnabled {
+  enabled: boolean;
+}
+⋮----
+/** POST /unified/leverage/user_setting failed currency entry */
+export interface LeverageFailedCurrency {
+  currency: string;
+  reason: string;
+}
+
+================
 File: src/types/request/tradfi.ts
 ================
 /** TradFi API request types */
@@ -10267,12 +10897,33 @@ export interface TradFiGetSymbolDetailParams {
   symbols: string;
 }
 ⋮----
+/**
+ * GET /tradfi/symbols/{symbol}/klines
+ *
+ * Docs: `begin_time` and `end_time` are Unix timestamps in seconds. `limit` max is 500
+ * (a larger limit is an error).
+ *
+ * Live on XAUUSD (19 Oct 2026): millisecond timestamps return an empty list.
+ * `limit` combined with `begin_time` and `end_time` returns INVALID_ARGUMENT
+ * ("Invalid parameter"). `begin_time` without `end_time` returns HTTP 400, label
+ * INTERNAL_SERVER_ERROR, message "Service is busy. Please try again later."
+ * Send `limit` alone, or `begin_time` and `end_time` together.
+ */
 export interface TradFiGetKlinesParams {
   kline_type: '1m' | '15m' | '1h' | '4h' | '1d' | '7d' | '30d';
+  /** Unix seconds. Pair with end_time. Do not send together with limit. */
   begin_time?: number;
+  /** Unix seconds. Required when begin_time is set. */
   end_time?: number;
+  /** Max 500. Do not send together with begin_time and end_time. */
   limit?: number;
 }
+⋮----
+/** Unix seconds. Pair with end_time. Do not send together with limit. */
+⋮----
+/** Unix seconds. Required when begin_time is set. */
+⋮----
+/** Max 500. Do not send together with begin_time and end_time. */
 ⋮----
 export interface TradFiCreateTransactionReq {
   asset: string;
@@ -10361,9 +11012,21 @@ export interface DualInvestmentProduct {
   start_time: number;
   end_time: number;
   status: 'NOTSTARTED' | 'ONGOING' | 'ENDED';
+  /** `call` sell high, `put` buy low. On crypto and stock investment plans (v4.106.150). */
+  type?: 'call' | 'put';
 }
 ⋮----
 /** @deprecated */
+⋮----
+/** `call` sell high, `put` buy low. On crypto and stock investment plans (v4.106.150). */
+⋮----
+/** GET /earn/dual/stock/balance */
+export interface DualInvestmentBalance {
+  user_asset_usdt?: string;
+  user_asset_btc?: string;
+  user_total_interest_usdt?: string;
+  user_total_interest_btc?: string;
+}
 ⋮----
 /** GET /earn/dual/order-refund-preview */
 export interface DualOrderRefundPreview {
@@ -10632,6 +11295,606 @@ export interface GetEarnFixedTermHistoryResponse {
 }
 
 ================
+File: src/types/response/spot.ts
+================
+/**==========================================================================================================================
+ * SPOT
+ * ==========================================================================================================================
+ */
+⋮----
+/** Limit-order take-profit / stop-loss on order responses (not re-exported; use request types for submits) */
+interface SpotOrderTPSL {
+  trigger_price: string;
+  order_price: string;
+}
+⋮----
+/** `{}` cancels TP/SL; `null` leaves unchanged */
+type PatchSpotOrderTPSL = SpotOrderTPSL | {} | null;
+⋮----
+export interface SpotCurrencyChain {
+  name: string;
+  addr?: string;
+  withdraw_disabled: boolean;
+  withdraw_delayed: boolean;
+  deposit_disabled: boolean;
+}
+⋮----
+export interface SpotCurrency {
+  currency: string;
+  name: string;
+  delisted: boolean;
+  withdraw_disabled: boolean;
+  withdraw_delayed: boolean;
+  deposit_disabled: boolean;
+  trade_disabled: boolean;
+  chain: string;
+  chains: SpotCurrencyChain[];
+  /** Asset categories (e.g. stocks, metals, indices, forex, commodities). */
+  category?: string[];
+}
+⋮----
+/** Asset categories (e.g. stocks, metals, indices, forex, commodities). */
+⋮----
+export interface SpotTicker {
+  currency_pair: string;
+  last: string;
+  lowest_ask: string;
+  lowest_size: string;
+  highest_bid: string;
+  highest_size: string;
+  change_percentage: string;
+  change_utc0: string;
+  change_utc8: string;
+  base_volume: string;
+  quote_volume: string;
+  high_24h: string;
+  low_24h: string;
+  etf_net_value: string;
+  etf_pre_net_value: string | null;
+  etf_pre_timestamp: number | null;
+  etf_leverage: string | null;
+}
+⋮----
+export interface SpotOrderBook {
+  id?: number;
+  current: number;
+  update: number;
+  asks: [string, string][];
+  bids: [string, string][];
+}
+⋮----
+export interface SpotTrade {
+  id: string;
+  create_time: string;
+  create_time_ms: string;
+  currency_pair: string;
+  side: 'buy' | 'sell';
+  role: 'taker' | 'maker';
+  amount: string;
+  price: string;
+  order_id: string;
+  fee: string;
+  fee_currency: string;
+  point_fee: string;
+  gt_fee: string;
+  amend_text: string;
+  sequence_id: string;
+  text: string;
+  trade_quote?: string;
+}
+⋮----
+export type SpotCandle = [
+  string, // Unix timestamp with second precision
+  string, // Trading volume in quote currency
+  string, // Closing price
+  string, // Highest price
+  string, // Lowest price
+  string, // Opening price
+  string, // Trading volume in base currency
+  boolean, // Whether the window is closed
+];
+⋮----
+string, // Unix timestamp with second precision
+string, // Trading volume in quote currency
+string, // Closing price
+string, // Highest price
+string, // Lowest price
+string, // Opening price
+string, // Trading volume in base currency
+boolean, // Whether the window is closed
+⋮----
+export interface SpotFeeRates {
+  user_id: number;
+  taker_fee: string; // For spot trading
+  maker_fee: string; // For spot trading
+  gt_discount: boolean;
+  gt_taker_fee: string;
+  gt_maker_fee: string;
+  loan_fee: string;
+  point_type: string;
+  currency_pair: string;
+  debit_fee: number;
+}
+⋮----
+taker_fee: string; // For spot trading
+maker_fee: string; // For spot trading
+⋮----
+export interface SpotAccount {
+  currency: string;
+  available: string;
+  locked: string;
+  update_id: number;
+  refresh_time: number;
+  last_update_time?: number;
+  trading_fee_rate?: string;
+}
+⋮----
+export interface SpotAccountBook {
+  id: string;
+  time: number;
+  currency: string;
+  change: string;
+  balance: string;
+  type: string;
+  code: string;
+  text: string;
+}
+⋮----
+export interface SubmitSpotBatchOrdersResp {
+  order_id: string;
+  amend_text: string;
+  text: string;
+  succeeded: boolean;
+  label: string;
+  message: string;
+  id: string;
+  create_time: string;
+  update_time: string;
+  create_time_ms: number;
+  update_time_ms: number;
+  status: 'open' | 'closed' | 'cancelled';
+  currency_pair: string;
+  type: 'limit' | 'market';
+  account: 'spot' | 'margin' | 'cross_margin' | 'unified';
+  side: 'buy' | 'sell';
+  amount: string;
+  price: string;
+  time_in_force: 'gtc' | 'ioc' | 'poc' | 'fok';
+  iceberg: string;
+  auto_repay: boolean;
+  left: string;
+  filled_amount: string;
+  fill_price: string;
+  filled_total: string;
+  avg_deal_price: string;
+  fee: string;
+  fee_currency: string;
+  point_fee: string;
+  gt_fee: string;
+  gt_discount: boolean;
+  rebated_fee: string;
+  rebated_fee_currency: string;
+  stp_id: number;
+  stp_act: 'cn' | 'co' | 'cb' | '-';
+  /**
+   * Final state; **ioc** / **poc** reflect unfilled remainder cancelled by TIF (IOC vs post-only / maker).
+   */
+  finish_as: 'open' | 'filled' | 'cancelled' | 'ioc' | 'poc' | 'stp';
+}
+⋮----
+/**
+   * Final state; **ioc** / **poc** reflect unfilled remainder cancelled by TIF (IOC vs post-only / maker).
+   */
+⋮----
+export interface SpotOrder {
+  id?: string;
+  text?: string;
+  amend_text?: string;
+  create_time?: string;
+  update_time?: string;
+  create_time_ms?: number;
+  update_time_ms?: number;
+  status?: 'open' | 'closed' | 'cancelled';
+  currency_pair: string;
+  type?: 'limit' | 'market';
+  account?: 'spot' | 'margin' | 'cross_margin' | 'unified';
+  side: 'buy' | 'sell';
+  amount: string;
+  price?: string;
+  time_in_force?: 'gtc' | 'ioc' | 'poc' | 'fok';
+  iceberg?: string;
+  auto_borrow?: boolean;
+  auto_repay?: boolean;
+  left?: string;
+  filled_amount?: string;
+  fill_price?: string;
+  filled_total?: string;
+  avg_deal_price?: string;
+  fee?: string;
+  fee_currency?: string;
+  point_fee?: string;
+  gt_fee?: string;
+  gt_maker_fee?: string;
+  gt_taker_fee?: string;
+  gt_discount?: boolean;
+  rebated_fee?: string;
+  rebated_fee_currency?: string;
+  stp_id?: number;
+  stp_act?: 'cn' | 'co' | 'cb' | '-';
+  /**
+   * Final state; **ioc** / **poc** reflect unfilled remainder cancelled by TIF (IOC vs post-only / maker).
+   */
+  finish_as?: 'open' | 'filled' | 'cancelled' | 'ioc' | 'poc' | 'stp';
+  action_mode?: 'ACK' | 'RESULT' | 'FULL';
+  stop_loss?: PatchSpotOrderTPSL;
+  stop_profit?: PatchSpotOrderTPSL;
+  trade_quote?: string;
+}
+⋮----
+/**
+   * Final state; **ioc** / **poc** reflect unfilled remainder cancelled by TIF (IOC vs post-only / maker).
+   */
+⋮----
+export interface SpotInsuranceHistory {
+  currency: string;
+  balance: string;
+  time: number;
+}
+⋮----
+export interface SpotPriceTriggeredOrder {
+  trigger: {
+    price: string;
+    rule: '>=' | '<=';
+    expiration?: number;
+  };
+  put: {
+    type?: 'limit' | 'market';
+    side: 'buy' | 'sell';
+    price: string;
+    amount: string;
+    account: 'normal' | 'margin' | 'cross_margin';
+    time_in_force: 'gtc' | 'ioc';
+    text?: string;
+  };
+  id?: number;
+  user?: number;
+  market: string;
+  ctime?: number;
+  ftime?: number;
+  fired_order_id?: number;
+  status?: 'open' | 'cancelled' | 'finish' | 'failed' | 'expired';
+  reason?: string;
+}
+⋮----
+export interface GetSpotOpenOrdersResp {
+  currency_pair: string;
+  total: number;
+  orders: SpotOrder[];
+}
+⋮----
+export interface DeleteSpotBatchOrdersResp {
+  currency_pair: string;
+  id: string;
+  succeeded: boolean;
+  label: string;
+  message: string;
+  account: string;
+  text: string;
+}
+⋮----
+export interface SpotHistoricTradeRecord {
+  id: string;
+  create_time: string;
+  create_time_ms: string;
+  currency_pair: string;
+  side: 'buy' | 'sell';
+  role: 'taker' | 'maker';
+  amount: string;
+  price: string;
+  order_id: string;
+  fee: string;
+  fee_currency: string;
+  point_fee: string;
+  gt_fee: string;
+  amend_text: string;
+  sequence_id: string;
+  text: string;
+  deal?: string; // v4.105.29: Total Executed Value
+  trade_quote?: string;
+}
+⋮----
+deal?: string; // v4.105.29: Total Executed Value
+⋮----
+export type SpotPovOrderStatus =
+  | 'CREATED'
+  | 'CANCELING'
+  | 'RUNNING'
+  | 'COMPLETED'
+  | 'EXPIRED'
+  | 'TERMINATED';
+⋮----
+export interface SpotPovOrder {
+  id?: string;
+  currency_pair?: string;
+  side?: string;
+  amount?: string;
+  participation_rate?: number;
+  ttl?: string;
+  limit_price?: string;
+  trigger_price?: string;
+  status?: SpotPovOrderStatus | string;
+  terminated_as?: string;
+  start_time_ms?: number;
+  end_time_ms?: number;
+  expire_time_ms?: number;
+  create_time_ms?: number;
+  update_time_ms?: number;
+  text?: string;
+}
+
+================
+File: src/types/response/tradfi.ts
+================
+/** TradFi API response types */
+⋮----
+export interface TradFiApiResp<T> {
+  timestamp?: number;
+  data?: T;
+  code?: number;
+  message?: string;
+  label?: string;
+}
+⋮----
+export interface TradFiListData<T> {
+  list?: T[];
+  total?: number;
+  total_page?: number;
+}
+⋮----
+export interface TradFiMT5Account {
+  mt5_uid?: number; // Removed from API in v4.106.132; kept optional for compatibility
+  leverage?: number;
+  stop_out_level?: string;
+  status?: number;
+}
+⋮----
+mt5_uid?: number; // Removed from API in v4.106.132; kept optional for compatibility
+⋮----
+export interface TradFiCategoryItem {
+  category_id?: number;
+  is_favorite?: boolean;
+  category_name?: string;
+}
+⋮----
+export interface TradFiSymbolItem {
+  symbol?: string;
+  symbol_desc?: string;
+  category_id?: number;
+  status?: string;
+  trade_mode?: string;
+  icon_link?: string;
+  close_time?: number;
+  open_time?: number;
+  next_open_time?: number;
+  settlement_currency?: string;
+  settlement_currency_symbol?: string;
+  price_precision?: number;
+}
+⋮----
+export interface TradFiSymbolDetailItem {
+  symbol?: string;
+  symbol_desc?: string;
+  category_name?: string;
+  contract_volume?: string;
+  settlement_currency?: string;
+  max_order_volume?: string;
+  min_order_volume?: string;
+  leverage?: string;
+  price_precision?: number;
+  price_sl_level?: string;
+  swap_cost_type?: string;
+  buy_swap_cost_rate?: string;
+  sell_swap_cost_rate?: string;
+  swap_cost_3day?: string;
+  trade_timezone?: string;
+  trade_mode?: string;
+  icon_link?: string;
+  [key: string]: unknown;
+}
+⋮----
+export interface TradFiKlineItem {
+  o?: string;
+  c?: string;
+  h?: string;
+  l?: string;
+  t?: number;
+}
+⋮----
+export interface TradFiTicker {
+  highest_price?: string;
+  lowest_price?: string;
+  price_change?: string;
+  price_change_amount?: string;
+  today_open_price?: string;
+  last_today_close_price?: string;
+  last_price?: string;
+  bid_price?: string;
+  ask_price?: string;
+  favorite?: boolean;
+  status?: string;
+  close_time?: number;
+  open_time?: number;
+  next_open_time?: number;
+  trade_mode?: string;
+  category_name?: string;
+}
+⋮----
+export interface TradFiCreateUserResult {
+  status?: number;
+  leverage?: number;
+  mt5_uid?: string; // Removed from API in v4.106.132; kept optional for compatibility
+}
+⋮----
+mt5_uid?: string; // Removed from API in v4.106.132; kept optional for compatibility
+⋮----
+export interface TradFiAssets {
+  equity?: string;
+  margin_level?: string;
+  balance?: string;
+  margin?: string;
+  margin_free?: string;
+  unrealized_pnl?: string;
+  mt5_uid?: string; // Removed from API in v4.106.132; kept optional for compatibility
+}
+⋮----
+mt5_uid?: string; // Removed from API in v4.106.132; kept optional for compatibility
+⋮----
+export interface TradFiTransactionRecord {
+  asset?: string;
+  type?: string;
+  type_desc?: string;
+  change?: string;
+  balance?: string;
+  time?: number;
+}
+⋮----
+export interface TradFiTransactionListData {
+  total?: number;
+  total_page?: number;
+  list?: TradFiTransactionRecord[];
+}
+⋮----
+export interface TradFiCreateOrderResult {
+  id?: string;
+}
+⋮----
+export interface TradFiOrderItem {
+  order_id?: number;
+  symbol?: string;
+  symbol_desc?: string;
+  price_type?: string;
+  state?: number;
+  state_desc?: string;
+  finished?: number;
+  side?: number;
+  volume?: string;
+  price?: string;
+  price_tp?: string;
+  price_sl?: string;
+  time_setup?: number;
+}
+⋮----
+export interface TradFiOrderListData {
+  list?: TradFiOrderItem[];
+  timestamp?: number;
+}
+⋮----
+export interface TradFiModifyOrderResult {
+  order_id?: number;
+  symbol?: string;
+  state?: string;
+  volume?: string;
+  price?: string;
+  price_tp?: string;
+  price_sl?: string;
+}
+⋮----
+export interface TradFiOrderHistoryItem {
+  order_id?: number;
+  symbol?: string;
+  symbol_desc?: string;
+  price_type?: string;
+  order_opt_type?: number;
+  state?: number;
+  state_desc?: string;
+  side?: number;
+  volume?: string;
+  fill_volume?: string;
+  close_pnl?: string;
+  price?: string;
+  trigger_price?: string;
+  price_tp?: string;
+  price_sl?: string;
+  time_setup?: number;
+  time_done?: number;
+}
+⋮----
+export interface TradFiPositionItem {
+  position_id?: number;
+  symbol?: string;
+  symbol_desc?: string;
+  margin?: string;
+  unrealized_pnl?: string;
+  unrealized_pnl_rate?: string;
+  volume?: string;
+  price_open?: string;
+  position_dir?: string;
+  price_tp?: string;
+  price_sl?: string;
+  counterparty_price?: string;
+  time_create?: number;
+}
+⋮----
+export interface TradFiPositionListData {
+  list?: TradFiPositionItem[];
+  timestamp?: number;
+}
+⋮----
+export interface TradFiPositionHistoryItem {
+  position_id?: number;
+  symbol?: string;
+  realized_pnl?: string;
+  realized_pnl_rate?: string;
+  volume?: string;
+  volume_closed?: string;
+  price_open?: string;
+  position_dir?: string;
+  price_tp?: string;
+  price_sl?: string;
+  counterparty_price?: string;
+  close_price?: string;
+  time_create?: string;
+  time_close?: string;
+  position_status?: string;
+  close_detail?: Record<string, unknown> | null;
+  realized_pnl_detail?: {
+    closed_pnl?: string;
+    swap?: string;
+    fee?: string;
+  };
+}
+⋮----
+/** GET /tradfi/orders/log/{log_id} — v4.106.94 */
+export interface TradFiOrderLog {
+  order_id?: number;
+  log_id?: number;
+  symbol?: string;
+  price_type?: 'market' | 'trigger';
+  state?: number;
+  side?: number;
+  volume?: string;
+  price?: string;
+  [key: string]: unknown;
+}
+⋮----
+export interface TradFiSymbolCommissionItem {
+  category_code?: string;
+  symbol?: string;
+  fee_per_lot?: string;
+}
+
+================
+File: src/index.ts
+================
+// Request Types
+⋮----
+// Response Types
+⋮----
+// Websockets Types
+⋮----
+// Shared Types
+
+================
 File: src/types/request/crossex.ts
 ================
 /**==========================================================================================================================
@@ -10687,27 +11950,36 @@ to?: number; // End timestamp for the query, defaults to current time if not spe
 page?: number; // Page number
 limit?: number; // Maximum number returned by list, max 1000
 ⋮----
+/**
+ * POST /crossex/orders
+ *
+ * Stock and ETF symbols use `{market}_{STOCK|ETF}_{code}_USDT`
+ * (US_STOCK_AAPL_USDT, HK_STOCK_00700_USDT, US_ETF_SPY_USDT).
+ * Those orders require cross-exchange account mode, time_in_force GTC, and qty.
+ * quote_qty is not accepted. Extra limit: 1 request per second per user.
+ * Price is in the listing market currency (USD, HKD, KRW, or JPY).
+ */
 export interface CreateCrossExOrderReq {
   text?: string; // Client-defined Order ID, supports letters (a-z), numbers (0-9), symbols (-, _) only
-  symbol: string; // Unique identifier Exchange_Business_Base_Counter
+  symbol: string; // Unique identifier Exchange_Business_Base_Counter. Stocks/ETFs: {market}_{STOCK|ETF}_{code}_USDT
   side: 'BUY' | 'SELL';
   type?: 'LIMIT' | 'MARKET'; // Order type (default: LIMIT)
-  time_in_force?: 'GTC' | 'IOC' | 'FOK' | 'POC' | 'RPI'; // Default GTC; RPI = Retail Price Improvement
-  qty?: string; // Order quantity (required unless spot market buy)
-  price?: string; // Limit Order Price (Required for Limit Orders)
-  quote_qty?: string; // Order quote quantity; required for spot and margin market buy orders
+  time_in_force?: 'GTC' | 'IOC' | 'FOK' | 'POC' | 'RPI'; // Default GTC; RPI = Retail Price Improvement. Stocks and ETFs: GTC only
+  qty?: string; // Order quantity (required unless spot market buy). Required for stock and ETF orders
+  price?: string; // Limit Order Price (Required for Limit Orders). Stocks/ETFs: listing market currency (USD, HKD, KRW, JPY)
+  quote_qty?: string; // Order quote quantity; required for spot and margin market buy orders. Not supported for stocks and ETFs
   reduce_only?: 'true' | 'false'; // Reduce-only
   position_side?: 'LONG' | 'SHORT' | 'NONE'; // Position side, defaults to NONE (single position mode) if not specified
 }
 ⋮----
 text?: string; // Client-defined Order ID, supports letters (a-z), numbers (0-9), symbols (-, _) only
-symbol: string; // Unique identifier Exchange_Business_Base_Counter
+symbol: string; // Unique identifier Exchange_Business_Base_Counter. Stocks/ETFs: {market}_{STOCK|ETF}_{code}_USDT
 ⋮----
 type?: 'LIMIT' | 'MARKET'; // Order type (default: LIMIT)
-time_in_force?: 'GTC' | 'IOC' | 'FOK' | 'POC' | 'RPI'; // Default GTC; RPI = Retail Price Improvement
-qty?: string; // Order quantity (required unless spot market buy)
-price?: string; // Limit Order Price (Required for Limit Orders)
-quote_qty?: string; // Order quote quantity; required for spot and margin market buy orders
+time_in_force?: 'GTC' | 'IOC' | 'FOK' | 'POC' | 'RPI'; // Default GTC; RPI = Retail Price Improvement. Stocks and ETFs: GTC only
+qty?: string; // Order quantity (required unless spot market buy). Required for stock and ETF orders
+price?: string; // Limit Order Price (Required for Limit Orders). Stocks/ETFs: listing market currency (USD, HKD, KRW, JPY)
+quote_qty?: string; // Order quote quantity; required for spot and margin market buy orders. Not supported for stocks and ETFs
 reduce_only?: 'true' | 'false'; // Reduce-only
 position_side?: 'LONG' | 'SHORT' | 'NONE'; // Position side, defaults to NONE (single position mode) if not specified
 ⋮----
@@ -10819,6 +12091,15 @@ export interface GetCrossExPositionsReq {
 symbol?: string; // Trading Pair
 exchange_type?: string; // Exchange
 ⋮----
+/** GET /crossex/security_positions */
+export interface GetCrossExSecurityPositionsReq {
+  symbol?: string; // Stock or ETF pair, e.g. US_STOCK_AAPL_USDT
+  exchange_type?: string; // Listing market: US, HK, KR, JP
+}
+⋮----
+symbol?: string; // Stock or ETF pair, e.g. US_STOCK_AAPL_USDT
+exchange_type?: string; // Listing market: US, HK, KR, JP
+⋮----
 export interface GetCrossExMarginPositionsReq {
   symbol?: string; // Currency pair
   exchange_type?: string; // Exchange
@@ -10915,12 +12196,22 @@ export interface GetCrossExAccountBookReq {
   page?: number; // Page number
   limit?: number; // Maximum number returned by list, max 1000
   coin?: string;
+  /**
+   * Bill type filter. Same values as CrossExAccountBook.statement_type, including
+   * SECURITY_DIVIDEND and SECURITY_CORPORATE_ACTION.
+   */
+  statement_type?: string;
   from?: number; // Start Millisecond Timestamp
   to?: number; // End Millisecond Timestamp
 }
 ⋮----
 page?: number; // Page number
 limit?: number; // Maximum number returned by list, max 1000
+⋮----
+/**
+   * Bill type filter. Same values as CrossExAccountBook.statement_type, including
+   * SECURITY_DIVIDEND and SECURITY_CORPORATE_ACTION.
+   */
 ⋮----
 from?: number; // Start Millisecond Timestamp
 to?: number; // End Millisecond Timestamp
@@ -10947,8 +12238,11 @@ File: src/types/response/crossex.ts
  */
 ⋮----
 export interface CrossExSymbol {
+  /** Exchange_Business_Base_Counter. Stocks/ETFs: {market}_{STOCK|ETF}_{code}_USDT, e.g. US_STOCK_AAPL_USDT */
   symbol: string;
+  /** BINANCE, OKX, GATE, BYBIT, KRAKEN, HYPERLIQUID, DERIBIT, LIGHTER. Stocks/ETFs: US, HK, KR, JP */
   exchange_type: string;
+  /** SPOT, FUTURE, MARGIN, STOCK, ETF */
   business_type: string;
   state: string;
   min_size: string;
@@ -10963,10 +12257,62 @@ export interface CrossExSymbol {
   delist_time: string;
   support_rpi?: string; // true/false whether RPI orders are supported
   support_cross?: string; // "true"/"false" whether the symbol supports cross-margin orders
+  /**
+   * Required (v4.106.157). Hyperliquid DEX info, or the stock/ETF security description.
+   * Empty string for other businesses.
+   */
+  tag: string;
 }
+⋮----
+/** Exchange_Business_Base_Counter. Stocks/ETFs: {market}_{STOCK|ETF}_{code}_USDT, e.g. US_STOCK_AAPL_USDT */
+⋮----
+/** BINANCE, OKX, GATE, BYBIT, KRAKEN, HYPERLIQUID, DERIBIT, LIGHTER. Stocks/ETFs: US, HK, KR, JP */
+⋮----
+/** SPOT, FUTURE, MARGIN, STOCK, ETF */
 ⋮----
 support_rpi?: string; // true/false whether RPI orders are supported
 support_cross?: string; // "true"/"false" whether the symbol supports cross-margin orders
+/**
+   * Required (v4.106.157). Hyperliquid DEX info, or the stock/ETF security description.
+   * Empty string for other businesses.
+   */
+⋮----
+/** GET /crossex/security_positions. Prices and values use the listing market currency (USD, HKD, KRW, JPY). */
+export interface CrossExSecurityPosition {
+  user_id: string;
+  symbol: string; // Stock or ETF pair
+  price: string; // Latest price in the listing market currency
+  entry_price: string;
+  diluted_cost_price: string;
+  upnl: string; // Unrealized PnL in the listing market currency
+  position_qty: string;
+  position_value: string;
+}
+⋮----
+symbol: string; // Stock or ETF pair
+price: string; // Latest price in the listing market currency
+⋮----
+upnl: string; // Unrealized PnL in the listing market currency
+⋮----
+/**
+ * Bill types on GET /crossex/account_book.
+ * v4.106.157 adds SECURITY_DIVIDEND and SECURITY_CORPORATE_ACTION.
+ */
+export type CrossExAccountBookStatementType =
+  | 'TRANSACTION'
+  | 'TRADING_FEE'
+  | 'FUNDING_FEE'
+  | 'LIQUIDATION_FEE'
+  | 'TRANSFER_IN'
+  | 'TRANSFER_OUT'
+  | 'BANKRUPT_COMPENSATION'
+  | 'AUTO_REPAY'
+  | 'INTEREST_ISOLATED'
+  | 'ACCOUNT_MODE_CHANGE'
+  | 'KRAKEN_CONVERSION'
+  | 'SECURITY_DIVIDEND'
+  | 'SECURITY_CORPORATE_ACTION'
+  | 'OTHER';
 ⋮----
 export interface CrossExRiskLimitTier {
   min_risk_limit_value: string; // Minimum risk limit value
@@ -11583,8 +12929,17 @@ create_time: string; // Created time
 export interface CrossExAccountBook {
   id: string; // Account Change Record ID
   user_id: string; // User ID
-  business_id: string; // Business ID
-  type: string; // TRANSACTION, TRADING_FEE, FUNDING_FEE, LIQUIDATION_FEE, TRANSFER_IN, TRANSFER_OUT, BANKRUPT_COMPENSATION, AUTO_REPAY
+  business_id: string; // Business ID. Meaning depends on statement_type
+  /**
+   * Current docs return the bill type here (example: FUNDING_FEE).
+   * SECURITY_DIVIDEND is a stock or ETF dividend. SECURITY_CORPORATE_ACTION is a split or reverse split.
+   */
+  statement_type?: CrossExAccountBookStatementType;
+  /**
+   * Older responses used `type` for the same bill types, including
+   * SECURITY_DIVIDEND and SECURITY_CORPORATE_ACTION. Current docs use statement_type.
+   */
+  type: string;
   exchange_type: string; // Exchange
   coin: string; // Currency
   change: string; // Change amount (positive indicates transfer in; negative indicates transfer out)
@@ -11594,8 +12949,17 @@ export interface CrossExAccountBook {
 ⋮----
 id: string; // Account Change Record ID
 user_id: string; // User ID
-business_id: string; // Business ID
-type: string; // TRANSACTION, TRADING_FEE, FUNDING_FEE, LIQUIDATION_FEE, TRANSFER_IN, TRANSFER_OUT, BANKRUPT_COMPENSATION, AUTO_REPAY
+business_id: string; // Business ID. Meaning depends on statement_type
+/**
+   * Current docs return the bill type here (example: FUNDING_FEE).
+   * SECURITY_DIVIDEND is a stock or ETF dividend. SECURITY_CORPORATE_ACTION is a split or reverse split.
+   */
+⋮----
+/**
+   * Older responses used `type` for the same bill types, including
+   * SECURITY_DIVIDEND and SECURITY_CORPORATE_ACTION. Current docs use statement_type.
+   */
+⋮----
 exchange_type: string; // Exchange
 coin: string; // Currency
 change: string; // Change amount (positive indicates transfer in; negative indicates transfer out)
@@ -11623,808 +12987,6 @@ export interface UpdateCrossExPositionsMarginResp {
   margin?: string;
   position_side?: 'NONE' | 'LONG' | 'SHORT';
 }
-
-================
-File: src/types/response/tradfi.ts
-================
-/** TradFi API response types */
-⋮----
-export interface TradFiApiResp<T> {
-  timestamp?: number;
-  data?: T;
-  code?: number;
-  message?: string;
-  label?: string;
-}
-⋮----
-export interface TradFiListData<T> {
-  list?: T[];
-  total?: number;
-  total_page?: number;
-}
-⋮----
-export interface TradFiMT5Account {
-  mt5_uid?: number; // Removed from API in v4.106.132; kept optional for compatibility
-  leverage?: number;
-  stop_out_level?: string;
-  status?: number;
-}
-⋮----
-mt5_uid?: number; // Removed from API in v4.106.132; kept optional for compatibility
-⋮----
-export interface TradFiCategoryItem {
-  category_id?: number;
-  is_favorite?: boolean;
-  category_name?: string;
-}
-⋮----
-export interface TradFiSymbolItem {
-  symbol?: string;
-  symbol_desc?: string;
-  category_id?: number;
-  status?: string;
-  trade_mode?: string;
-  icon_link?: string;
-  close_time?: number;
-  open_time?: number;
-  next_open_time?: number;
-  settlement_currency?: string;
-  settlement_currency_symbol?: string;
-  price_precision?: number;
-}
-⋮----
-export interface TradFiSymbolDetailItem {
-  symbol?: string;
-  symbol_desc?: string;
-  category_name?: string;
-  contract_volume?: string;
-  settlement_currency?: string;
-  max_order_volume?: string;
-  min_order_volume?: string;
-  leverage?: string;
-  price_precision?: number;
-  price_sl_level?: string;
-  swap_cost_type?: string;
-  buy_swap_cost_rate?: string;
-  sell_swap_cost_rate?: string;
-  swap_cost_3day?: string;
-  trade_timezone?: string;
-  trade_mode?: string;
-  icon_link?: string;
-  [key: string]: unknown;
-}
-⋮----
-export interface TradFiKlineItem {
-  o?: string;
-  c?: string;
-  h?: string;
-  l?: string;
-  t?: number;
-}
-⋮----
-export interface TradFiTicker {
-  highest_price?: string;
-  lowest_price?: string;
-  price_change?: string;
-  price_change_amount?: string;
-  today_open_price?: string;
-  last_today_close_price?: string;
-  last_price?: string;
-  bid_price?: string;
-  ask_price?: string;
-  favorite?: boolean;
-  status?: string;
-  close_time?: number;
-  open_time?: number;
-  next_open_time?: number;
-  trade_mode?: string;
-  category_name?: string;
-}
-⋮----
-export interface TradFiCreateUserResult {
-  status?: number;
-  leverage?: number;
-  mt5_uid?: string; // Removed from API in v4.106.132; kept optional for compatibility
-}
-⋮----
-mt5_uid?: string; // Removed from API in v4.106.132; kept optional for compatibility
-⋮----
-export interface TradFiAssets {
-  equity?: string;
-  margin_level?: string;
-  balance?: string;
-  margin?: string;
-  margin_free?: string;
-  unrealized_pnl?: string;
-  mt5_uid?: string; // Removed from API in v4.106.132; kept optional for compatibility
-}
-⋮----
-mt5_uid?: string; // Removed from API in v4.106.132; kept optional for compatibility
-⋮----
-export interface TradFiTransactionRecord {
-  asset?: string;
-  type?: string;
-  type_desc?: string;
-  change?: string;
-  balance?: string;
-  time?: number;
-}
-⋮----
-export interface TradFiTransactionListData {
-  total?: number;
-  total_page?: number;
-  list?: TradFiTransactionRecord[];
-}
-⋮----
-export interface TradFiCreateOrderResult {
-  id?: string;
-}
-⋮----
-export interface TradFiOrderItem {
-  order_id?: number;
-  symbol?: string;
-  symbol_desc?: string;
-  price_type?: string;
-  state?: number;
-  state_desc?: string;
-  finished?: number;
-  side?: number;
-  volume?: string;
-  price?: string;
-  price_tp?: string;
-  price_sl?: string;
-  time_setup?: number;
-}
-⋮----
-export interface TradFiOrderListData {
-  list?: TradFiOrderItem[];
-  timestamp?: number;
-}
-⋮----
-export interface TradFiModifyOrderResult {
-  order_id?: number;
-  symbol?: string;
-  state?: string;
-  volume?: string;
-  price?: string;
-  price_tp?: string;
-  price_sl?: string;
-}
-⋮----
-export interface TradFiOrderHistoryItem {
-  order_id?: number;
-  symbol?: string;
-  symbol_desc?: string;
-  price_type?: string;
-  order_opt_type?: number;
-  state?: number;
-  state_desc?: string;
-  side?: number;
-  volume?: string;
-  fill_volume?: string;
-  close_pnl?: string;
-  price?: string;
-  trigger_price?: string;
-  price_tp?: string;
-  price_sl?: string;
-  time_setup?: number;
-  time_done?: number;
-}
-⋮----
-export interface TradFiPositionItem {
-  position_id?: number;
-  symbol?: string;
-  symbol_desc?: string;
-  margin?: string;
-  unrealized_pnl?: string;
-  unrealized_pnl_rate?: string;
-  volume?: string;
-  price_open?: string;
-  position_dir?: string;
-  price_tp?: string;
-  price_sl?: string;
-  counterparty_price?: string;
-  time_create?: number;
-}
-⋮----
-export interface TradFiPositionListData {
-  list?: TradFiPositionItem[];
-  timestamp?: number;
-}
-⋮----
-export interface TradFiPositionHistoryItem {
-  position_id?: number;
-  symbol?: string;
-  realized_pnl?: string;
-  realized_pnl_rate?: string;
-  volume?: string;
-  volume_closed?: string;
-  price_open?: string;
-  position_dir?: string;
-  price_tp?: string;
-  price_sl?: string;
-  counterparty_price?: string;
-  close_price?: string;
-  time_create?: string;
-  time_close?: string;
-  position_status?: string;
-  close_detail?: Record<string, unknown> | null;
-  realized_pnl_detail?: {
-    closed_pnl?: string;
-    swap?: string;
-    fee?: string;
-  };
-}
-⋮----
-/** GET /tradfi/orders/log/{log_id} — v4.106.94 */
-export interface TradFiOrderLog {
-  order_id?: number;
-  log_id?: number;
-  symbol?: string;
-  price_type?: 'market' | 'trigger';
-  state?: number;
-  side?: number;
-  volume?: string;
-  price?: string;
-  [key: string]: unknown;
-}
-⋮----
-export interface TradFiSymbolCommissionItem {
-  category_code?: string;
-  symbol?: string;
-  fee_per_lot?: string;
-}
-
-================
-File: src/types/response/unified.ts
-================
-export interface UnifiedAccountInfo {
-  mode: 'classic' | 'multi_currency' | 'portfolio' | 'single_currency'; // classic: Classic account; multi_currency: Multi-currency margin; portfolio: Portfolio margin; single_currency: Single-currency margin
-  user_id: number;
-  refresh_time: number;
-  locked: boolean; // Whether the account is locked; valid in cross-currency/combined margin mode, false in other modes such as single-currency margin
-  balances: {
-    [key: string]: {
-      available: string; // Cross available balance, after deducting futures isolated margin occupation and frozen amount (futures isolated occupation = futures isolated balance); effective in single-currency/multi-currency/portfolio margin mode
-      freeze: string; // Frozen amount; effective in single-currency/multi-currency/portfolio margin mode
-      borrowed: string; // Borrowed amount; valid in cross-currency/combined margin mode, 0 in other modes such as single-currency margin
-      negative_liab: string; // Negative balance borrowing; valid in cross-currency/combined margin mode, 0 in other modes such as single-currency margin
-      futures_pos_liab: string; // Contract opening position borrowing currency (abandoned, to be removed)
-      equity: string; // Currency equity amount (cross); effective in single-currency/multi-currency/portfolio margin mode
-      total_freeze: string; // Total frozen (deprecated, to be removed)
-      total_liab: string; // Total borrowed amount; valid in cross-currency/combined margin mode, 0 in other modes such as single-currency margin
-      spot_in_use: string; // Spot hedging amount; valid in combined (portfolio) margin mode, 0 in single-currency and cross-currency margin modes
-      funding: string; // Uniloan / Earn amount; effective when Earn is enabled as unified account margin
-      funding_version: string; // Funding version
-      cross_balance: string; // Full margin balance; valid in single-currency margin mode, 0 in cross-currency/combined margin mode
-      iso_balance: string; // Futures isolated balance; effective in single-currency and multi-currency margin mode, 0 in portfolio margin mode
-      im: string; // Cross initial margin; only effective for USDT in single-currency margin mode, 0 in multi-currency/portfolio margin mode
-      mm: string; // Cross maintenance margin; only effective for USDT in single-currency margin mode, 0 in multi-currency/portfolio margin mode
-      mmr: string; // Cross maintenance margin rate; only effective for USDT in single-currency margin mode, 0 in multi-currency/portfolio margin mode
-      margin_balance: string; // Cross margin balance; only effective for USDT in single-currency margin mode, 0 in multi-currency/portfolio margin mode
-      available_margin: string; // Cross available margin; only effective for USDT in single-currency margin mode, 0 in multi-currency/portfolio margin mode
-      imr?: string; // Cross initial margin rate; only effective for USDT in single-currency margin mode, 0 in multi-currency/portfolio margin mode
-      enabled_collateral?: boolean; // Currency enabled as margin: true — enabled, false — disabled
-      balance_version?: number; // Balance version number (int64)
-    };
-  };
-  total: string; // Total account assets in USD: sum of (available + freeze) * price per currency (deprecated; use unified_account_total)
-  borrowed: string; // Total borrowed in USD: sum of borrowed * price (excluding point cards); valid in cross-currency/combined margin mode, 0 in single-currency margin mode
-  total_initial_margin: string; // Total initial margin (cross); effective in multi-currency/portfolio margin mode, 0 in single-currency margin mode
-  total_margin_balance: string; // Total margin balance (cross); effective in multi-currency/portfolio margin mode, 0 in single-currency margin mode
-  total_maintenance_margin: string; // Total maintenance margin (cross); effective in multi-currency/portfolio margin mode, 0 in single-currency margin mode
-  total_initial_margin_rate: string; // Total initial margin rate (cross); effective in multi-currency/portfolio margin mode, 0 in single-currency margin mode
-  total_maintenance_margin_rate: string; // Total maintenance margin rate (cross); effective in multi-currency/portfolio margin mode, 0 in single-currency margin mode
-  total_available_margin: string; // Available margin; valid in cross-currency/combined margin mode, 0 in single-currency margin mode
-  unified_account_total: string; // Total unified account assets: cross + isolated in single/multi-currency mode; cross only in portfolio margin mode
-  unified_account_total_liab: string; // Total unified borrowed (cross); effective in multi-currency/portfolio margin mode, 0 in single-currency margin mode
-  unified_account_total_equity: string; // Total unified equity: cross + isolated in single/multi-currency mode; cross only in portfolio margin mode
-  leverage: string; // Account leverage; effective in multi-currency/portfolio margin mode (deprecated; prefer GET /unified/leverage/user_currency_setting)
-  spot_order_loss: string; // Spot pending order loss (USDT); only in cross-currency and portfolio margin mode
-  options_order_loss?: string; // v4.105.29: Option pending order loss (USDT); only in portfolio margin mode
-  spot_hedge: boolean; // Spot hedging: true — enabled, false — disabled
-  margin_mode?: string;
-  total_balance?: string;
-  cross_leverage?: string;
-  portfolio_margin?: string;
-  risk_level?: string;
-  is_all_collateral?: boolean; // Whether all currencies are used as margin: true — all as margin, false — not all
-  borrow_amount?: string;
-  cross_margin_leverage?: string;
-  use_funding?: boolean; // Whether Earn funds are used as margin
-}
-⋮----
-mode: 'classic' | 'multi_currency' | 'portfolio' | 'single_currency'; // classic: Classic account; multi_currency: Multi-currency margin; portfolio: Portfolio margin; single_currency: Single-currency margin
-⋮----
-locked: boolean; // Whether the account is locked; valid in cross-currency/combined margin mode, false in other modes such as single-currency margin
-⋮----
-available: string; // Cross available balance, after deducting futures isolated margin occupation and frozen amount (futures isolated occupation = futures isolated balance); effective in single-currency/multi-currency/portfolio margin mode
-freeze: string; // Frozen amount; effective in single-currency/multi-currency/portfolio margin mode
-borrowed: string; // Borrowed amount; valid in cross-currency/combined margin mode, 0 in other modes such as single-currency margin
-negative_liab: string; // Negative balance borrowing; valid in cross-currency/combined margin mode, 0 in other modes such as single-currency margin
-futures_pos_liab: string; // Contract opening position borrowing currency (abandoned, to be removed)
-equity: string; // Currency equity amount (cross); effective in single-currency/multi-currency/portfolio margin mode
-total_freeze: string; // Total frozen (deprecated, to be removed)
-total_liab: string; // Total borrowed amount; valid in cross-currency/combined margin mode, 0 in other modes such as single-currency margin
-spot_in_use: string; // Spot hedging amount; valid in combined (portfolio) margin mode, 0 in single-currency and cross-currency margin modes
-funding: string; // Uniloan / Earn amount; effective when Earn is enabled as unified account margin
-funding_version: string; // Funding version
-cross_balance: string; // Full margin balance; valid in single-currency margin mode, 0 in cross-currency/combined margin mode
-iso_balance: string; // Futures isolated balance; effective in single-currency and multi-currency margin mode, 0 in portfolio margin mode
-im: string; // Cross initial margin; only effective for USDT in single-currency margin mode, 0 in multi-currency/portfolio margin mode
-mm: string; // Cross maintenance margin; only effective for USDT in single-currency margin mode, 0 in multi-currency/portfolio margin mode
-mmr: string; // Cross maintenance margin rate; only effective for USDT in single-currency margin mode, 0 in multi-currency/portfolio margin mode
-margin_balance: string; // Cross margin balance; only effective for USDT in single-currency margin mode, 0 in multi-currency/portfolio margin mode
-available_margin: string; // Cross available margin; only effective for USDT in single-currency margin mode, 0 in multi-currency/portfolio margin mode
-imr?: string; // Cross initial margin rate; only effective for USDT in single-currency margin mode, 0 in multi-currency/portfolio margin mode
-enabled_collateral?: boolean; // Currency enabled as margin: true — enabled, false — disabled
-balance_version?: number; // Balance version number (int64)
-⋮----
-total: string; // Total account assets in USD: sum of (available + freeze) * price per currency (deprecated; use unified_account_total)
-borrowed: string; // Total borrowed in USD: sum of borrowed * price (excluding point cards); valid in cross-currency/combined margin mode, 0 in single-currency margin mode
-total_initial_margin: string; // Total initial margin (cross); effective in multi-currency/portfolio margin mode, 0 in single-currency margin mode
-total_margin_balance: string; // Total margin balance (cross); effective in multi-currency/portfolio margin mode, 0 in single-currency margin mode
-total_maintenance_margin: string; // Total maintenance margin (cross); effective in multi-currency/portfolio margin mode, 0 in single-currency margin mode
-total_initial_margin_rate: string; // Total initial margin rate (cross); effective in multi-currency/portfolio margin mode, 0 in single-currency margin mode
-total_maintenance_margin_rate: string; // Total maintenance margin rate (cross); effective in multi-currency/portfolio margin mode, 0 in single-currency margin mode
-total_available_margin: string; // Available margin; valid in cross-currency/combined margin mode, 0 in single-currency margin mode
-unified_account_total: string; // Total unified account assets: cross + isolated in single/multi-currency mode; cross only in portfolio margin mode
-unified_account_total_liab: string; // Total unified borrowed (cross); effective in multi-currency/portfolio margin mode, 0 in single-currency margin mode
-unified_account_total_equity: string; // Total unified equity: cross + isolated in single/multi-currency mode; cross only in portfolio margin mode
-leverage: string; // Account leverage; effective in multi-currency/portfolio margin mode (deprecated; prefer GET /unified/leverage/user_currency_setting)
-spot_order_loss: string; // Spot pending order loss (USDT); only in cross-currency and portfolio margin mode
-options_order_loss?: string; // v4.105.29: Option pending order loss (USDT); only in portfolio margin mode
-spot_hedge: boolean; // Spot hedging: true — enabled, false — disabled
-⋮----
-is_all_collateral?: boolean; // Whether all currencies are used as margin: true — all as margin, false — not all
-⋮----
-use_funding?: boolean; // Whether Earn funds are used as margin
-⋮----
-export interface UnifiedLoan {
-  currency: string;
-  currency_pair: string;
-  amount: string;
-  type: 'platform' | 'margin';
-  create_time: number;
-  update_time: number;
-}
-⋮----
-export interface UnifiedLoanRecord {
-  id: number;
-  type: 'borrow' | 'repay';
-  repayment_type: 'none' | 'manual_repay' | 'auto_repay' | 'cancel_auto_repay';
-  currency_pair: string;
-  currency: string;
-  amount: string;
-  create_time: number;
-  borrow_type: string;
-}
-export interface UnifiedInterestRecord {
-  currency: string;
-  currency_pair: string;
-  actual_rate: string;
-  interest: string;
-  status: number;
-  type: 'platform' | 'margin';
-  create_time: number;
-}
-⋮----
-export interface UnifiedRiskUnitDetails {
-  user_id: number;
-  spot_hedge: boolean;
-  risk_units: {
-    symbol: string;
-    spot_in_use: string;
-    maintain_margin: string;
-    initial_margin: string;
-    delta: string;
-    gamma: string;
-    theta: string;
-    vega: string;
-  }[];
-}
-⋮----
-export interface UnifiedCurrencyDiscountTiers {
-  currency: string;
-  discount_tiers: {
-    tier: string;
-    discount: string;
-    lower_limit: string;
-    upper_limit: string;
-    leverage: string;
-  }[];
-}
-⋮----
-export interface UserCurrencyLeverageConfig {
-  current_leverage: string;
-  min_leverage: string;
-  max_leverage: string;
-  debit: string;
-  available_margin: string;
-  borrowable: string;
-  except_leverage_borrowable: string;
-}
-⋮----
-export interface UnifiedLoanCurrency {
-  name: string;
-  prec: string;
-  min_borrow_amount: string;
-  user_max_borrow_amount: string;
-  total_max_borrow_amount: string;
-  loan_status: string;
-}
-⋮----
-export interface UnifiedHistoryLendingRate {
-  currency: string;
-  tier: string;
-  tier_up_rate: string;
-  rates: {
-    time: number;
-    rate: string;
-  }[];
-}
-⋮----
-export interface MarginTier {
-  tier: string;
-  margin_rate: string;
-  lower_limit: string;
-  upper_limit: string;
-}
-⋮----
-export interface PortfolioMarginCalculation {
-  maintain_margin_total: string;
-  initial_margin_total: string;
-  calculate_time: number;
-  risk_unit: {
-    symbol: string;
-    spot_in_use: string;
-    maintain_margin: string;
-    initial_margin: string;
-    margin_result: {
-      type:
-        | 'original_position'
-        | 'long_delta_original_position'
-        | 'short_delta_original_position';
-      profit_loss_ranges: {
-        price_percentage: string;
-        implied_volatility_percentage: string;
-        profit_loss: string;
-      }[];
-      max_loss: {
-        price_percentage: string;
-        implied_volatility_percentage: string;
-        profit_loss: string;
-      };
-      mr1: string;
-      mr2: string;
-      mr3: string;
-      mr4: string;
-      delta: string;
-      gamma: string;
-      theta: string;
-      vega: string;
-    }[];
-  }[];
-}
-⋮----
-export interface UnifiedCollateralCurrenciesResp {
-  is_success: boolean;
-}
-⋮----
-export interface UnifiedQuickRepayDebtItem {
-  currency?: string;
-  debt_amount?: string;
-  estimated_usd?: string;
-  borrowed?: string;
-  neg_balance?: string;
-}
-⋮----
-export interface UnifiedQuickRepayAvailableItem {
-  currency?: string;
-  available?: string;
-  estimated_usd?: string;
-}
-⋮----
-export interface QuickEstimatedRepayment {
-  debt_currencies?: UnifiedQuickRepayDebtItem[];
-  available_currencies?: UnifiedQuickRepayAvailableItem[];
-}
-⋮----
-export interface QuickRepayRepaidInfo {
-  currency: string;
-  repaid: string;
-  left: string;
-}
-⋮----
-export interface QuickRepayUsedInfo {
-  currency: string;
-  used: string;
-}
-⋮----
-export interface QuickRepaymentResp {
-  order_id: string;
-  repaid_infos: QuickRepayRepaidInfo[];
-  used_infos: QuickRepayUsedInfo[];
-}
-⋮----
-/** GET/POST /unified/delta_neutral — v4.106.97 */
-export interface DeltaNeutralEnabled {
-  enabled: boolean;
-}
-⋮----
-/** POST /unified/leverage/user_setting failed currency entry */
-export interface LeverageFailedCurrency {
-  currency: string;
-  reason: string;
-}
-
-================
-File: src/index.ts
-================
-// Request Types
-⋮----
-// Response Types
-⋮----
-// Websockets Types
-⋮----
-// Shared Types
-
-================
-File: src/lib/BaseRestClient.ts
-================
-import axios, { AxiosRequestConfig, AxiosResponse, Method } from 'axios';
-// NOTE: https.Agent is Node.js-only and not available in browser environments
-// Browser builds (via webpack) exclude this module - see webpack.config.js fallback settings
-import https from 'https';
-⋮----
-import { neverGuard } from './misc-util.js';
-import {
-  CHANNEL_ID,
-  getRestBaseUrl,
-  RestClientOptions,
-  serializeParams,
-} from './requestUtils.js';
-import {
-  checkWebCryptoAPISupported,
-  hashMessage,
-  SignAlgorithm,
-  SignEncodeMethod,
-  signMessage,
-} from './webCryptoAPI.js';
-⋮----
-/**
- * Used to switch how authentication/requests work under the hood
- */
-⋮----
-export type RestClientType =
-  (typeof REST_CLIENT_TYPE_ENUM)[keyof typeof REST_CLIENT_TYPE_ENUM];
-⋮----
-interface SignedRequest<T extends object | undefined = {}> {
-  originalParams: T;
-  paramsWithSign?: T & { sign: string };
-  serializedParams: string;
-  sign: string;
-  queryParamsWithSign: string;
-  timestamp: number;
-  recvWindow: number;
-}
-⋮----
-interface UnsignedRequest<T extends object | undefined = {}> {
-  originalParams: T;
-  paramsWithSign: T;
-}
-⋮----
-type SignMethod = 'gateV4';
-⋮----
-/**
- * Some requests require some params to be in the query string and some in the body. Some even support passing params via headers.
- * This type anticipates these are possible in any combination.
- *
- * The request builder will automatically handle where parameters should go.
- */
-type ParamsInQueryBodyOrHeader = {
-  query?: object;
-  body?: object;
-  headers?: object;
-  /** multipart/form-data body; mutually exclusive with `body` */
-  multipart?: FormData;
-};
-⋮----
-/** multipart/form-data body; mutually exclusive with `body` */
-⋮----
-/**
- * Enables:
- * - Detailed request/response logging
- * - Full request dump in any exceptions thrown from API responses
- */
-⋮----
-// request: {
-//   url: response.config.url,
-//   method: response.config.method,
-//   data: response.config.data,
-//   headers: response.config.headers,
-// },
-⋮----
-/**
- * Impure, mutates params to remove any values that have a key but are undefined.
- */
-function deleteUndefinedValues(params?: any): void
-⋮----
-export abstract class BaseRestClient
-⋮----
-/** Defines the client type (affecting how requests & signatures behave) */
-abstract getClientType(): RestClientType;
-⋮----
-/**
-   * Create an instance of the REST client. Pass API credentials in the object in the first parameter.
-   * @param {RestClientOptions} [restClientOptions={}] options to configure REST API connectivity
-   * @param {AxiosRequestConfig} [networkOptions={}] HTTP networking options for axios
-   */
-constructor(
-    restClientOptions: RestClientOptions = {},
-    networkOptions: AxiosRequestConfig = {},
-)
-⋮----
-/** Throw errors if any request params are empty */
-⋮----
-/** in ms == 5 minutes by default */
-⋮----
-/** inject custom rquest options based on axios specs - see axios docs for more guidance on AxiosRequestConfig: https://github.com/axios/axios#request-config */
-⋮----
-// If enabled, configure a https agent with keepAlive enabled
-// NOTE: This is Node.js-only functionality. In browser environments, this code is skipped
-// as the 'https' module is excluded via webpack fallback configuration.
-// Browser connection pooling is handled automatically by the browser itself.
-⋮----
-// Extract existing https agent parameters, if provided, to prevent the keepAlive flag from overwriting an existing https agent completely
-⋮----
-// For more advanced configuration, raise an issue on GitHub or use the "networkOptions"
-// parameter to define a custom httpsAgent with the desired properties
-⋮----
-// Check Web Crypto API support when credentials are provided and no custom sign function is used
-⋮----
-// Throw if one of the 3 values is missing, but at least one of them is set
-⋮----
-/**
-   * Timestamp used to sign the request. Override this method to implement your own timestamp/sync mechanism
-   */
-getSignTimestampMs(): number
-⋮----
-protected get(endpoint: string, params?: object)
-⋮----
-// GET only supports params in the query string
-⋮----
-protected post(endpoint: string, params?: ParamsInQueryBodyOrHeader)
-⋮----
-protected getPrivate(endpoint: string, params?: object)
-⋮----
-// GET only supports params in the query string
-⋮----
-protected postPrivate(endpoint: string, params?: ParamsInQueryBodyOrHeader)
-⋮----
-/** POST private endpoint with multipart/form-data (empty body hash for signing) */
-protected postPrivateMultipart(
-    endpoint: string,
-    formData: FormData,
-    query?: object,
-)
-⋮----
-protected deletePrivate(
-    endpoint: string,
-    params?: ParamsInQueryBodyOrHeader,
-)
-⋮----
-protected putPrivate(endpoint: string, params?: ParamsInQueryBodyOrHeader)
-⋮----
-// protected patchPrivate(endpoint: string, params?: any) {
-protected patchPrivate(endpoint: string, params?: ParamsInQueryBodyOrHeader)
-⋮----
-/**
-   * @private Make a HTTP request to a specific endpoint. Private endpoint API calls are automatically signed.
-   */
-private async _call(
-    method: Method,
-    endpoint: string,
-    params?: ParamsInQueryBodyOrHeader,
-    isPublicApi?: boolean,
-): Promise<any>
-⋮----
-// Sanity check to make sure it's only ever prefixed by one forward slash
-⋮----
-// Build a request and handle signature process
-⋮----
-// Dispatch request
-⋮----
-// See: https://www.gate.io/docs/developers/apiv4/en/#return-format
-⋮----
-// Throw API rejections by parsing the response code from the body
-⋮----
-/**
-   * @private generic handler to parse request exceptions
-   */
-parseException(e: any, request: AxiosRequestConfig<any>): unknown
-⋮----
-// Something happened in setting up the request that triggered an error
-⋮----
-// request made but no response received
-⋮----
-// The request was made and the server responded with a status code
-// that falls out of the range of 2xx
-⋮----
-// console.error('err: ', response?.data);
-⋮----
-// Prevent credentials from leaking into error messages
-⋮----
-/**
-   * @private sign request and set recv window
-   */
-private async signRequest<
-    T extends ParamsInQueryBodyOrHeader | undefined = {},
-  >(
-    data: T,
-    endpoint: string,
-    method: Method,
-    signMethod: SignMethod,
-): Promise<SignedRequest<T>>
-⋮----
-const timestamp = +(this.getSignTimestampMs() / 1000).toFixed(0); // in seconds
-⋮----
-// recvWindow: this.options.recvWindow,
-⋮----
-// It's possible to override the recv window on a per rquest level
-⋮----
-// console.log('sign params: ', {
-//   requestBodyToHash,
-//   paramsStr: toSign,
-//   url: this.baseUrl,
-//   urlPath: this.baseUrlPath,
-// });
-⋮----
-private async signMessage(
-    paramsStr: string,
-    secret: string,
-    method: 'hex' | 'base64',
-    algorithm: SignAlgorithm,
-): Promise<string>
-⋮----
-private async prepareSignParams<
-    TParams extends ParamsInQueryBodyOrHeader | undefined,
-  >(
-    method: Method,
-    endpoint: string,
-    signMethod: SignMethod,
-    params?: TParams,
-    isPublicApi?: true,
-  ): Promise<UnsignedRequest<TParams>>;
-⋮----
-private async prepareSignParams<
-    TParams extends ParamsInQueryBodyOrHeader | undefined,
-  >(
-    method: Method,
-    endpoint: string,
-    signMethod: SignMethod,
-    params?: TParams,
-    isPublicApi?: false | undefined,
-  ): Promise<SignedRequest<TParams>>;
-⋮----
-private async prepareSignParams<
-    TParams extends ParamsInQueryBodyOrHeader | undefined,
-  >(
-    method: Method,
-    endpoint: string,
-    signMethod: SignMethod,
-    params?: TParams,
-    isPublicApi?: boolean,
-)
-⋮----
-/** Returns an axios request object. Handles signing process automatically if this is a private API call */
-private async buildRequest(
-    method: Method,
-    endpoint: string,
-    url: string,
-    params?: ParamsInQueryBodyOrHeader,
-    isPublicApi?: boolean,
-): Promise<AxiosRequestConfig>
 
 ================
 File: src/types/response/otc.ts
@@ -12724,344 +13286,6 @@ export interface CreateOTCUploadPreUploadResp {
   message?: string;
   timestamp?: number;
   data?: CreateOTCUploadPreUploadData;
-}
-
-================
-File: src/types/response/spot.ts
-================
-/**==========================================================================================================================
- * SPOT
- * ==========================================================================================================================
- */
-⋮----
-/** Limit-order take-profit / stop-loss on order responses (not re-exported; use request types for submits) */
-interface SpotOrderTPSL {
-  trigger_price: string;
-  order_price: string;
-}
-⋮----
-/** `{}` cancels TP/SL; `null` leaves unchanged */
-type PatchSpotOrderTPSL = SpotOrderTPSL | {} | null;
-⋮----
-export interface SpotCurrencyChain {
-  name: string;
-  addr?: string;
-  withdraw_disabled: boolean;
-  withdraw_delayed: boolean;
-  deposit_disabled: boolean;
-}
-⋮----
-export interface SpotCurrency {
-  currency: string;
-  name: string;
-  delisted: boolean;
-  withdraw_disabled: boolean;
-  withdraw_delayed: boolean;
-  deposit_disabled: boolean;
-  trade_disabled: boolean;
-  chain: string;
-  chains: SpotCurrencyChain[];
-  /** Asset categories (e.g. stocks, metals, indices, forex, commodities). */
-  category?: string[];
-}
-⋮----
-/** Asset categories (e.g. stocks, metals, indices, forex, commodities). */
-⋮----
-export interface SpotTicker {
-  currency_pair: string;
-  last: string;
-  lowest_ask: string;
-  lowest_size: string;
-  highest_bid: string;
-  highest_size: string;
-  change_percentage: string;
-  change_utc0: string;
-  change_utc8: string;
-  base_volume: string;
-  quote_volume: string;
-  high_24h: string;
-  low_24h: string;
-  etf_net_value: string;
-  etf_pre_net_value: string | null;
-  etf_pre_timestamp: number | null;
-  etf_leverage: string | null;
-}
-⋮----
-export interface SpotOrderBook {
-  id?: number;
-  current: number;
-  update: number;
-  asks: [string, string][];
-  bids: [string, string][];
-}
-⋮----
-export interface SpotTrade {
-  id: string;
-  create_time: string;
-  create_time_ms: string;
-  currency_pair: string;
-  side: 'buy' | 'sell';
-  role: 'taker' | 'maker';
-  amount: string;
-  price: string;
-  order_id: string;
-  fee: string;
-  fee_currency: string;
-  point_fee: string;
-  gt_fee: string;
-  amend_text: string;
-  sequence_id: string;
-  text: string;
-  trade_quote?: string;
-}
-⋮----
-export type SpotCandle = [
-  string, // Unix timestamp with second precision
-  string, // Trading volume in quote currency
-  string, // Closing price
-  string, // Highest price
-  string, // Lowest price
-  string, // Opening price
-  string, // Trading volume in base currency
-  boolean, // Whether the window is closed
-];
-⋮----
-string, // Unix timestamp with second precision
-string, // Trading volume in quote currency
-string, // Closing price
-string, // Highest price
-string, // Lowest price
-string, // Opening price
-string, // Trading volume in base currency
-boolean, // Whether the window is closed
-⋮----
-export interface SpotFeeRates {
-  user_id: number;
-  taker_fee: string; // For spot trading
-  maker_fee: string; // For spot trading
-  gt_discount: boolean;
-  gt_taker_fee: string;
-  gt_maker_fee: string;
-  loan_fee: string;
-  point_type: string;
-  currency_pair: string;
-  debit_fee: number;
-}
-⋮----
-taker_fee: string; // For spot trading
-maker_fee: string; // For spot trading
-⋮----
-export interface SpotAccount {
-  currency: string;
-  available: string;
-  locked: string;
-  update_id: number;
-  refresh_time: number;
-  last_update_time?: number;
-  trading_fee_rate?: string;
-}
-⋮----
-export interface SpotAccountBook {
-  id: string;
-  time: number;
-  currency: string;
-  change: string;
-  balance: string;
-  type: string;
-  code: string;
-  text: string;
-}
-⋮----
-export interface SubmitSpotBatchOrdersResp {
-  order_id: string;
-  amend_text: string;
-  text: string;
-  succeeded: boolean;
-  label: string;
-  message: string;
-  id: string;
-  create_time: string;
-  update_time: string;
-  create_time_ms: number;
-  update_time_ms: number;
-  status: 'open' | 'closed' | 'cancelled';
-  currency_pair: string;
-  type: 'limit' | 'market';
-  account: 'spot' | 'margin' | 'cross_margin' | 'unified';
-  side: 'buy' | 'sell';
-  amount: string;
-  price: string;
-  time_in_force: 'gtc' | 'ioc' | 'poc' | 'fok';
-  iceberg: string;
-  auto_repay: boolean;
-  left: string;
-  filled_amount: string;
-  fill_price: string;
-  filled_total: string;
-  avg_deal_price: string;
-  fee: string;
-  fee_currency: string;
-  point_fee: string;
-  gt_fee: string;
-  gt_discount: boolean;
-  rebated_fee: string;
-  rebated_fee_currency: string;
-  stp_id: number;
-  stp_act: 'cn' | 'co' | 'cb' | '-';
-  /**
-   * Final state; **ioc** / **poc** reflect unfilled remainder cancelled by TIF (IOC vs post-only / maker).
-   */
-  finish_as: 'open' | 'filled' | 'cancelled' | 'ioc' | 'poc' | 'stp';
-}
-⋮----
-/**
-   * Final state; **ioc** / **poc** reflect unfilled remainder cancelled by TIF (IOC vs post-only / maker).
-   */
-⋮----
-export interface SpotOrder {
-  id?: string;
-  text?: string;
-  amend_text?: string;
-  create_time?: string;
-  update_time?: string;
-  create_time_ms?: number;
-  update_time_ms?: number;
-  status?: 'open' | 'closed' | 'cancelled';
-  currency_pair: string;
-  type?: 'limit' | 'market';
-  account?: 'spot' | 'margin' | 'cross_margin' | 'unified';
-  side: 'buy' | 'sell';
-  amount: string;
-  price?: string;
-  time_in_force?: 'gtc' | 'ioc' | 'poc' | 'fok';
-  iceberg?: string;
-  auto_borrow?: boolean;
-  auto_repay?: boolean;
-  left?: string;
-  filled_amount?: string;
-  fill_price?: string;
-  filled_total?: string;
-  avg_deal_price?: string;
-  fee?: string;
-  fee_currency?: string;
-  point_fee?: string;
-  gt_fee?: string;
-  gt_maker_fee?: string;
-  gt_taker_fee?: string;
-  gt_discount?: boolean;
-  rebated_fee?: string;
-  rebated_fee_currency?: string;
-  stp_id?: number;
-  stp_act?: 'cn' | 'co' | 'cb' | '-';
-  /**
-   * Final state; **ioc** / **poc** reflect unfilled remainder cancelled by TIF (IOC vs post-only / maker).
-   */
-  finish_as?: 'open' | 'filled' | 'cancelled' | 'ioc' | 'poc' | 'stp';
-  action_mode?: 'ACK' | 'RESULT' | 'FULL';
-  stop_loss?: PatchSpotOrderTPSL;
-  stop_profit?: PatchSpotOrderTPSL;
-  trade_quote?: string;
-}
-⋮----
-/**
-   * Final state; **ioc** / **poc** reflect unfilled remainder cancelled by TIF (IOC vs post-only / maker).
-   */
-⋮----
-export interface SpotInsuranceHistory {
-  currency: string;
-  balance: string;
-  time: number;
-}
-⋮----
-export interface SpotPriceTriggeredOrder {
-  trigger: {
-    price: string;
-    rule: '>=' | '<=';
-    expiration?: number;
-  };
-  put: {
-    type?: 'limit' | 'market';
-    side: 'buy' | 'sell';
-    price: string;
-    amount: string;
-    account: 'normal' | 'margin' | 'cross_margin';
-    time_in_force: 'gtc' | 'ioc';
-    text?: string;
-  };
-  id?: number;
-  user?: number;
-  market: string;
-  ctime?: number;
-  ftime?: number;
-  fired_order_id?: number;
-  status?: 'open' | 'cancelled' | 'finish' | 'failed' | 'expired';
-  reason?: string;
-}
-⋮----
-export interface GetSpotOpenOrdersResp {
-  currency_pair: string;
-  total: number;
-  orders: SpotOrder[];
-}
-⋮----
-export interface DeleteSpotBatchOrdersResp {
-  currency_pair: string;
-  id: string;
-  succeeded: boolean;
-  label: string;
-  message: string;
-  account: string;
-  text: string;
-}
-⋮----
-export interface SpotHistoricTradeRecord {
-  id: string;
-  create_time: string;
-  create_time_ms: string;
-  currency_pair: string;
-  side: 'buy' | 'sell';
-  role: 'taker' | 'maker';
-  amount: string;
-  price: string;
-  order_id: string;
-  fee: string;
-  fee_currency: string;
-  point_fee: string;
-  gt_fee: string;
-  amend_text: string;
-  sequence_id: string;
-  text: string;
-  deal?: string; // v4.105.29: Total Executed Value
-  trade_quote?: string;
-}
-⋮----
-deal?: string; // v4.105.29: Total Executed Value
-⋮----
-export type SpotPovOrderStatus =
-  | 'CREATED'
-  | 'CANCELING'
-  | 'RUNNING'
-  | 'COMPLETED'
-  | 'EXPIRED'
-  | 'TERMINATED';
-⋮----
-export interface SpotPovOrder {
-  id?: string;
-  currency_pair?: string;
-  side?: string;
-  amount?: string;
-  participation_rate?: number;
-  ttl?: string;
-  limit_price?: string;
-  trigger_price?: string;
-  status?: SpotPovOrderStatus | string;
-  terminated_as?: string;
-  start_time_ms?: number;
-  end_time_ms?: number;
-  expire_time_ms?: number;
-  create_time_ms?: number;
-  update_time_ms?: number;
-  text?: string;
 }
 
 ================
@@ -13533,8 +13757,6 @@ File: src/types/response/futures.ts
  * ==========================================================================================================================
  */
 ⋮----
-import type { FuturesAccountBookType } from '../request/futures.js';
-⋮----
 export interface FuturesOrderBook {
   id?: number;
   current: number;
@@ -13715,12 +13937,25 @@ enable_evolved_classic?: boolean; // Deprecated
 enable_new_dual_mode?: boolean; // Deprecated
 margin_mode: number; // 0: classic future account or Classic Spot Margin Mode of unified account; 1: Multi-Currency Margin Mode; 2: Portfolio Margin Mode; 3: Single-Currency Margin Mode
 ⋮----
+/** v4.106.147: includes `dividend` (dividend payout) */
+export type FuturesAccountBookRecordType =
+  | 'dnw'
+  | 'pnl'
+  | 'fee'
+  | 'refr'
+  | 'fund'
+  | 'point_dnw'
+  | 'point_fee'
+  | 'point_refr'
+  | 'bonus_offset'
+  | 'dividend';
+⋮----
 export interface FuturesAccountBookRecord {
   time: number;
   change: string;
   balance: string;
   /** v4.106.147: includes `dividend` (dividend payout) */
-  type: FuturesAccountBookType;
+  type: FuturesAccountBookRecordType;
   text: string;
   contract?: string;
   trade_id: string;
@@ -14446,6 +14681,7 @@ Updated & performant JavaScript & Node.js SDK for the Gate.com (gate.io) REST AP
     - [WebSocket API](#websocket-api)
       - [Event Driven API](#event-driven-api)
       - [REST-like API](#rest-like-api)
+- [Why not raw ws?](#why-not-raw-ws)
 - [Customise Logging](#customise-logging)
 - [Browser/Frontend Usage](#browserfrontend-usage)
   - [Webpack](#webpack)
@@ -14609,6 +14845,27 @@ client
 TestNet REST for spot and futures is `baseUrlKey: 'testnet'` (`https://api-testnet.gateapi.io/api/v4`). `baseUrlKey: 'futuresTestnet'` is that same host, kept so older configs keep working. WebSocket TestNet is `useTestnet: true` on `WebsocketClient`.
 
 See [RestClient](./src/RestClient.ts) for further information, or the [examples](./examples/) for lots of usage examples.
+
+## Why not raw ws?
+
+Gate publishes [`gate-api`](https://www.npmjs.com/package/gate-api) as a generated REST client. This package, `gateio-api`, covers the REST API and a WebSocket client.
+
+`WebsocketClient` keeps a public or private stream running:
+
+- reconnects after a drop, including Gate's scheduled 24 hour disconnect
+- heartbeats, and treats a missed pong as a dead connection
+- resubscribes to the topics you asked for after reconnect
+- signs private channels and WebSocket API requests
+- typed events: `update`, `response`, `reconnected`, `exception`
+
+Public spot tickers:
+
+```javascript
+const { WebsocketClient } = require('gateio-api');
+const ws = new WebsocketClient();
+ws.on('update', (data) => console.log(data));
+ws.subscribe({ topic: 'spot.tickers', payload: ['BTC_USDT'] }, 'spotV4');
+```
 
 ## WebSockets
 
@@ -14991,6 +15248,7 @@ import {
   GetCrossExPositionLeverageReq,
   GetCrossExPositionsReq,
   GetCrossExRiskLimitsReq,
+  GetCrossExSecurityPositionsReq,
   GetCrossExSymbolsReq,
   GetCrossExTransferCoinsReq,
   GetCrossExTransferHistoryReq,
@@ -15020,11 +15278,14 @@ import {
   GetDualInvestmentPlansReq,
   GetDualOrderRefundPreviewReq,
   GetDualProjectRecommendReq,
+  GetDualStockInvestmentPlansReq,
+  GetDualStockOrdersReq,
   GetEarnFixedTermHistoryReq,
   GetEarnFixedTermLendsReq,
   GetEarnFixedTermProductsByAssetReq,
   GetEarnFixedTermProductsReq,
   PlaceDualInvestmentOrderParams,
+  PlaceDualStockInvestmentOrderParams,
   SubmitDualOrderRefundParams,
   UpdateDualOrderReinvestParams,
 } from './types/request/earn.js';
@@ -15294,6 +15555,7 @@ import {
   CrossExPosition,
   CrossExPositionLeverage,
   CrossExRiskLimit,
+  CrossExSecurityPosition,
   CrossExSymbol,
   CrossExTransferCoin,
   CrossExTransferHistory,
@@ -15318,6 +15580,7 @@ import {
 import {
   CreateEarnFixedTermLendResponse,
   CreateEarnFixedTermPreRedeemResponse,
+  DualInvestmentBalance,
   DualInvestmentOrder,
   DualInvestmentProduct,
   DualOrderRefundPreview,
@@ -16341,6 +16604,16 @@ getSpotTicker(params?: {
 getSpotOrderBook(params: GetSpotOrderBookReq): Promise<SpotOrderBook>
 ⋮----
 /**
+   * Spot RPI order book
+   *
+   * Public. No API key. Bids are sorted by descending price, asks by ascending price.
+   * Same query parameters as getSpotOrderBook.
+   *
+   * @param params currency_pair, optional interval, limit, with_id
+   */
+getSpotRpiOrderBook(params: GetSpotOrderBookReq): Promise<SpotOrderBook>
+⋮----
+/**
    * Retrieve market trades
    *
    * You can use from and to to query by time range, or use last_id by scrolling page. The default behavior is by time range.
@@ -17206,6 +17479,19 @@ listFuturesADLRiskStates(
    * @returns Promise<GetFuturesOrderBookResp>
    */
 getFuturesOrderBook(
+    params: GetFuturesOrderBookReq,
+): Promise<FuturesOrderBook>
+⋮----
+/**
+   * Futures RPI order book
+   *
+   * Public. No API key. Bids are sorted by descending price, asks by ascending price.
+   * interval is the merged-depth price precision (0 means no merge).
+   * with_id returns the depth update id, which increments on each change.
+   *
+   * @param params settle, contract, optional interval, limit, with_id
+   */
+getFuturesRpiOrderBook(
     params: GetFuturesOrderBookReq,
 ): Promise<FuturesOrderBook>
 ⋮----
@@ -18796,6 +19082,8 @@ getMultiLoanCurrentRates(params: {
 /**
    * Dual Investment product list
    *
+   * `type` is `call` (sell high) or `put` (buy low).
+   *
    * @returns Promise<GetDualInvestmentProductsResp[]>
    */
 getDualInvestmentProducts(
@@ -18848,6 +19136,68 @@ updateDualOrderReinvest(
 getDualProjectRecommend(
     params?: GetDualProjectRecommendReq,
 ): Promise<DualProjectRecommend[]>
+⋮----
+/**
+   * Stock dual investment product list
+   *
+   * Public. Each plan includes type: `call` (sell high) or `put` (buy low).
+   */
+getDualStockInvestmentPlans(
+    params?: GetDualStockInvestmentPlansReq,
+): Promise<DualInvestmentProduct[]>
+⋮----
+/**
+   * Stock dual investment recommendations
+   *
+   * Public. mode `normal` (default) or `senior`.
+   * When nothing matches, Gate returns label SERVER_ERROR and message "No data".
+   */
+getDualStockProjectRecommend(
+    params?: GetDualProjectRecommendReq,
+): Promise<DualProjectRecommend[]>
+⋮----
+/**
+   * Stock dual investment order list
+   */
+getDualStockOrders(
+    params?: GetDualStockOrdersReq,
+): Promise<DualInvestmentOrder[]>
+⋮----
+/**
+   * Place a stock dual investment order
+   *
+   * hit_spot, hit_stock, and hit_simple apply to buy-low (put) subscriptions.
+   * 1 selects that funding account.
+   */
+submitDualStockOrder(
+    params: PlaceDualStockInvestmentOrderParams,
+): Promise<DualInvestmentOrder>
+⋮----
+/**
+   * Stock dual investment asset statistics
+   */
+getDualStockBalance(): Promise<DualInvestmentBalance>
+⋮----
+/**
+   * Preview redemption of a stock dual investment order
+   */
+getDualStockOrderRefundPreview(
+    params: GetDualOrderRefundPreviewReq,
+): Promise<DualOrderRefundPreview>
+⋮----
+/**
+   * Redeem a stock dual investment order
+   */
+submitDualStockOrderRefund(
+    params: SubmitDualOrderRefundParams,
+): Promise<DualInvestmentOrder>
+⋮----
+/**
+   * Update reinvestment settings for a stock dual investment order
+   */
+updateDualStockOrderReinvest(
+    params: UpdateDualOrderReinvestParams,
+): Promise<unknown>
 ⋮----
 /**
    * List fixed-term earn products (public).
@@ -19483,7 +19833,9 @@ uploadP2PMerchantChatFile(
 /**
    * Query Trading Pair Information
    *
-   * Query trading pair information for cross-exchange trading
+   * Stock and ETF symbols use `{market}_{STOCK|ETF}_{code}_USDT`
+   * (US_STOCK_AAPL_USDT, HK_STOCK_00700_USDT, US_ETF_SPY_USDT).
+   * `tag` is required: security description, Hyperliquid DEX info, or an empty string.
    *
    * @param params Optional parameters to filter symbols
    * @returns Promise with array of symbol information
@@ -19541,7 +19893,10 @@ getCrossExTransferHistory(
 /**
    * Create an order
    *
-   * Create an order for cross-exchange trading. Rate Limit: 100 requests per 10 seconds
+   * Create an order for cross-exchange trading. Rate Limit: 100 requests per 10 seconds.
+   * Stocks and ETFs also allow 1 request per second per user, and only in cross-exchange
+   * account mode with time_in_force GTC and qty. quote_qty is not supported.
+   * Stock and ETF prices use the listing market currency (USD, HKD, KRW, JPY).
    *
    * @param params Order parameters
    * @returns Promise with order creation response
@@ -19740,6 +20095,18 @@ getCrossExPositions(
 ): Promise<CrossExPosition[]>
 ⋮----
 /**
+   * List stock and ETF positions
+   *
+   * Prices, position value, and unrealized PnL use the listing market currency
+   * (USD, HKD, KRW, JPY). Rate Limit: 200 requests per 10 seconds.
+   *
+   * @param params Optional symbol and exchange_type (US, HK, KR, JP)
+   */
+getCrossExSecurityPositions(
+    params?: GetCrossExSecurityPositionsReq,
+): Promise<CrossExSecurityPosition[]>
+⋮----
+/**
    * Query Leveraged Positions
    *
    * Query margin/leveraged positions. Rate Limit: 200 requests per 10 seconds
@@ -19836,7 +20203,9 @@ getCrossExHistoryTrades(
 /**
    * Query Account Asset Change History
    *
-   * Query account balance change history. Rate Limit: 200 requests per 10 seconds
+   * Query account balance change history. Rate Limit: 200 requests per 10 seconds.
+   * `statement_type` includes SECURITY_DIVIDEND (stock or ETF dividend) and
+   * SECURITY_CORPORATE_ACTION (split or reverse split). Filter with the same values.
    *
    * @param params Optional filter parameters
    * @returns Promise with array of account book records
@@ -19994,6 +20363,15 @@ getTradFiSymbolDetail(
     params: TradFiGetSymbolDetailParams,
 ): Promise<TradFiApiResp<TradFiListData<TradFiSymbolDetailItem>>>
 ⋮----
+/**
+   * TradFi symbol klines
+   *
+   * `symbol` is the path parameter (for example XAUUSD). Query rules are on
+   * TradFiGetKlinesParams: times are Unix seconds, limit max 500, and limit
+   * cannot be combined with begin_time and end_time (INVALID_ARGUMENT).
+   * begin_time without end_time returns HTTP 400, label INTERNAL_SERVER_ERROR,
+   * message "Service is busy. Please try again later."
+   */
 getTradFiKlines(
     symbol: string,
     params: TradFiGetKlinesParams,
@@ -20220,7 +20598,7 @@ File: package.json
 ================
 {
   "name": "gateio-api",
-  "version": "1.6.5",
+  "version": "1.6.6",
   "description": "Complete & Robust Node.js SDK for Gate.com's REST APIs, WebSockets & WebSocket APIs, with TypeScript declarations.",
   "scripts": {
     "clean": "rm -rf dist/*",
