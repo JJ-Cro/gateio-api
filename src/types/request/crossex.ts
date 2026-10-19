@@ -32,15 +32,24 @@ export interface GetCrossExTransferHistoryReq {
   limit?: number; // Maximum number returned by list, max 1000
 }
 
+/**
+ * POST /crossex/orders
+ *
+ * Stock and ETF symbols use `{market}_{STOCK|ETF}_{code}_USDT`
+ * (US_STOCK_AAPL_USDT, HK_STOCK_00700_USDT, US_ETF_SPY_USDT).
+ * Those orders require cross-exchange account mode, time_in_force GTC, and qty.
+ * quote_qty is not accepted. Extra limit: 1 request per second per user.
+ * Price is in the listing market currency (USD, HKD, KRW, or JPY).
+ */
 export interface CreateCrossExOrderReq {
   text?: string; // Client-defined Order ID, supports letters (a-z), numbers (0-9), symbols (-, _) only
-  symbol: string; // Unique identifier Exchange_Business_Base_Counter
+  symbol: string; // Unique identifier Exchange_Business_Base_Counter. Stocks/ETFs: {market}_{STOCK|ETF}_{code}_USDT
   side: 'BUY' | 'SELL';
   type?: 'LIMIT' | 'MARKET'; // Order type (default: LIMIT)
-  time_in_force?: 'GTC' | 'IOC' | 'FOK' | 'POC' | 'RPI'; // Default GTC; RPI = Retail Price Improvement
-  qty?: string; // Order quantity (required unless spot market buy)
-  price?: string; // Limit Order Price (Required for Limit Orders)
-  quote_qty?: string; // Order quote quantity; required for spot and margin market buy orders
+  time_in_force?: 'GTC' | 'IOC' | 'FOK' | 'POC' | 'RPI'; // Default GTC; RPI = Retail Price Improvement. Stocks and ETFs: GTC only
+  qty?: string; // Order quantity (required unless spot market buy). Required for stock and ETF orders
+  price?: string; // Limit Order Price (Required for Limit Orders). Stocks/ETFs: listing market currency (USD, HKD, KRW, JPY)
+  quote_qty?: string; // Order quote quantity; required for spot and margin market buy orders. Not supported for stocks and ETFs
   reduce_only?: 'true' | 'false'; // Reduce-only
   position_side?: 'LONG' | 'SHORT' | 'NONE'; // Position side, defaults to NONE (single position mode) if not specified
 }
@@ -118,6 +127,12 @@ export interface GetCrossExPositionsReq {
   exchange_type?: string; // Exchange
 }
 
+/** GET /crossex/security_positions */
+export interface GetCrossExSecurityPositionsReq {
+  symbol?: string; // Stock or ETF pair, e.g. US_STOCK_AAPL_USDT
+  exchange_type?: string; // Listing market: US, HK, KR, JP
+}
+
 export interface GetCrossExMarginPositionsReq {
   symbol?: string; // Currency pair
   exchange_type?: string; // Exchange
@@ -180,6 +195,11 @@ export interface GetCrossExAccountBookReq {
   page?: number; // Page number
   limit?: number; // Maximum number returned by list, max 1000
   coin?: string;
+  /**
+   * Bill type filter. Same values as CrossExAccountBook.statement_type, including
+   * SECURITY_DIVIDEND and SECURITY_CORPORATE_ACTION.
+   */
+  statement_type?: string;
   from?: number; // Start Millisecond Timestamp
   to?: number; // End Millisecond Timestamp
 }

@@ -19,6 +19,16 @@ export interface DualInvestmentProduct {
   start_time: number;
   end_time: number;
   status: 'NOTSTARTED' | 'ONGOING' | 'ENDED';
+  /** `call` sell high, `put` buy low. On crypto and stock investment plans (v4.106.150). */
+  type?: 'call' | 'put';
+}
+
+/** GET /earn/dual/stock/balance */
+export interface DualInvestmentBalance {
+  user_asset_usdt?: string;
+  user_asset_btc?: string;
+  user_total_interest_usdt?: string;
+  user_total_interest_btc?: string;
 }
 
 /** GET /earn/dual/order-refund-preview */

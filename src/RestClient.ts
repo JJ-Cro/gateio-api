@@ -58,6 +58,7 @@ import {
   GetCrossExPositionLeverageReq,
   GetCrossExPositionsReq,
   GetCrossExRiskLimitsReq,
+  GetCrossExSecurityPositionsReq,
   GetCrossExSymbolsReq,
   GetCrossExTransferCoinsReq,
   GetCrossExTransferHistoryReq,
@@ -87,11 +88,14 @@ import {
   GetDualInvestmentPlansReq,
   GetDualOrderRefundPreviewReq,
   GetDualProjectRecommendReq,
+  GetDualStockInvestmentPlansReq,
+  GetDualStockOrdersReq,
   GetEarnFixedTermHistoryReq,
   GetEarnFixedTermLendsReq,
   GetEarnFixedTermProductsByAssetReq,
   GetEarnFixedTermProductsReq,
   PlaceDualInvestmentOrderParams,
+  PlaceDualStockInvestmentOrderParams,
   SubmitDualOrderRefundParams,
   UpdateDualOrderReinvestParams,
 } from './types/request/earn.js';
@@ -361,6 +365,7 @@ import {
   CrossExPosition,
   CrossExPositionLeverage,
   CrossExRiskLimit,
+  CrossExSecurityPosition,
   CrossExSymbol,
   CrossExTransferCoin,
   CrossExTransferHistory,
@@ -385,6 +390,7 @@ import {
 import {
   CreateEarnFixedTermLendResponse,
   CreateEarnFixedTermPreRedeemResponse,
+  DualInvestmentBalance,
   DualInvestmentOrder,
   DualInvestmentProduct,
   DualOrderRefundPreview,
@@ -1620,6 +1626,18 @@ export class RestClient extends BaseRestClient {
   }
 
   /**
+   * Spot RPI order book
+   *
+   * Public. No API key. Bids are sorted by descending price, asks by ascending price.
+   * Same query parameters as getSpotOrderBook.
+   *
+   * @param params currency_pair, optional interval, limit, with_id
+   */
+  getSpotRpiOrderBook(params: GetSpotOrderBookReq): Promise<SpotOrderBook> {
+    return this.get('/spot/rpi_order_book', params);
+  }
+
+  /**
    * Retrieve market trades
    *
    * You can use from and to to query by time range, or use last_id by scrolling page. The default behavior is by time range.
@@ -2709,6 +2727,22 @@ export class RestClient extends BaseRestClient {
   ): Promise<FuturesOrderBook> {
     const { settle, ...query } = params;
     return this.get(`/futures/${settle}/order_book`, query);
+  }
+
+  /**
+   * Futures RPI order book
+   *
+   * Public. No API key. Bids are sorted by descending price, asks by ascending price.
+   * interval is the merged-depth price precision (0 means no merge).
+   * with_id returns the depth update id, which increments on each change.
+   *
+   * @param params settle, contract, optional interval, limit, with_id
+   */
+  getFuturesRpiOrderBook(
+    params: GetFuturesOrderBookReq,
+  ): Promise<FuturesOrderBook> {
+    const { settle, ...query } = params;
+    return this.get(`/futures/${settle}/rpi_order_book`, query);
   }
 
   /**
@@ -4822,6 +4856,8 @@ export class RestClient extends BaseRestClient {
   /**
    * Dual Investment product list
    *
+   * `type` is `call` (sell high) or `put` (buy low).
+   *
    * @returns Promise<GetDualInvestmentProductsResp[]>
    */
   getDualInvestmentProducts(
@@ -4889,6 +4925,86 @@ export class RestClient extends BaseRestClient {
     params?: GetDualProjectRecommendReq,
   ): Promise<DualProjectRecommend[]> {
     return this.getPrivate('/earn/dual/project-recommend', params);
+  }
+
+  /**
+   * Stock dual investment product list
+   *
+   * Public. Each plan includes type: `call` (sell high) or `put` (buy low).
+   */
+  getDualStockInvestmentPlans(
+    params?: GetDualStockInvestmentPlansReq,
+  ): Promise<DualInvestmentProduct[]> {
+    return this.get('/earn/dual/stock/investment_plan', params);
+  }
+
+  /**
+   * Stock dual investment recommendations
+   *
+   * Public. mode `normal` (default) or `senior`.
+   * When nothing matches, Gate returns label SERVER_ERROR and message "No data".
+   */
+  getDualStockProjectRecommend(
+    params?: GetDualProjectRecommendReq,
+  ): Promise<DualProjectRecommend[]> {
+    return this.get('/earn/dual/stock/project-recommend', params);
+  }
+
+  /**
+   * Stock dual investment order list
+   */
+  getDualStockOrders(
+    params?: GetDualStockOrdersReq,
+  ): Promise<DualInvestmentOrder[]> {
+    return this.getPrivate('/earn/dual/stock/orders', params);
+  }
+
+  /**
+   * Place a stock dual investment order
+   *
+   * hit_spot, hit_stock, and hit_simple apply to buy-low (put) subscriptions.
+   * 1 selects that funding account.
+   */
+  submitDualStockOrder(
+    params: PlaceDualStockInvestmentOrderParams,
+  ): Promise<DualInvestmentOrder> {
+    return this.postPrivate('/earn/dual/stock/orders', { body: params });
+  }
+
+  /**
+   * Stock dual investment asset statistics
+   */
+  getDualStockBalance(): Promise<DualInvestmentBalance> {
+    return this.getPrivate('/earn/dual/stock/balance');
+  }
+
+  /**
+   * Preview redemption of a stock dual investment order
+   */
+  getDualStockOrderRefundPreview(
+    params: GetDualOrderRefundPreviewReq,
+  ): Promise<DualOrderRefundPreview> {
+    return this.getPrivate('/earn/dual/stock/order-refund-preview', params);
+  }
+
+  /**
+   * Redeem a stock dual investment order
+   */
+  submitDualStockOrderRefund(
+    params: SubmitDualOrderRefundParams,
+  ): Promise<DualInvestmentOrder> {
+    return this.postPrivate('/earn/dual/stock/order-refund', { body: params });
+  }
+
+  /**
+   * Update reinvestment settings for a stock dual investment order
+   */
+  updateDualStockOrderReinvest(
+    params: UpdateDualOrderReinvestParams,
+  ): Promise<unknown> {
+    return this.postPrivate('/earn/dual/stock/modify-order-reinvest', {
+      body: params,
+    });
   }
 
   /**
@@ -5776,7 +5892,9 @@ export class RestClient extends BaseRestClient {
   /**
    * Query Trading Pair Information
    *
-   * Query trading pair information for cross-exchange trading
+   * Stock and ETF symbols use `{market}_{STOCK|ETF}_{code}_USDT`
+   * (US_STOCK_AAPL_USDT, HK_STOCK_00700_USDT, US_ETF_SPY_USDT).
+   * `tag` is required: security description, Hyperliquid DEX info, or an empty string.
    *
    * @param params Optional parameters to filter symbols
    * @returns Promise with array of symbol information
@@ -5844,7 +5962,10 @@ export class RestClient extends BaseRestClient {
   /**
    * Create an order
    *
-   * Create an order for cross-exchange trading. Rate Limit: 100 requests per 10 seconds
+   * Create an order for cross-exchange trading. Rate Limit: 100 requests per 10 seconds.
+   * Stocks and ETFs also allow 1 request per second per user, and only in cross-exchange
+   * account mode with time_in_force GTC and qty. quote_qty is not supported.
+   * Stock and ETF prices use the listing market currency (USD, HKD, KRW, JPY).
    *
    * @param params Order parameters
    * @returns Promise with order creation response
@@ -6081,6 +6202,20 @@ export class RestClient extends BaseRestClient {
   }
 
   /**
+   * List stock and ETF positions
+   *
+   * Prices, position value, and unrealized PnL use the listing market currency
+   * (USD, HKD, KRW, JPY). Rate Limit: 200 requests per 10 seconds.
+   *
+   * @param params Optional symbol and exchange_type (US, HK, KR, JP)
+   */
+  getCrossExSecurityPositions(
+    params?: GetCrossExSecurityPositionsReq,
+  ): Promise<CrossExSecurityPosition[]> {
+    return this.getPrivate('/crossex/security_positions', params);
+  }
+
+  /**
    * Query Leveraged Positions
    *
    * Query margin/leveraged positions. Rate Limit: 200 requests per 10 seconds
@@ -6193,7 +6328,9 @@ export class RestClient extends BaseRestClient {
   /**
    * Query Account Asset Change History
    *
-   * Query account balance change history. Rate Limit: 200 requests per 10 seconds
+   * Query account balance change history. Rate Limit: 200 requests per 10 seconds.
+   * `statement_type` includes SECURITY_DIVIDEND (stock or ETF dividend) and
+   * SECURITY_CORPORATE_ACTION (split or reverse split). Filter with the same values.
    *
    * @param params Optional filter parameters
    * @returns Promise with array of account book records
@@ -6384,6 +6521,15 @@ export class RestClient extends BaseRestClient {
     return this.getPrivate('/tradfi/symbols/detail', params);
   }
 
+  /**
+   * TradFi symbol klines
+   *
+   * `symbol` is the path parameter (for example XAUUSD). Query rules are on
+   * TradFiGetKlinesParams: times are Unix seconds, limit max 500, and limit
+   * cannot be combined with begin_time and end_time (INVALID_ARGUMENT).
+   * begin_time without end_time returns HTTP 400, label INTERNAL_SERVER_ERROR,
+   * message "Service is busy. Please try again later."
+   */
   getTradFiKlines(
     symbol: string,
     params: TradFiGetKlinesParams,
