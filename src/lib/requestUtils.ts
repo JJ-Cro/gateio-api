@@ -9,6 +9,9 @@ export interface RestClientOptions {
   /** Your API secret */
   apiSecret?: string;
 
+  /** Use the Gate TestNet REST host. */
+  useTestnet?: boolean;
+
   /**
    * Override the default/global max size of the request window (in ms) for signed api calls.
    * If you don't include a recv window when making an API call, this value will be used as default
@@ -97,6 +100,10 @@ export function getRestBaseUrl(restClientOptions: RestClientOptions): string {
 
   if (restClientOptions.baseUrlKey) {
     return GATE_BASE_URLS[restClientOptions.baseUrlKey];
+  }
+
+  if (restClientOptions.useTestnet) {
+    return GATE_BASE_URLS.testnet;
   }
 
   return GATE_BASE_URLS.live;

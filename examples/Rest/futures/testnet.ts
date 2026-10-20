@@ -11,7 +11,7 @@ const account = {
 const gateRestClient = new RestClient({
   apiKey: account.key,
   apiSecret: account.secret,
-  baseUrl: 'https://api-testnet.gateapi.io/api/v4',
+  useTestnet: true,
 });
 
 async function submitFuturesOrder() {

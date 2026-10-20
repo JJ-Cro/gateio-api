@@ -743,7 +743,7 @@ import { RestClient } from 'gateio-api';
 const client = new RestClient({
   apiKey: process.env.GATE_TESTNET_API_KEY,
   apiSecret: process.env.GATE_TESTNET_API_SECRET,
-  baseUrl: 'https://api-testnet.gateapi.io/api/v4',
+  useTestnet: true,
 });
 
 async function main() {
@@ -899,7 +899,7 @@ import { RestClient } from 'gateio-api';
 const client = new RestClient({
   apiKey: process.env.GATE_TESTNET_API_KEY,
   apiSecret: process.env.GATE_TESTNET_API_SECRET,
-  baseUrl: 'https://api-testnet.gateapi.io/api/v4',
+  useTestnet: true,
 });
 
 async function main() {
@@ -1062,7 +1062,7 @@ This TestNet example uses the REST API only to read current market rules and the
 import { RestClient, WebsocketAPIClient, WS_KEY_MAP } from 'gateio-api';
 
 const rest = new RestClient({
-  baseUrl: 'https://api-testnet.gateapi.io/api/v4',
+  useTestnet: true,
 });
 
 const wsApi = new WebsocketAPIClient({
@@ -1237,7 +1237,7 @@ import { RestClient, WebsocketAPIClient, WS_KEY_MAP } from 'gateio-api';
 const rest = new RestClient({
   apiKey: process.env.GATE_TESTNET_API_KEY,
   apiSecret: process.env.GATE_TESTNET_API_SECRET,
-  baseUrl: 'https://api-testnet.gateapi.io/api/v4',
+  useTestnet: true,
 });
 
 const wsApi = new WebsocketAPIClient({
@@ -1740,7 +1740,7 @@ Gate TestNet is a separate environment with separate credentials. Use it for all
 | USDT perpetual WebSocket | `wss://ws-testnet.gate.com/v4/ws/futures/usdt` |
 | Options WebSocket        | `wss://ws-testnet.gate.com/v4/ws/options`      |
 
-For WebSocket TestNet, set `useTestnet: true`.
+For TestNet, set `useTestnet: true`.
 
 ```javascript
 import { RestClient, WebsocketClient } from 'gateio-api';
@@ -1748,7 +1748,7 @@ import { RestClient, WebsocketClient } from 'gateio-api';
 const rest = new RestClient({
   apiKey: process.env.GATE_TESTNET_API_KEY,
   apiSecret: process.env.GATE_TESTNET_API_SECRET,
-  baseUrl: 'https://api-testnet.gateapi.io/api/v4',
+  useTestnet: true,
 });
 
 const spotWs = new WebsocketClient({
@@ -2071,7 +2071,7 @@ async function main() {
 main();
 ```
 
-To combine a proxy with TestNet or a regional API, keep `baseUrl` or `wsUrl` in the first client argument and the agent in the same positions shown above.
+To combine a proxy with TestNet, set `useTestnet: true`. For a regional API, keep `baseUrl` or `wsUrl` in the first client argument and the agent in the same positions shown above.
 
 The proxy's egress IP is the address Gate sees. Add that address to the API key whitelist when whitelisting is enabled. Use a stable proxy endpoint, monitor its latency, and never use a proxy to bypass account or regional restrictions.
 
@@ -2198,7 +2198,7 @@ Futures `size` is the number of contracts. Use `quanto_multiplier` to find the u
 
 ### Can live credentials be used in TestNet?
 
-No. TestNet and live trading use separate API keys and balances. Use the current TestNet `baseUrl` or `wsUrl` with TestNet credentials.
+No. TestNet and live trading use separate API keys and balances. Set `useTestnet: true` with TestNet credentials.
 
 ### Can I use Gate US or Gate EU with the SDK?
 

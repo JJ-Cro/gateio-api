@@ -229,7 +229,7 @@ client
   });
 ```
 
-WebSocket TestNet: set `useTestnet: true` on `WebsocketClient`.
+TestNet: set `useTestnet: true` on `RestClient` or `WebsocketClient`.
 
 See [RestClient](./src/RestClient.ts) for further information, or the [examples](./examples/) for lots of usage examples.
 
