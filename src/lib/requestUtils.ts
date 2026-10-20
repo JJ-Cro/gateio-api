@@ -24,11 +24,7 @@ export interface RestClientOptions {
    **/
   baseUrl?: string;
 
-  /**
-   * Built-in Gate API v4 host.
-   * `testnet` and `futuresTestnet` both use https://api-testnet.gateapi.io/api/v4
-   * (spot and futures). `futuresTestnet` is kept as an alias of `testnet`.
-   */
+  // manually override with one of the known base URLs in the library
   baseUrlKey?: GateBaseUrlKey;
 
   /** Default: true. whether to try and post-process request exceptions (and throw them). */
@@ -90,7 +86,7 @@ const GATE_BASE_URLS: Record<GateBaseUrlKey, string> = {
   live: 'https://api.gateio.ws/api/v4',
   futuresLiveAlternative: 'https://fx-api.gateio.ws/api/v4',
   testnet: GATE_TESTNET_REST_URL,
-  // Alias of `testnet`. Previously https://fx-api-testnet.gateio.ws/api/v4 (HTTP 502).
+  // Same host as testnet. The old fx-api-testnet.gateio.ws host returns 502.
   futuresTestnet: GATE_TESTNET_REST_URL,
 };
 

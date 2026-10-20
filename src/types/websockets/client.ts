@@ -21,6 +21,7 @@ export interface WSClientConfigurableOptions {
   /** Your API secret */
   apiSecret?: string;
 
+  /** Use the Gate TestNet WebSocket hosts. */
   useTestnet?: boolean;
 
   /** Define a recv window when preparing a private websocket signature. This is in milliseconds, so 5000 == 5 seconds */

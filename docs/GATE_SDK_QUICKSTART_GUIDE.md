@@ -1740,10 +1740,7 @@ Gate TestNet is a separate environment with separate credentials. Use it for all
 | USDT perpetual WebSocket | `wss://ws-testnet.gate.com/v4/ws/futures/usdt` |
 | Options WebSocket        | `wss://ws-testnet.gate.com/v4/ws/options`      |
 
-Set the REST API host with `baseUrl` or `baseUrlKey`, and the WebSocket host with `wsUrl` or `useTestnet: true`. Prefer explicit hosts for TestNet examples:
-
-- `baseUrlKey: 'testnet'` uses `https://api-testnet.gateapi.io/api/v4` for spot and futures. `baseUrlKey: 'futuresTestnet'` is the same host, kept so older configs keep working.
-- `useTestnet: true` selects the TestNet WebSocket host for that connection, including Spot and Options. BTC perpetual and delivery TestNet hosts stay on the URLs in the current Gate docs (`wss://fx-ws-testnet.gateio.ws/...`). Announcements still have no TestNet host.
+For WebSocket TestNet, set `useTestnet: true`.
 
 ```javascript
 import { RestClient, WebsocketClient } from 'gateio-api';
@@ -1757,7 +1754,7 @@ const rest = new RestClient({
 const spotWs = new WebsocketClient({
   apiKey: process.env.GATE_TESTNET_API_KEY,
   apiSecret: process.env.GATE_TESTNET_API_SECRET,
-  wsUrl: 'wss://ws-testnet.gate.com/v4/ws/spot',
+  useTestnet: true,
 });
 ```
 
