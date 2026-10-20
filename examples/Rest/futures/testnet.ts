@@ -11,26 +11,7 @@ const account = {
 const gateRestClient = new RestClient({
   apiKey: account.key,
   apiSecret: account.secret,
-  /**
-   * To use a different base URL, use the baseUrl key. The SDK uses the live environment by default:
-   * baseUrlKey: 'live',
-   *'https://api.gateio.ws/api/v4'
-   * But you can force it to use any of the available environments. Examples below.
-   */
-
-  /*
-   * Futures TestNet trading (alias of `testnet`, spot and futures):
-   * 'https://api-testnet.gateapi.io/api/v4'
-   * Older host https://fx-api-testnet.gateio.ws/api/v4 now returns 502.
-   * baseUrlKey: 'testnet' is the same host.
-   */
-  baseUrlKey: 'futuresTestnet',
-
-  /**
-   * Futures live trading alternative (futures only):
-   * 'https://fx-api.gateio.ws/api/v4'
-   */
-  // baseUrlKey: 'futuresLiveAlternative'
+  baseUrl: 'https://api-testnet.gateapi.io/api/v4',
 });
 
 async function submitFuturesOrder() {

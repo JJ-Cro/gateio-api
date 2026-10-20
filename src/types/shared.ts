@@ -1,8 +1,3 @@
-/**
- * Built-in Gate API v4 hosts.
- * `testnet` is the global TestNet host (spot and futures).
- * `futuresTestnet` is the same host, kept so older `baseUrlKey` values keep working.
- */
 export type GateBaseUrlKey =
   | 'live'
   | 'futuresLiveAlternative'
