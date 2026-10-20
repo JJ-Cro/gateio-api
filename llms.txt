@@ -4708,130 +4708,6 @@ export function appendGateMultipartFields(
 ): void
 
 ================
-File: src/lib/requestUtils.ts
-================
-import WebSocket from 'isomorphic-ws';
-⋮----
-import { GateBaseUrlKey } from '../types/shared.js';
-⋮----
-export interface RestClientOptions {
-  /** Your API key */
-  apiKey?: string;
-
-  /** Your API secret */
-  apiSecret?: string;
-
-  /**
-   * Override the default/global max size of the request window (in ms) for signed api calls.
-   * If you don't include a recv window when making an API call, this value will be used as default
-   */
-  recvWindow?: number;
-
-  /** Default: false. If true, we'll throw errors if any params are undefined */
-  strictParamValidation?: boolean;
-
-  /**
-   * Optionally override API protocol + domain
-   * e.g baseUrl: 'https://api.gate.io'
-   **/
-  baseUrl?: string;
-
-  /**
-   * Built-in Gate API v4 host.
-   * `testnet` and `futuresTestnet` both use https://api-testnet.gateapi.io/api/v4
-   * (spot and futures). `futuresTestnet` is kept as an alias of `testnet`.
-   */
-  baseUrlKey?: GateBaseUrlKey;
-
-  /** Default: true. whether to try and post-process request exceptions (and throw them). */
-  parseExceptions?: boolean;
-
-  /**
-   * Enable keep alive for REST API requests (via axios).
-   * See: https://github.com/tiagosiebler/bybit-api/issues/368
-   */
-  keepAlive?: boolean;
-
-  /**
-   * When using HTTP KeepAlive, how often to send TCP KeepAlive packets over sockets being kept alive. Default = 1000.
-   * Only relevant if keepAlive is set to true.
-   * Default: 1000 (defaults comes from https agent)
-   */
-  keepAliveMsecs?: number;
-
-  /**
-   * Allows you to provide a custom "signMessage" function, e.g. to use node's much faster createHmac method
-   *
-   * Look in the examples folder for a demonstration on using node's createHmac instead.
-   */
-  customSignMessageFn?: (message: string, secret: string) => Promise<string>;
-}
-⋮----
-/** Your API key */
-⋮----
-/** Your API secret */
-⋮----
-/**
-   * Override the default/global max size of the request window (in ms) for signed api calls.
-   * If you don't include a recv window when making an API call, this value will be used as default
-   */
-⋮----
-/** Default: false. If true, we'll throw errors if any params are undefined */
-⋮----
-/**
-   * Optionally override API protocol + domain
-   * e.g baseUrl: 'https://api.gate.io'
-   **/
-⋮----
-/**
-   * Built-in Gate API v4 host.
-   * `testnet` and `futuresTestnet` both use https://api-testnet.gateapi.io/api/v4
-   * (spot and futures). `futuresTestnet` is kept as an alias of `testnet`.
-   */
-⋮----
-/** Default: true. whether to try and post-process request exceptions (and throw them). */
-⋮----
-/**
-   * Enable keep alive for REST API requests (via axios).
-   * See: https://github.com/tiagosiebler/bybit-api/issues/368
-   */
-⋮----
-/**
-   * When using HTTP KeepAlive, how often to send TCP KeepAlive packets over sockets being kept alive. Default = 1000.
-   * Only relevant if keepAlive is set to true.
-   * Default: 1000 (defaults comes from https agent)
-   */
-⋮----
-/**
-   * Allows you to provide a custom "signMessage" function, e.g. to use node's much faster createHmac method
-   *
-   * Look in the examples folder for a demonstration on using node's createHmac instead.
-   */
-⋮----
-export function serializeParams<T extends Record<string, any> | undefined = {}>(
-  params: T,
-  strict_validation: boolean | undefined,
-  encodeValues: boolean,
-  prefixWith: string,
-): string
-⋮----
-// Only prefix if there's a value
-⋮----
-/** Global TestNet REST host. Gate docs: spot and futures. */
-⋮----
-// Alias of `testnet`. Previously https://fx-api-testnet.gateio.ws/api/v4 (HTTP 502).
-⋮----
-export function getRestBaseUrl(restClientOptions: RestClientOptions): string
-⋮----
-export interface MessageEventLike {
-  target: WebSocket;
-  type: 'message';
-  data: string;
-}
-⋮----
-export function isMessageEvent(msg: unknown): msg is MessageEventLike
-
-================
 File: src/types/request/announcement.ts
 ================
 /** POST /ann/list_article */
@@ -5765,55 +5641,6 @@ File: .nvmrc
 v24.18.0
 
 ================
-File: examples/Rest/futures/testnet.ts
-================
-import { RestClient } from '../../../src/index.js'; // For an easy demonstration, import from the src dir. Normally though, see below to import from the npm installed version instead.
-// import { RestClient } from 'gateio-api'; // Import the RestClient from the published version of this SDK, installed via NPM (npm install gateio-api)
-⋮----
-// Define the account object with API key and secret
-⋮----
-key: process.env.API_KEY || 'yourApiHere', // Replace 'yourApiHere' with your actual API key
-secret: process.env.API_SECRET || 'yourSecretHere', // Replace 'yourSecretHere' with your actual API secret
-⋮----
-// Initialize the RestClient with the API credentials
-⋮----
-/**
-   * To use a different base URL, use the baseUrl key. The SDK uses the live environment by default:
-   * baseUrlKey: 'live',
-   *'https://api.gateio.ws/api/v4'
-   * But you can force it to use any of the available environments. Examples below.
-   */
-⋮----
-/*
-   * Futures TestNet trading (alias of `testnet`, spot and futures):
-   * 'https://api-testnet.gateapi.io/api/v4'
-   * Older host https://fx-api-testnet.gateio.ws/api/v4 now returns 502.
-   * baseUrlKey: 'testnet' is the same host.
-   */
-⋮----
-/**
-   * Futures live trading alternative (futures only):
-   * 'https://fx-api.gateio.ws/api/v4'
-   */
-// baseUrlKey: 'futuresLiveAlternative'
-⋮----
-async function submitFuturesOrder()
-⋮----
-// Submit a market order for futures trading
-⋮----
-settle: 'usdt', // Specify the settlement currency
-contract: 'BTC_USDT', // Specify the contract
-size: 20, // Order size: positive for long, negative for short
-price: '0', // Market order, so price is set to '0'
-tif: 'ioc', // Time in force: 'ioc' (Immediate Or Cancel)
-⋮----
-console.log('Response: ', result); // Log the response to the console
-⋮----
-console.error('Error in execution: ', e); // Log any errors that occur
-⋮----
-// Execute the function to submit a futures order
-
-================
 File: examples/Rest/otc/submitOTCBankPersonalSupplement.ts
 ================
 import { readFileSync } from 'fs';
@@ -5822,6 +5649,122 @@ import { RestClient } from '../../../src/index.js';
 // import { RestClient } from 'gateio-api';
 ⋮----
 async function submitOTCBankPersonalSupplementExample()
+
+================
+File: src/lib/requestUtils.ts
+================
+import WebSocket from 'isomorphic-ws';
+⋮----
+import { GateBaseUrlKey } from '../types/shared.js';
+⋮----
+export interface RestClientOptions {
+  /** Your API key */
+  apiKey?: string;
+
+  /** Your API secret */
+  apiSecret?: string;
+
+  /**
+   * Override the default/global max size of the request window (in ms) for signed api calls.
+   * If you don't include a recv window when making an API call, this value will be used as default
+   */
+  recvWindow?: number;
+
+  /** Default: false. If true, we'll throw errors if any params are undefined */
+  strictParamValidation?: boolean;
+
+  /**
+   * Optionally override API protocol + domain
+   * e.g baseUrl: 'https://api.gate.io'
+   **/
+  baseUrl?: string;
+
+  // manually override with one of the known base URLs in the library
+  baseUrlKey?: GateBaseUrlKey;
+
+  /** Default: true. whether to try and post-process request exceptions (and throw them). */
+  parseExceptions?: boolean;
+
+  /**
+   * Enable keep alive for REST API requests (via axios).
+   * See: https://github.com/tiagosiebler/bybit-api/issues/368
+   */
+  keepAlive?: boolean;
+
+  /**
+   * When using HTTP KeepAlive, how often to send TCP KeepAlive packets over sockets being kept alive. Default = 1000.
+   * Only relevant if keepAlive is set to true.
+   * Default: 1000 (defaults comes from https agent)
+   */
+  keepAliveMsecs?: number;
+
+  /**
+   * Allows you to provide a custom "signMessage" function, e.g. to use node's much faster createHmac method
+   *
+   * Look in the examples folder for a demonstration on using node's createHmac instead.
+   */
+  customSignMessageFn?: (message: string, secret: string) => Promise<string>;
+}
+⋮----
+/** Your API key */
+⋮----
+/** Your API secret */
+⋮----
+/**
+   * Override the default/global max size of the request window (in ms) for signed api calls.
+   * If you don't include a recv window when making an API call, this value will be used as default
+   */
+⋮----
+/** Default: false. If true, we'll throw errors if any params are undefined */
+⋮----
+/**
+   * Optionally override API protocol + domain
+   * e.g baseUrl: 'https://api.gate.io'
+   **/
+⋮----
+// manually override with one of the known base URLs in the library
+⋮----
+/** Default: true. whether to try and post-process request exceptions (and throw them). */
+⋮----
+/**
+   * Enable keep alive for REST API requests (via axios).
+   * See: https://github.com/tiagosiebler/bybit-api/issues/368
+   */
+⋮----
+/**
+   * When using HTTP KeepAlive, how often to send TCP KeepAlive packets over sockets being kept alive. Default = 1000.
+   * Only relevant if keepAlive is set to true.
+   * Default: 1000 (defaults comes from https agent)
+   */
+⋮----
+/**
+   * Allows you to provide a custom "signMessage" function, e.g. to use node's much faster createHmac method
+   *
+   * Look in the examples folder for a demonstration on using node's createHmac instead.
+   */
+⋮----
+export function serializeParams<T extends Record<string, any> | undefined = {}>(
+  params: T,
+  strict_validation: boolean | undefined,
+  encodeValues: boolean,
+  prefixWith: string,
+): string
+⋮----
+// Only prefix if there's a value
+⋮----
+/** Global TestNet REST host. Gate docs: spot and futures. */
+⋮----
+// Same host as testnet. The old fx-api-testnet.gateio.ws host returns 502.
+⋮----
+export function getRestBaseUrl(restClientOptions: RestClientOptions): string
+⋮----
+export interface MessageEventLike {
+  target: WebSocket;
+  type: 'message';
+  data: string;
+}
+⋮----
+export function isMessageEvent(msg: unknown): msg is MessageEventLike
 
 ================
 File: src/types/request/alpha.ts
@@ -6525,59 +6468,6 @@ export interface P2PMerchantChatsListData {
 }
 
 ================
-File: src/types/shared.ts
-================
-/**
- * Built-in Gate API v4 hosts.
- * `testnet` is the global TestNet host (spot and futures).
- * `futuresTestnet` is the same host, kept so older `baseUrlKey` values keep working.
- */
-export type GateBaseUrlKey =
-  | 'live'
-  | 'futuresLiveAlternative'
-  | 'testnet'
-  | 'futuresTestnet';
-⋮----
-// interfaces
-⋮----
-export interface FromToPageLimit {
-  from: number;
-  to: number;
-  page: number;
-  limit: number;
-}
-⋮----
-// Used for spot and flash swap
-export interface CurrencyPair {
-  id?: string;
-  base?: string;
-  base_name?: string;
-  quote?: string;
-  quote_name?: string;
-  trade_quotes?: string[] | null;
-  fee?: string;
-  min_base_amount?: string;
-  min_quote_amount?: string;
-  max_base_amount?: string;
-  max_quote_amount?: string;
-  amount_precision?: number;
-  precision?: number;
-  trade_status?: 'untradable' | 'buyable' | 'sellable' | 'tradable';
-  sell_start?: number;
-  buy_start?: number;
-  type: string;
-  delisting_time?: number;
-  trade_url?: string;
-  up_rate?: string; // v4.106.4: Maximum price increase percentage
-  down_rate?: string; // v4.106.4: Maximum price decrease percentage
-  market_order_max_stock?: string | null;
-  market_order_max_money?: string | null;
-}
-⋮----
-up_rate?: string; // v4.106.4: Maximum price increase percentage
-down_rate?: string; // v4.106.4: Maximum price decrease percentage
-
-================
 File: .gitignore
 ================
 !.gitkeep
@@ -6618,6 +6508,35 @@ privaterepotracker
 restClientRegex.ts
 
 testfile.ts
+
+================
+File: examples/Rest/futures/testnet.ts
+================
+import { RestClient } from '../../../src/index.js'; // For an easy demonstration, import from the src dir. Normally though, see below to import from the npm installed version instead.
+// import { RestClient } from 'gateio-api'; // Import the RestClient from the published version of this SDK, installed via NPM (npm install gateio-api)
+⋮----
+// Define the account object with API key and secret
+⋮----
+key: process.env.API_KEY || 'yourApiHere', // Replace 'yourApiHere' with your actual API key
+secret: process.env.API_SECRET || 'yourSecretHere', // Replace 'yourSecretHere' with your actual API secret
+⋮----
+// Initialize the RestClient with the API credentials
+⋮----
+async function submitFuturesOrder()
+⋮----
+// Submit a market order for futures trading
+⋮----
+settle: 'usdt', // Specify the settlement currency
+contract: 'BTC_USDT', // Specify the contract
+size: 20, // Order size: positive for long, negative for short
+price: '0', // Market order, so price is set to '0'
+tif: 'ioc', // Time in force: 'ioc' (Immediate Or Cancel)
+⋮----
+console.log('Response: ', result); // Log the response to the console
+⋮----
+console.error('Error in execution: ', e); // Log any errors that occur
+⋮----
+// Execute the function to submit a futures order
 
 ================
 File: src/types/request/unified.ts
@@ -7366,6 +7285,1237 @@ export interface AccountTransferDetail {
 }
 
 ================
+File: src/types/shared.ts
+================
+export type GateBaseUrlKey =
+  | 'live'
+  | 'futuresLiveAlternative'
+  | 'testnet'
+  | 'futuresTestnet';
+⋮----
+// interfaces
+⋮----
+export interface FromToPageLimit {
+  from: number;
+  to: number;
+  page: number;
+  limit: number;
+}
+⋮----
+// Used for spot and flash swap
+export interface CurrencyPair {
+  id?: string;
+  base?: string;
+  base_name?: string;
+  quote?: string;
+  quote_name?: string;
+  trade_quotes?: string[] | null;
+  fee?: string;
+  min_base_amount?: string;
+  min_quote_amount?: string;
+  max_base_amount?: string;
+  max_quote_amount?: string;
+  amount_precision?: number;
+  precision?: number;
+  trade_status?: 'untradable' | 'buyable' | 'sellable' | 'tradable';
+  sell_start?: number;
+  buy_start?: number;
+  type: string;
+  delisting_time?: number;
+  trade_url?: string;
+  up_rate?: string; // v4.106.4: Maximum price increase percentage
+  down_rate?: string; // v4.106.4: Maximum price decrease percentage
+  market_order_max_stock?: string | null;
+  market_order_max_money?: string | null;
+}
+⋮----
+up_rate?: string; // v4.106.4: Maximum price increase percentage
+down_rate?: string; // v4.106.4: Maximum price decrease percentage
+
+================
+File: webpack/webpack.config.cjs
+================
+function generateConfig(name)
+⋮----
+// Add '.ts' and '.tsx' as resolvable extensions.
+⋮----
+// Node.js core modules not available in browsers
+// The REST client's https.Agent (for keepAlive) is Node.js-only and won't work in browsers
+⋮----
+// Code is already transpiled from TypeScript, no additional loaders needed
+
+================
+File: src/lib/BaseRestClient.ts
+================
+import axios, { AxiosRequestConfig, AxiosResponse, Method } from 'axios';
+// NOTE: https.Agent is Node.js-only and not available in browser environments
+// Browser builds (via webpack) exclude this module - see webpack.config.js fallback settings
+import https from 'https';
+⋮----
+import { neverGuard } from './misc-util.js';
+import {
+  CHANNEL_ID,
+  getRestBaseUrl,
+  RestClientOptions,
+  serializeParams,
+} from './requestUtils.js';
+import {
+  checkWebCryptoAPISupported,
+  hashMessage,
+  SignAlgorithm,
+  SignEncodeMethod,
+  signMessage,
+} from './webCryptoAPI.js';
+⋮----
+/**
+ * Used to switch how authentication/requests work under the hood
+ */
+⋮----
+export type RestClientType =
+  (typeof REST_CLIENT_TYPE_ENUM)[keyof typeof REST_CLIENT_TYPE_ENUM];
+⋮----
+interface SignedRequest<T extends object | undefined = {}> {
+  originalParams: T;
+  paramsWithSign?: T & { sign: string };
+  serializedParams: string;
+  sign: string;
+  queryParamsWithSign: string;
+  timestamp: number;
+  recvWindow: number;
+}
+⋮----
+interface UnsignedRequest<T extends object | undefined = {}> {
+  originalParams: T;
+  paramsWithSign: T;
+}
+⋮----
+type SignMethod = 'gateV4';
+⋮----
+/**
+ * Some requests require some params to be in the query string and some in the body. Some even support passing params via headers.
+ * This type anticipates these are possible in any combination.
+ *
+ * The request builder will automatically handle where parameters should go.
+ */
+type ParamsInQueryBodyOrHeader = {
+  query?: object;
+  body?: object;
+  headers?: object;
+  /** multipart/form-data body; mutually exclusive with `body` */
+  multipart?: FormData;
+};
+⋮----
+/** multipart/form-data body; mutually exclusive with `body` */
+⋮----
+/**
+ * Enables:
+ * - Detailed request/response logging
+ * - Full request dump in any exceptions thrown from API responses
+ */
+⋮----
+// request: {
+//   url: response.config.url,
+//   method: response.config.method,
+//   data: response.config.data,
+//   headers: response.config.headers,
+// },
+⋮----
+/**
+ * Impure, mutates params to remove any values that have a key but are undefined.
+ */
+function deleteUndefinedValues(params?: any): void
+⋮----
+export abstract class BaseRestClient
+⋮----
+/** Defines the client type (affecting how requests & signatures behave) */
+abstract getClientType(): RestClientType;
+⋮----
+/**
+   * Create an instance of the REST client. Pass API credentials in the object in the first parameter.
+   * @param {RestClientOptions} [restClientOptions={}] options to configure REST API connectivity
+   * @param {AxiosRequestConfig} [networkOptions={}] HTTP networking options for axios
+   */
+constructor(
+    restClientOptions: RestClientOptions = {},
+    networkOptions: AxiosRequestConfig = {},
+)
+⋮----
+/** Throw errors if any request params are empty */
+⋮----
+/** in ms == 5 minutes by default */
+⋮----
+/** inject custom rquest options based on axios specs - see axios docs for more guidance on AxiosRequestConfig: https://github.com/axios/axios#request-config */
+⋮----
+// If enabled, configure a https agent with keepAlive enabled
+// NOTE: This is Node.js-only functionality. In browser environments, this code is skipped
+// as the 'https' module is excluded via webpack fallback configuration.
+// Browser connection pooling is handled automatically by the browser itself.
+⋮----
+// Extract existing https agent parameters, if provided, to prevent the keepAlive flag from overwriting an existing https agent completely
+⋮----
+// For more advanced configuration, raise an issue on GitHub or use the "networkOptions"
+// parameter to define a custom httpsAgent with the desired properties
+⋮----
+// Check Web Crypto API support when credentials are provided and no custom sign function is used
+⋮----
+// Throw if one of the 3 values is missing, but at least one of them is set
+⋮----
+/**
+   * Timestamp used to sign the request. Override this method to implement your own timestamp/sync mechanism
+   */
+getSignTimestampMs(): number
+⋮----
+protected get(endpoint: string, params?: object)
+⋮----
+// GET only supports params in the query string
+⋮----
+protected post(endpoint: string, params?: ParamsInQueryBodyOrHeader)
+⋮----
+protected getPrivate(endpoint: string, params?: object)
+⋮----
+// GET only supports params in the query string
+⋮----
+protected postPrivate(endpoint: string, params?: ParamsInQueryBodyOrHeader)
+⋮----
+/** POST private endpoint with multipart/form-data (empty body hash for signing) */
+protected postPrivateMultipart(
+    endpoint: string,
+    formData: FormData,
+    query?: object,
+)
+⋮----
+protected deletePrivate(
+    endpoint: string,
+    params?: ParamsInQueryBodyOrHeader,
+)
+⋮----
+protected putPrivate(endpoint: string, params?: ParamsInQueryBodyOrHeader)
+⋮----
+// protected patchPrivate(endpoint: string, params?: any) {
+protected patchPrivate(endpoint: string, params?: ParamsInQueryBodyOrHeader)
+⋮----
+/**
+   * @private Make a HTTP request to a specific endpoint. Private endpoint API calls are automatically signed.
+   */
+private async _call(
+    method: Method,
+    endpoint: string,
+    params?: ParamsInQueryBodyOrHeader,
+    isPublicApi?: boolean,
+): Promise<any>
+⋮----
+// Sanity check to make sure it's only ever prefixed by one forward slash
+⋮----
+// Build a request and handle signature process
+⋮----
+// Dispatch request
+⋮----
+// See: https://www.gate.io/docs/developers/apiv4/en/#return-format
+⋮----
+// Throw API rejections by parsing the response code from the body
+⋮----
+/**
+   * @private generic handler to parse request exceptions
+   */
+parseException(e: any, request: AxiosRequestConfig<any>): unknown
+⋮----
+// Something happened in setting up the request that triggered an error
+⋮----
+// request made but no response received
+⋮----
+// The request was made and the server responded with a status code
+// that falls out of the range of 2xx
+⋮----
+// console.error('err: ', response?.data);
+⋮----
+// Prevent credentials from leaking into error messages
+⋮----
+/**
+   * @private sign request and set recv window
+   */
+private async signRequest<
+    T extends ParamsInQueryBodyOrHeader | undefined = {},
+  >(
+    data: T,
+    endpoint: string,
+    method: Method,
+    signMethod: SignMethod,
+): Promise<SignedRequest<T>>
+⋮----
+const timestamp = +(this.getSignTimestampMs() / 1000).toFixed(0); // in seconds
+⋮----
+// recvWindow: this.options.recvWindow,
+⋮----
+// It's possible to override the recv window on a per rquest level
+⋮----
+// console.log('sign params: ', {
+//   requestBodyToHash,
+//   paramsStr: toSign,
+//   url: this.baseUrl,
+//   urlPath: this.baseUrlPath,
+// });
+⋮----
+private async signMessage(
+    paramsStr: string,
+    secret: string,
+    method: 'hex' | 'base64',
+    algorithm: SignAlgorithm,
+): Promise<string>
+⋮----
+private async prepareSignParams<
+    TParams extends ParamsInQueryBodyOrHeader | undefined,
+  >(
+    method: Method,
+    endpoint: string,
+    signMethod: SignMethod,
+    params?: TParams,
+    isPublicApi?: true,
+  ): Promise<UnsignedRequest<TParams>>;
+⋮----
+private async prepareSignParams<
+    TParams extends ParamsInQueryBodyOrHeader | undefined,
+  >(
+    method: Method,
+    endpoint: string,
+    signMethod: SignMethod,
+    params?: TParams,
+    isPublicApi?: false | undefined,
+  ): Promise<SignedRequest<TParams>>;
+⋮----
+private async prepareSignParams<
+    TParams extends ParamsInQueryBodyOrHeader | undefined,
+  >(
+    method: Method,
+    endpoint: string,
+    signMethod: SignMethod,
+    params?: TParams,
+    isPublicApi?: boolean,
+)
+⋮----
+/** Returns an axios request object. Handles signing process automatically if this is a private API call */
+private async buildRequest(
+    method: Method,
+    endpoint: string,
+    url: string,
+    params?: ParamsInQueryBodyOrHeader,
+    isPublicApi?: boolean,
+): Promise<AxiosRequestConfig>
+
+================
+File: src/types/request/earn.ts
+================
+/**==========================================================================================================================
+ * EARN
+ * ==========================================================================================================================
+ */
+⋮----
+/** GET /earn/dual/investment_plan */
+export interface GetDualInvestmentPlansReq {
+  plan_id?: number | string;
+  coin?: string;
+  type?: string;
+  quote_currency?: string;
+  /** `apy` | `short-period` | `multiple` */
+  sort?: string;
+  page?: number;
+  page_size?: number;
+}
+⋮----
+/** `apy` | `short-period` | `multiple` */
+⋮----
+/** GET /earn/dual/orders */
+export interface GetDualInvestmentOrdersReq {
+  from?: number;
+  to?: number;
+  type?: string;
+  status?: string;
+  coin?: string;
+  page?: number;
+  limit?: number;
+}
+⋮----
+/** GET /earn/dual/order-refund-preview */
+export interface GetDualOrderRefundPreviewReq {
+  order_id: string;
+}
+⋮----
+/** POST /earn/dual/order-refund */
+export interface SubmitDualOrderRefundParams {
+  order_id: string;
+  /** From order-refund-preview */
+  req_id: string;
+}
+⋮----
+/** From order-refund-preview */
+⋮----
+/** POST /earn/dual/modify-order-reinvest */
+export interface UpdateDualOrderReinvestParams {
+  order_id?: number;
+  /** 0 off, 1 on */
+  status?: number;
+  /** Effective duration in seconds; default 86400 */
+  effective_time_duration?: number;
+}
+⋮----
+/** 0 off, 1 on */
+⋮----
+/** Effective duration in seconds; default 86400 */
+⋮----
+/** GET /earn/dual/project-recommend */
+export interface GetDualProjectRecommendReq {
+  mode?: string;
+  coin?: string;
+  type?: string;
+  /** Comma-separated project IDs to exclude */
+  history_pids?: string;
+}
+⋮----
+/** Comma-separated project IDs to exclude */
+⋮----
+/** GET /earn/dual/stock/investment_plan (public) */
+export interface GetDualStockInvestmentPlansReq {
+  plan_id?: string;
+  coin?: string;
+  /** `call` sell high, `put` buy low */
+  type?: 'call' | 'put';
+  /** Settlement currency. Default USDT */
+  quote_currency?: string;
+  /** `apy` | `short-period` | `multiple` */
+  sort?: string;
+  page?: number;
+  /** Max 100 */
+  page_size?: number;
+}
+⋮----
+/** `call` sell high, `put` buy low */
+⋮----
+/** Settlement currency. Default USDT */
+⋮----
+/** `apy` | `short-period` | `multiple` */
+⋮----
+/** Max 100 */
+⋮----
+/** GET /earn/dual/stock/orders */
+export interface GetDualStockOrdersReq {
+  coin?: string;
+  /**
+   * HOLD current, REPAY historical, PROCESSING, SETTLEMENT_PROCESSING, ALL.
+   * Default ALL.
+   */
+  status?: string;
+  /** `call` sell high, `put` buy low */
+  type?: 'call' | 'put';
+  /** Unix seconds */
+  from?: number;
+  /** Unix seconds */
+  to?: number;
+  page?: number;
+  /** Max 100. Defaults to 100 when omitted */
+  page_size?: number;
+  limit?: number;
+}
+⋮----
+/**
+   * HOLD current, REPAY historical, PROCESSING, SETTLEMENT_PROCESSING, ALL.
+   * Default ALL.
+   */
+⋮----
+/** `call` sell high, `put` buy low */
+⋮----
+/** Unix seconds */
+⋮----
+/** Unix seconds */
+⋮----
+/** Max 100. Defaults to 100 when omitted */
+⋮----
+/** POST /earn/dual/stock/orders */
+export interface PlaceDualStockInvestmentOrderParams {
+  plan_id: string;
+  amount: string;
+  /**
+   * Custom id. Must start with `t-`, at most 28 bytes after that prefix,
+   * and only numbers, letters, underscore, hyphen, or dot.
+   */
+  text?: string;
+  /**
+   * 1 uses the spot account to fund a buy-low (put) subscription.
+   * Omit, or any value other than 1, leaves it unselected.
+   */
+  hit_spot?: 0 | 1;
+  /** 1 uses the stock account to fund a buy-low (put) subscription. */
+  hit_stock?: 0 | 1;
+  /** 1 uses the Simple Earn account to fund a buy-low (put) subscription. */
+  hit_simple?: 0 | 1;
+}
+⋮----
+/**
+   * Custom id. Must start with `t-`, at most 28 bytes after that prefix,
+   * and only numbers, letters, underscore, hyphen, or dot.
+   */
+⋮----
+/**
+   * 1 uses the spot account to fund a buy-low (put) subscription.
+   * Omit, or any value other than 1, leaves it unselected.
+   */
+⋮----
+/** 1 uses the stock account to fund a buy-low (put) subscription. */
+⋮----
+/** 1 uses the Simple Earn account to fund a buy-low (put) subscription. */
+⋮----
+/** Request params for POST /earn/dual/orders */
+export interface PlaceDualInvestmentOrderParams {
+  plan_id: string;
+  /** Subscription amount. Mutually exclusive with copies. */
+  amount: string;
+  /** Units. Mutually exclusive with amount. */
+  copies?: string;
+  /** Custom order info, must start with t- */
+  text?: string;
+}
+⋮----
+/** Subscription amount. Mutually exclusive with copies. */
+⋮----
+/** Units. Mutually exclusive with amount. */
+⋮----
+/** Custom order info, must start with t- */
+⋮----
+/**==========================================================================================================================
+ * EARN FIXED-TERM
+ * ==========================================================================================================================
+ */
+⋮----
+export interface GetEarnFixedTermProductsReq {
+  asset?: string;
+  type?: number; // 1 regular, 2 VIP
+  page: number;
+  limit: number;
+}
+⋮----
+type?: number; // 1 regular, 2 VIP
+⋮----
+export interface GetEarnFixedTermProductsByAssetReq {
+  /** Product type: "" or 1 regular, 2 VIP, 0 all */
+  type?: string;
+}
+⋮----
+/** Product type: "" or 1 regular, 2 VIP, 0 all */
+⋮----
+export interface CreateEarnFixedTermLendReq {
+  product_id: number;
+  amount: string;
+  year_rate?: string;
+  reinvest_status?: number; // 0 off, 1 on
+  redeem_account_type?: number; // 1 spot
+  financial_rate_id?: number; // interest boost coupon id, 0 = none
+  sub_business?: number;
+}
+⋮----
+reinvest_status?: number; // 0 off, 1 on
+redeem_account_type?: number; // 1 spot
+financial_rate_id?: number; // interest boost coupon id, 0 = none
+⋮----
+export interface GetEarnFixedTermLendsReq {
+  product_id?: number;
+  order_id?: number;
+  asset?: string;
+  order_type: '1' | '2'; // 1 current, 2 historical
+  page: number;
+  limit: number;
+  sub_business?: number;
+  business_filter?: string;
+}
+⋮----
+order_type: '1' | '2'; // 1 current, 2 historical
+⋮----
+export interface EarnFixedTermPreRedeemReq {
+  order_id: string;
+}
+⋮----
+export interface GetEarnFixedTermHistoryReq {
+  product_id?: number;
+  order_id?: string;
+  asset?: string;
+  type: '1' | '2' | '3' | '4'; // 1 subscribe, 2 redeem, 3 interest, 4 bonus
+  page: number;
+  limit: number;
+  start_at?: number;
+  end_at?: number;
+  sub_business?: number;
+  business_filter?: string;
+}
+⋮----
+type: '1' | '2' | '3' | '4'; // 1 subscribe, 2 redeem, 3 interest, 4 bonus
+
+================
+File: src/types/request/otc.ts
+================
+import { GateMultipartFile } from '../../lib/multipartUtil.js';
+⋮----
+/**==========================================================================================================================
+ * OTC
+ * ==========================================================================================================================
+ */
+⋮----
+export interface CreateOTCQuoteReq {
+  side: 'PAY' | 'GET'; // PAY means user inputs pay amount, GET means user inputs get amount
+  pay_coin: string; // Currency the user pays
+  get_coin: string; // Currency the user receives
+  pay_amount?: string; // User payment currency amount (required if side is PAY)
+  get_amount?: string; // Amount of currency received by user (required if side is GET)
+  create_quote_token?: string; // Create quote token: 0: quote preview only; 1: generate quote token for order placement
+  promotion_code?: string; // Promotion code (optional)
+}
+⋮----
+side: 'PAY' | 'GET'; // PAY means user inputs pay amount, GET means user inputs get amount
+pay_coin: string; // Currency the user pays
+get_coin: string; // Currency the user receives
+pay_amount?: string; // User payment currency amount (required if side is PAY)
+get_amount?: string; // Amount of currency received by user (required if side is GET)
+create_quote_token?: string; // Create quote token: 0: quote preview only; 1: generate quote token for order placement
+promotion_code?: string; // Promotion code (optional)
+⋮----
+export interface CreateOTCFiatOrderReq {
+  type: 'BUY' | 'SELL'; // BUY (on-ramp) or SELL (off-ramp)
+  side: string; // Quote direction returned by the quote API (used for order validation)
+  crypto_currency: string; // Cryptocurrency
+  fiat_currency: string; // Fiat currency
+  crypto_amount: string; // Amount of cryptocurrency
+  fiat_amount: string; // Fiat amount
+  promotion_code?: string; // Promotion code
+  quote_token: string; // Parameter returned by the quote API
+  /** From GET /otc/bank/list; default card has is_default=1 */
+  bank_id: string;
+  receive_type?: string;
+}
+⋮----
+type: 'BUY' | 'SELL'; // BUY (on-ramp) or SELL (off-ramp)
+side: string; // Quote direction returned by the quote API (used for order validation)
+crypto_currency: string; // Cryptocurrency
+fiat_currency: string; // Fiat currency
+crypto_amount: string; // Amount of cryptocurrency
+fiat_amount: string; // Fiat amount
+promotion_code?: string; // Promotion code
+quote_token: string; // Parameter returned by the quote API
+/** From GET /otc/bank/list; default card has is_default=1 */
+⋮----
+export interface CreateOTCStablecoinOrderReq {
+  pay_coin: string; // Currency paid by the user
+  get_coin: string; // Currency to be received by the user
+  pay_amount: string; // User payment currency amount
+  get_amount: string; // Amount of currency received by the user
+  side: string; // Quote direction returned by the quote API (used for order validation)
+  quote_token: string; // Parameter returned by the quote API
+  promotion_code?: string; // Promotion code (optional)
+}
+⋮----
+pay_coin: string; // Currency paid by the user
+get_coin: string; // Currency to be received by the user
+pay_amount: string; // User payment currency amount
+get_amount: string; // Amount of currency received by the user
+side: string; // Quote direction returned by the quote API (used for order validation)
+quote_token: string; // Parameter returned by the quote API
+promotion_code?: string; // Promotion code (optional)
+⋮----
+export interface MarkOTCOrderAsPaidReq {
+  order_id: string; // Order ID
+  client_order_id?: string; // Client order ID (gateway/Inner Pay paths)
+  payment_receipt_file_key: string; // Required. Stored as file_key; jpg/jpeg/png/pdf; ≤10MB
+  payment_receipt?: string; // Alias compatible with payment_receipt_file_key
+}
+⋮----
+order_id: string; // Order ID
+client_order_id?: string; // Client order ID (gateway/Inner Pay paths)
+payment_receipt_file_key: string; // Required. Stored as file_key; jpg/jpeg/png/pdf; ≤10MB
+payment_receipt?: string; // Alias compatible with payment_receipt_file_key
+⋮----
+export interface CancelOTCOrderReq {
+  order_id: string; // Order ID
+}
+⋮----
+order_id: string; // Order ID
+⋮----
+export interface GetOTCFiatOrderListReq {
+  type?: 'BUY' | 'SELL'; // BUY (on-ramp) or SELL (off-ramp)
+  fiat_currency?: string; // Fiat currency
+  crypto_currency?: string; // Digital currency
+  start_time?: string; // Start Time
+  end_time?: string; // End time
+  status?: string; // DONE: Completed
+  pn?: string; // Page number
+  ps?: string; // Number of items per page
+}
+⋮----
+type?: 'BUY' | 'SELL'; // BUY (on-ramp) or SELL (off-ramp)
+fiat_currency?: string; // Fiat currency
+crypto_currency?: string; // Digital currency
+start_time?: string; // Start Time
+end_time?: string; // End time
+status?: string; // DONE: Completed
+pn?: string; // Page number
+ps?: string; // Number of items per page
+⋮----
+export interface GetOTCStablecoinOrderListReq {
+  page_size?: string; // Number of records per page
+  page_number?: string; // Page number
+  coin_name?: string; // Order currency
+  start_time?: string; // Start Time
+  end_time?: string; // End time
+  status?: string; // Status: PROCESSING: in progress / DONE: completed / FAILED: failed
+}
+⋮----
+page_size?: string; // Number of records per page
+page_number?: string; // Page number
+coin_name?: string; // Order currency
+start_time?: string; // Start Time
+end_time?: string; // End time
+status?: string; // Status: PROCESSING: in progress / DONE: completed / FAILED: failed
+⋮----
+export interface GetOTCFiatOrderDetailReq {
+  order_id: string; // Order ID
+}
+⋮----
+order_id: string; // Order ID
+⋮----
+export interface OTCBankIdReq {
+  bank_id: string;
+}
+⋮----
+export interface GetOTCBankSupplementChecklistReq {
+  bank_id: string;
+}
+⋮----
+export interface CreateOTCBankReq {
+  bank_account_name: string;
+  bank_name: string;
+  bank_country: string;
+  bank_address: string;
+  iban: string;
+  swift: string;
+  remittance_line_number?: string;
+  agent_bank_name?: string;
+  agent_bank_swift?: string;
+  documentation_file?: GateMultipartFile;
+  documentation_file_key?: string;
+  file_type?: string;
+}
+⋮----
+export interface SubmitOTCBankPersonalSupplementReq {
+  bank_id: string;
+  id_document_front: GateMultipartFile;
+  id_document_back: GateMultipartFile;
+  address_proof: GateMultipartFile;
+}
+⋮----
+export interface SubmitOTCBankEnterpriseSupplementReq {
+  bank_id: string;
+  certificate: GateMultipartFile;
+  share_holders: GateMultipartFile;
+  passport: GateMultipartFile;
+  share_holding_structure: GateMultipartFile;
+  uid?: string;
+  funds_statement?: GateMultipartFile;
+  additional?: GateMultipartFile;
+}
+⋮----
+export interface CreateOTCUploadPreUploadReq {
+  content_type: string;
+  scene: 'general' | 'bank' | 'assessment' | 'credit';
+}
+
+================
+File: src/types/request/spot.ts
+================
+/**==========================================================================================================================
+ * SPOT
+ * ==========================================================================================================================
+ */
+⋮----
+/** Limit-order take-profit / stop-loss on create */
+export interface SpotOrderTPSL {
+  trigger_price: string;
+  order_price: string;
+}
+⋮----
+/** Limit-order take-profit / stop-loss on amend; `{}` cancels, `null` leaves unchanged */
+export type PatchSpotOrderTPSL = SpotOrderTPSL | {} | null;
+⋮----
+export interface GetSpotOrderBookReq {
+  currency_pair: string;
+  interval?: string;
+  limit?: number;
+  with_id?: boolean;
+}
+⋮----
+export interface GetSpotTradesReq {
+  currency_pair: string;
+  limit?: number;
+  last_id?: string;
+  reverse?: boolean;
+  from?: number;
+  to?: number;
+  page?: number;
+}
+⋮----
+export interface GetSpotCandlesReq {
+  currency_pair: string;
+  limit?: number;
+  from?: number;
+  to?: number;
+  interval?:
+    | '1s'
+    | '10s'
+    | '1m'
+    | '5m'
+    | '15m'
+    | '30m'
+    | '1h'
+    | '4h'
+    | '8h'
+    | '1d'
+    | '7d'
+    | '30d';
+}
+⋮----
+export interface GetSpotAccountBookReq {
+  currency?: string;
+  from?: number;
+  to?: number;
+  page?: number;
+  limit?: number;
+  /**
+   * BizType / business type filter. Sub-account transfer internal BizType values include
+   * 150215, 150216, 150217, 150218, 150219 (Subaccount Transfer); see Gate BizType reference.
+   */
+  type?: string;
+  code?: string;
+}
+⋮----
+/**
+   * BizType / business type filter. Sub-account transfer internal BizType values include
+   * 150215, 150216, 150217, 150218, 150219 (Subaccount Transfer); see Gate BizType reference.
+   */
+⋮----
+export interface SubmitSpotClosePosCrossDisabledReq {
+  text?: string;
+  currency_pair: string;
+  amount: string;
+  price: string;
+  action_mode?: 'ACK' | 'RESULT' | 'FULL';
+}
+⋮----
+export interface GetSpotOrdersReq {
+  currency_pair: string;
+  status: 'open' | 'finished';
+  page?: number;
+  limit?: number;
+  account?: 'spot' | 'margin' | 'cross_margin' | 'unified';
+  from?: number;
+  to?: number;
+  side?: 'buy' | 'sell';
+}
+⋮----
+export interface CancelSpotBatchOrdersReq {
+  currency_pair: string;
+  id: string;
+  account?: 'cross_margin';
+  action_mode?: 'ACK' | 'RESULT' | 'FULL';
+}
+⋮----
+export interface DeleteSpotOrderReq {
+  order_id: string;
+  currency_pair: string;
+  account?: 'spot' | 'margin' | 'cross_margin' | 'unified';
+  action_mode?: 'ACK' | 'RESULT' | 'FULL';
+  xGateExptime?: number;
+}
+⋮----
+export interface GetSpotOrderReq {
+  order_id: string;
+  currency_pair: string;
+  account?: 'spot' | 'margin' | 'cross_margin' | 'unified';
+}
+⋮----
+export interface GetSpotTradingHistoryReq {
+  currency_pair?: string;
+  limit?: number;
+  page?: number;
+  order_id?: string;
+  account?: 'spot' | 'margin' | 'cross_margin' | 'unified';
+  from?: number;
+  to?: number;
+}
+⋮----
+export interface UpdateSpotBatchOrdersReq {
+  order_id?: string;
+  currency_pair?: string;
+  amount?: string;
+  price?: string;
+  amend_text?: string;
+  stop_loss?: PatchSpotOrderTPSL;
+  stop_profit?: PatchSpotOrderTPSL;
+}
+⋮----
+export interface GetSpotInsuranceHistoryReq {
+  business: 'margin' | 'unified';
+  currency: string;
+  from: number;
+  to: number;
+  page?: number;
+  limit?: number;
+}
+⋮----
+export interface GetSpotAutoOrdersReq {
+  status: 'open' | 'finished';
+  market?: string;
+  account?: 'normal' | 'margin' | 'cross_margin' | 'unified';
+  limit?: number;
+  offset?: number;
+}
+⋮----
+export interface SubmitSpotOrderReq {
+  xGateExptime?: number;
+  side: 'buy' | 'sell';
+  amount: string;
+  text?: string;
+  currency_pair: string;
+  type?: 'limit' | 'market';
+  account?: 'spot' | 'margin' | 'cross_margin' | 'unified';
+  price?: string;
+  time_in_force?: 'gtc' | 'ioc' | 'poc' | 'fok';
+  iceberg?: string;
+  auto_borrow?: boolean;
+  auto_repay?: boolean;
+  stp_act?: string;
+  action_mode?: string;
+  stop_loss?: PatchSpotOrderTPSL;
+  stop_profit?: PatchSpotOrderTPSL;
+  post_only?: boolean;
+  trade_quote?: string;
+}
+⋮----
+export interface UpdateSpotOrderReq {
+  xGateExptime?: number;
+  order_id: string;
+  currency_pair: string;
+  account?: 'spot' | 'margin' | 'cross_margin' | 'unified';
+  amount?: string;
+  price?: string;
+  amend_text?: string;
+  action_mode?: 'ACK' | 'RESULT' | 'FULL';
+  stop_loss?: PatchSpotOrderTPSL;
+  stop_profit?: PatchSpotOrderTPSL;
+}
+⋮----
+/** GET /spot/pov_orders */
+export interface GetSpotPovOrdersReq {
+  status: 'open' | 'finished';
+  currency_pair?: string;
+  side?: 'buy' | 'sell';
+  page?: number;
+  limit?: number;
+}
+⋮----
+/** POST /spot/pov_orders */
+export interface CreateSpotPovOrderReq {
+  currency_pair: string;
+  side: 'buy' | 'sell';
+  amount: string;
+  participation_rate: 5 | 10 | 20 | 40;
+  ttl: '1h' | '6h' | '12h' | '1d' | '2d' | '3d' | '4d' | '5d' | '6d' | '7d';
+  limit_price?: string;
+  trigger_price?: string;
+  text?: string;
+}
+⋮----
+/** DELETE /spot/pov_orders */
+export interface CancelSpotPovOrdersReq {
+  currency_pair?: string;
+}
+
+================
+File: src/types/response/unified.ts
+================
+export interface UnifiedAccountInfo {
+  mode: 'classic' | 'multi_currency' | 'portfolio' | 'single_currency'; // classic: Classic account; multi_currency: Multi-currency margin; portfolio: Portfolio margin; single_currency: Single-currency margin
+  user_id: number;
+  refresh_time: number;
+  locked: boolean; // Whether the account is locked; valid in cross-currency/combined margin mode, false in other modes such as single-currency margin
+  balances: {
+    [key: string]: {
+      available: string; // Cross available balance, after deducting futures isolated margin occupation and frozen amount (futures isolated occupation = futures isolated balance); effective in single-currency/multi-currency/portfolio margin mode
+      freeze: string; // Frozen amount; effective in single-currency/multi-currency/portfolio margin mode
+      borrowed: string; // Borrowed amount; valid in cross-currency/combined margin mode, 0 in other modes such as single-currency margin
+      negative_liab: string; // Negative balance borrowing; valid in cross-currency/combined margin mode, 0 in other modes such as single-currency margin
+      futures_pos_liab: string; // Contract opening position borrowing currency (abandoned, to be removed)
+      equity: string; // Currency equity amount (cross); effective in single-currency/multi-currency/portfolio margin mode
+      total_freeze: string; // Total frozen (deprecated, to be removed)
+      total_liab: string; // Total borrowed amount; valid in cross-currency/combined margin mode, 0 in other modes such as single-currency margin
+      spot_in_use: string; // Spot hedging amount; valid in combined (portfolio) margin mode, 0 in single-currency and cross-currency margin modes
+      funding: string; // Uniloan / Earn amount; effective when Earn is enabled as unified account margin
+      funding_version: string; // Funding version
+      cross_balance: string; // Full margin balance; valid in single-currency margin mode, 0 in cross-currency/combined margin mode
+      iso_balance: string; // Futures isolated balance; effective in single-currency and multi-currency margin mode, 0 in portfolio margin mode
+      im: string; // Cross initial margin; only effective for USDT in single-currency margin mode, 0 in multi-currency/portfolio margin mode
+      mm: string; // Cross maintenance margin; only effective for USDT in single-currency margin mode, 0 in multi-currency/portfolio margin mode
+      mmr: string; // Cross maintenance margin rate; only effective for USDT in single-currency margin mode, 0 in multi-currency/portfolio margin mode
+      margin_balance: string; // Cross margin balance; only effective for USDT in single-currency margin mode, 0 in multi-currency/portfolio margin mode
+      available_margin: string; // Cross available margin; only effective for USDT in single-currency margin mode, 0 in multi-currency/portfolio margin mode
+      imr?: string; // Cross initial margin rate; only effective for USDT in single-currency margin mode, 0 in multi-currency/portfolio margin mode
+      enabled_collateral?: boolean; // Currency enabled as margin: true — enabled, false — disabled
+      balance_version?: number; // Balance version number (int64)
+    };
+  };
+  total: string; // Total account assets in USD: sum of (available + freeze) * price per currency (deprecated; use unified_account_total)
+  borrowed: string; // Total borrowed in USD: sum of borrowed * price (excluding point cards); valid in cross-currency/combined margin mode, 0 in single-currency margin mode
+  total_initial_margin: string; // Total initial margin (cross); effective in multi-currency/portfolio margin mode, 0 in single-currency margin mode
+  total_margin_balance: string; // Total margin balance (cross); effective in multi-currency/portfolio margin mode, 0 in single-currency margin mode
+  total_maintenance_margin: string; // Total maintenance margin (cross); effective in multi-currency/portfolio margin mode, 0 in single-currency margin mode
+  total_initial_margin_rate: string; // Total initial margin rate (cross); effective in multi-currency/portfolio margin mode, 0 in single-currency margin mode
+  total_maintenance_margin_rate: string; // Total maintenance margin rate (cross); effective in multi-currency/portfolio margin mode, 0 in single-currency margin mode
+  total_available_margin: string; // Available margin; valid in cross-currency/combined margin mode, 0 in single-currency margin mode
+  unified_account_total: string; // Total unified account assets: cross + isolated in single/multi-currency mode; cross only in portfolio margin mode
+  unified_account_total_liab: string; // Total unified borrowed (cross); effective in multi-currency/portfolio margin mode, 0 in single-currency margin mode
+  unified_account_total_equity: string; // Total unified equity: cross + isolated in single/multi-currency mode; cross only in portfolio margin mode
+  leverage: string; // Account leverage; effective in multi-currency/portfolio margin mode (deprecated; prefer GET /unified/leverage/user_currency_setting)
+  spot_order_loss: string; // Spot pending order loss (USDT); only in cross-currency and portfolio margin mode
+  options_order_loss?: string; // v4.105.29: Option pending order loss (USDT); only in portfolio margin mode
+  spot_hedge: boolean; // Spot hedging: true — enabled, false — disabled
+  margin_mode?: string;
+  total_balance?: string;
+  cross_leverage?: string;
+  portfolio_margin?: string;
+  risk_level?: string;
+  is_all_collateral?: boolean; // Whether all currencies are used as margin: true — all as margin, false — not all
+  borrow_amount?: string;
+  cross_margin_leverage?: string;
+  use_funding?: boolean; // Whether Earn funds are used as margin
+}
+⋮----
+mode: 'classic' | 'multi_currency' | 'portfolio' | 'single_currency'; // classic: Classic account; multi_currency: Multi-currency margin; portfolio: Portfolio margin; single_currency: Single-currency margin
+⋮----
+locked: boolean; // Whether the account is locked; valid in cross-currency/combined margin mode, false in other modes such as single-currency margin
+⋮----
+available: string; // Cross available balance, after deducting futures isolated margin occupation and frozen amount (futures isolated occupation = futures isolated balance); effective in single-currency/multi-currency/portfolio margin mode
+freeze: string; // Frozen amount; effective in single-currency/multi-currency/portfolio margin mode
+borrowed: string; // Borrowed amount; valid in cross-currency/combined margin mode, 0 in other modes such as single-currency margin
+negative_liab: string; // Negative balance borrowing; valid in cross-currency/combined margin mode, 0 in other modes such as single-currency margin
+futures_pos_liab: string; // Contract opening position borrowing currency (abandoned, to be removed)
+equity: string; // Currency equity amount (cross); effective in single-currency/multi-currency/portfolio margin mode
+total_freeze: string; // Total frozen (deprecated, to be removed)
+total_liab: string; // Total borrowed amount; valid in cross-currency/combined margin mode, 0 in other modes such as single-currency margin
+spot_in_use: string; // Spot hedging amount; valid in combined (portfolio) margin mode, 0 in single-currency and cross-currency margin modes
+funding: string; // Uniloan / Earn amount; effective when Earn is enabled as unified account margin
+funding_version: string; // Funding version
+cross_balance: string; // Full margin balance; valid in single-currency margin mode, 0 in cross-currency/combined margin mode
+iso_balance: string; // Futures isolated balance; effective in single-currency and multi-currency margin mode, 0 in portfolio margin mode
+im: string; // Cross initial margin; only effective for USDT in single-currency margin mode, 0 in multi-currency/portfolio margin mode
+mm: string; // Cross maintenance margin; only effective for USDT in single-currency margin mode, 0 in multi-currency/portfolio margin mode
+mmr: string; // Cross maintenance margin rate; only effective for USDT in single-currency margin mode, 0 in multi-currency/portfolio margin mode
+margin_balance: string; // Cross margin balance; only effective for USDT in single-currency margin mode, 0 in multi-currency/portfolio margin mode
+available_margin: string; // Cross available margin; only effective for USDT in single-currency margin mode, 0 in multi-currency/portfolio margin mode
+imr?: string; // Cross initial margin rate; only effective for USDT in single-currency margin mode, 0 in multi-currency/portfolio margin mode
+enabled_collateral?: boolean; // Currency enabled as margin: true — enabled, false — disabled
+balance_version?: number; // Balance version number (int64)
+⋮----
+total: string; // Total account assets in USD: sum of (available + freeze) * price per currency (deprecated; use unified_account_total)
+borrowed: string; // Total borrowed in USD: sum of borrowed * price (excluding point cards); valid in cross-currency/combined margin mode, 0 in single-currency margin mode
+total_initial_margin: string; // Total initial margin (cross); effective in multi-currency/portfolio margin mode, 0 in single-currency margin mode
+total_margin_balance: string; // Total margin balance (cross); effective in multi-currency/portfolio margin mode, 0 in single-currency margin mode
+total_maintenance_margin: string; // Total maintenance margin (cross); effective in multi-currency/portfolio margin mode, 0 in single-currency margin mode
+total_initial_margin_rate: string; // Total initial margin rate (cross); effective in multi-currency/portfolio margin mode, 0 in single-currency margin mode
+total_maintenance_margin_rate: string; // Total maintenance margin rate (cross); effective in multi-currency/portfolio margin mode, 0 in single-currency margin mode
+total_available_margin: string; // Available margin; valid in cross-currency/combined margin mode, 0 in single-currency margin mode
+unified_account_total: string; // Total unified account assets: cross + isolated in single/multi-currency mode; cross only in portfolio margin mode
+unified_account_total_liab: string; // Total unified borrowed (cross); effective in multi-currency/portfolio margin mode, 0 in single-currency margin mode
+unified_account_total_equity: string; // Total unified equity: cross + isolated in single/multi-currency mode; cross only in portfolio margin mode
+leverage: string; // Account leverage; effective in multi-currency/portfolio margin mode (deprecated; prefer GET /unified/leverage/user_currency_setting)
+spot_order_loss: string; // Spot pending order loss (USDT); only in cross-currency and portfolio margin mode
+options_order_loss?: string; // v4.105.29: Option pending order loss (USDT); only in portfolio margin mode
+spot_hedge: boolean; // Spot hedging: true — enabled, false — disabled
+⋮----
+is_all_collateral?: boolean; // Whether all currencies are used as margin: true — all as margin, false — not all
+⋮----
+use_funding?: boolean; // Whether Earn funds are used as margin
+⋮----
+export interface UnifiedLoan {
+  currency: string;
+  currency_pair: string;
+  amount: string;
+  type: 'platform' | 'margin';
+  create_time: number;
+  update_time: number;
+}
+⋮----
+export interface UnifiedLoanRecord {
+  id: number;
+  type: 'borrow' | 'repay';
+  repayment_type: 'none' | 'manual_repay' | 'auto_repay' | 'cancel_auto_repay';
+  currency_pair: string;
+  currency: string;
+  amount: string;
+  create_time: number;
+  borrow_type: string;
+}
+export interface UnifiedInterestRecord {
+  currency: string;
+  currency_pair: string;
+  actual_rate: string;
+  interest: string;
+  status: number;
+  type: 'platform' | 'margin';
+  create_time: number;
+}
+⋮----
+export interface UnifiedRiskUnitDetails {
+  user_id: number;
+  spot_hedge: boolean;
+  risk_units: {
+    symbol: string;
+    spot_in_use: string;
+    maintain_margin: string;
+    initial_margin: string;
+    delta: string;
+    gamma: string;
+    theta: string;
+    vega: string;
+  }[];
+}
+⋮----
+export interface UnifiedCurrencyDiscountTiers {
+  currency: string;
+  discount_tiers: {
+    tier: string;
+    discount: string;
+    lower_limit: string;
+    upper_limit: string;
+    leverage: string;
+  }[];
+}
+⋮----
+export interface UserCurrencyLeverageConfig {
+  current_leverage: string;
+  min_leverage: string;
+  max_leverage: string;
+  debit: string;
+  available_margin: string;
+  borrowable: string;
+  except_leverage_borrowable: string;
+}
+⋮----
+export interface UnifiedLoanCurrency {
+  name: string;
+  prec: string;
+  min_borrow_amount: string;
+  user_max_borrow_amount: string;
+  total_max_borrow_amount: string;
+  loan_status: string;
+}
+⋮----
+export interface UnifiedHistoryLendingRate {
+  currency: string;
+  tier: string;
+  tier_up_rate: string;
+  rates: {
+    time: number;
+    rate: string;
+  }[];
+}
+⋮----
+export interface MarginTier {
+  tier: string;
+  margin_rate: string;
+  lower_limit: string;
+  upper_limit: string;
+}
+⋮----
+export interface PortfolioMarginCalculation {
+  maintain_margin_total: string;
+  initial_margin_total: string;
+  calculate_time: number;
+  risk_unit: {
+    symbol: string;
+    spot_in_use: string;
+    maintain_margin: string;
+    initial_margin: string;
+    margin_result: {
+      type:
+        | 'original_position'
+        | 'long_delta_original_position'
+        | 'short_delta_original_position';
+      profit_loss_ranges: {
+        price_percentage: string;
+        implied_volatility_percentage: string;
+        profit_loss: string;
+      }[];
+      max_loss: {
+        price_percentage: string;
+        implied_volatility_percentage: string;
+        profit_loss: string;
+      };
+      mr1: string;
+      mr2: string;
+      mr3: string;
+      mr4: string;
+      delta: string;
+      gamma: string;
+      theta: string;
+      vega: string;
+    }[];
+  }[];
+}
+⋮----
+export interface UnifiedCollateralCurrenciesResp {
+  is_success: boolean;
+}
+⋮----
+export interface UnifiedQuickRepayDebtItem {
+  currency?: string;
+  debt_amount?: string;
+  estimated_usd?: string;
+  borrowed?: string;
+  neg_balance?: string;
+}
+⋮----
+export interface UnifiedQuickRepayAvailableItem {
+  currency?: string;
+  available?: string;
+  estimated_usd?: string;
+}
+⋮----
+export interface QuickEstimatedRepayment {
+  debt_currencies?: UnifiedQuickRepayDebtItem[];
+  available_currencies?: UnifiedQuickRepayAvailableItem[];
+}
+⋮----
+export interface QuickRepayRepaidInfo {
+  currency: string;
+  repaid: string;
+  left: string;
+}
+⋮----
+export interface QuickRepayUsedInfo {
+  currency: string;
+  used: string;
+}
+⋮----
+export interface QuickRepaymentResp {
+  order_id: string;
+  repaid_infos: QuickRepayRepaidInfo[];
+  used_infos: QuickRepayUsedInfo[];
+}
+⋮----
+/** GET/POST /unified/delta_neutral — v4.106.97 */
+export interface DeltaNeutralEnabled {
+  enabled: boolean;
+}
+⋮----
+/** POST /unified/leverage/user_setting failed currency entry */
+export interface LeverageFailedCurrency {
+  currency: string;
+  reason: string;
+}
+
+================
 File: src/types/websockets/client.ts
 ================
 import type { ClientRequestArgs } from 'http';
@@ -7391,6 +8541,7 @@ export interface WSClientConfigurableOptions {
   /** Your API secret */
   apiSecret?: string;
 
+  /** Use the Gate TestNet WebSocket hosts. */
   useTestnet?: boolean;
 
   /** Define a recv window when preparing a private websocket signature. This is in milliseconds, so 5000 == 5 seconds */
@@ -7434,6 +8585,8 @@ export interface WSClientConfigurableOptions {
 ⋮----
 /** Your API secret */
 ⋮----
+/** Use the Gate TestNet WebSocket hosts. */
+⋮----
 /** Define a recv window when preparing a private websocket signature. This is in milliseconds, so 5000 == 5 seconds */
 ⋮----
 /** How often to check if the connection is alive */
@@ -7465,18 +8618,6 @@ export interface WebsocketClientOptions extends WSClientConfigurableOptions {
   authPrivateRequests: boolean;
   reauthWSAPIOnReconnect: boolean;
 }
-
-================
-File: webpack/webpack.config.cjs
-================
-function generateConfig(name)
-⋮----
-// Add '.ts' and '.tsx' as resolvable extensions.
-⋮----
-// Node.js core modules not available in browsers
-// The REST client's https.Agent (for keepAlive) is Node.js-only and won't work in browsers
-⋮----
-// Code is already transpiled from TypeScript, no additional loaders needed
 
 ================
 File: docs/GATE_SDK_QUICKSTART_GUIDE.md
@@ -9223,10 +10364,7 @@ Gate TestNet is a separate environment with separate credentials. Use it for all
 | USDT perpetual WebSocket | `wss://ws-testnet.gate.com/v4/ws/futures/usdt` |
 | Options WebSocket        | `wss://ws-testnet.gate.com/v4/ws/options`      |
 
-Set the REST API host with `baseUrl` or `baseUrlKey`, and the WebSocket host with `wsUrl` or `useTestnet: true`. Prefer explicit hosts for TestNet examples:
-
-- `baseUrlKey: 'testnet'` uses `https://api-testnet.gateapi.io/api/v4` for spot and futures. `baseUrlKey: 'futuresTestnet'` is the same host, kept so older configs keep working.
-- `useTestnet: true` selects the TestNet WebSocket host for that connection, including Spot and Options. BTC perpetual and delivery TestNet hosts stay on the URLs in the current Gate docs (`wss://fx-ws-testnet.gateio.ws/...`). Announcements still have no TestNet host.
+For WebSocket TestNet, set `useTestnet: true`.
 
 ```javascript
 import { RestClient, WebsocketClient } from 'gateio-api';
@@ -9240,7 +10378,7 @@ const rest = new RestClient({
 const spotWs = new WebsocketClient({
   apiKey: process.env.GATE_TESTNET_API_KEY,
   apiSecret: process.env.GATE_TESTNET_API_SECRET,
-  wsUrl: 'wss://ws-testnet.gate.com/v4/ws/spot',
+  useTestnet: true,
 });
 ```
 
@@ -9716,1177 +10854,6 @@ Common causes are a drifting system clock, the wrong API secret, credentials fro
 - Use [Runtime Workflows](https://siebly.io/reference/runtime-workflows) when designing startup, reconnect, and reconciliation behavior.
 - Open the [Siebly glossary](https://siebly.io/reference/glossary) for order, stream, and recovery terms.
 - Report SDK issues in the [`gateio-api` GitHub repository](https://github.com/sieblyio/gateio-api/issues).
-
-================
-File: src/lib/BaseRestClient.ts
-================
-import axios, { AxiosRequestConfig, AxiosResponse, Method } from 'axios';
-// NOTE: https.Agent is Node.js-only and not available in browser environments
-// Browser builds (via webpack) exclude this module - see webpack.config.js fallback settings
-import https from 'https';
-⋮----
-import { neverGuard } from './misc-util.js';
-import {
-  CHANNEL_ID,
-  getRestBaseUrl,
-  RestClientOptions,
-  serializeParams,
-} from './requestUtils.js';
-import {
-  checkWebCryptoAPISupported,
-  hashMessage,
-  SignAlgorithm,
-  SignEncodeMethod,
-  signMessage,
-} from './webCryptoAPI.js';
-⋮----
-/**
- * Used to switch how authentication/requests work under the hood
- */
-⋮----
-export type RestClientType =
-  (typeof REST_CLIENT_TYPE_ENUM)[keyof typeof REST_CLIENT_TYPE_ENUM];
-⋮----
-interface SignedRequest<T extends object | undefined = {}> {
-  originalParams: T;
-  paramsWithSign?: T & { sign: string };
-  serializedParams: string;
-  sign: string;
-  queryParamsWithSign: string;
-  timestamp: number;
-  recvWindow: number;
-}
-⋮----
-interface UnsignedRequest<T extends object | undefined = {}> {
-  originalParams: T;
-  paramsWithSign: T;
-}
-⋮----
-type SignMethod = 'gateV4';
-⋮----
-/**
- * Some requests require some params to be in the query string and some in the body. Some even support passing params via headers.
- * This type anticipates these are possible in any combination.
- *
- * The request builder will automatically handle where parameters should go.
- */
-type ParamsInQueryBodyOrHeader = {
-  query?: object;
-  body?: object;
-  headers?: object;
-  /** multipart/form-data body; mutually exclusive with `body` */
-  multipart?: FormData;
-};
-⋮----
-/** multipart/form-data body; mutually exclusive with `body` */
-⋮----
-/**
- * Enables:
- * - Detailed request/response logging
- * - Full request dump in any exceptions thrown from API responses
- */
-⋮----
-// request: {
-//   url: response.config.url,
-//   method: response.config.method,
-//   data: response.config.data,
-//   headers: response.config.headers,
-// },
-⋮----
-/**
- * Impure, mutates params to remove any values that have a key but are undefined.
- */
-function deleteUndefinedValues(params?: any): void
-⋮----
-export abstract class BaseRestClient
-⋮----
-/** Defines the client type (affecting how requests & signatures behave) */
-abstract getClientType(): RestClientType;
-⋮----
-/**
-   * Create an instance of the REST client. Pass API credentials in the object in the first parameter.
-   * @param {RestClientOptions} [restClientOptions={}] options to configure REST API connectivity
-   * @param {AxiosRequestConfig} [networkOptions={}] HTTP networking options for axios
-   */
-constructor(
-    restClientOptions: RestClientOptions = {},
-    networkOptions: AxiosRequestConfig = {},
-)
-⋮----
-/** Throw errors if any request params are empty */
-⋮----
-/** in ms == 5 minutes by default */
-⋮----
-/** inject custom rquest options based on axios specs - see axios docs for more guidance on AxiosRequestConfig: https://github.com/axios/axios#request-config */
-⋮----
-// If enabled, configure a https agent with keepAlive enabled
-// NOTE: This is Node.js-only functionality. In browser environments, this code is skipped
-// as the 'https' module is excluded via webpack fallback configuration.
-// Browser connection pooling is handled automatically by the browser itself.
-⋮----
-// Extract existing https agent parameters, if provided, to prevent the keepAlive flag from overwriting an existing https agent completely
-⋮----
-// For more advanced configuration, raise an issue on GitHub or use the "networkOptions"
-// parameter to define a custom httpsAgent with the desired properties
-⋮----
-// Check Web Crypto API support when credentials are provided and no custom sign function is used
-⋮----
-// Throw if one of the 3 values is missing, but at least one of them is set
-⋮----
-/**
-   * Timestamp used to sign the request. Override this method to implement your own timestamp/sync mechanism
-   */
-getSignTimestampMs(): number
-⋮----
-protected get(endpoint: string, params?: object)
-⋮----
-// GET only supports params in the query string
-⋮----
-protected post(endpoint: string, params?: ParamsInQueryBodyOrHeader)
-⋮----
-protected getPrivate(endpoint: string, params?: object)
-⋮----
-// GET only supports params in the query string
-⋮----
-protected postPrivate(endpoint: string, params?: ParamsInQueryBodyOrHeader)
-⋮----
-/** POST private endpoint with multipart/form-data (empty body hash for signing) */
-protected postPrivateMultipart(
-    endpoint: string,
-    formData: FormData,
-    query?: object,
-)
-⋮----
-protected deletePrivate(
-    endpoint: string,
-    params?: ParamsInQueryBodyOrHeader,
-)
-⋮----
-protected putPrivate(endpoint: string, params?: ParamsInQueryBodyOrHeader)
-⋮----
-// protected patchPrivate(endpoint: string, params?: any) {
-protected patchPrivate(endpoint: string, params?: ParamsInQueryBodyOrHeader)
-⋮----
-/**
-   * @private Make a HTTP request to a specific endpoint. Private endpoint API calls are automatically signed.
-   */
-private async _call(
-    method: Method,
-    endpoint: string,
-    params?: ParamsInQueryBodyOrHeader,
-    isPublicApi?: boolean,
-): Promise<any>
-⋮----
-// Sanity check to make sure it's only ever prefixed by one forward slash
-⋮----
-// Build a request and handle signature process
-⋮----
-// Dispatch request
-⋮----
-// See: https://www.gate.io/docs/developers/apiv4/en/#return-format
-⋮----
-// Throw API rejections by parsing the response code from the body
-⋮----
-/**
-   * @private generic handler to parse request exceptions
-   */
-parseException(e: any, request: AxiosRequestConfig<any>): unknown
-⋮----
-// Something happened in setting up the request that triggered an error
-⋮----
-// request made but no response received
-⋮----
-// The request was made and the server responded with a status code
-// that falls out of the range of 2xx
-⋮----
-// console.error('err: ', response?.data);
-⋮----
-// Prevent credentials from leaking into error messages
-⋮----
-/**
-   * @private sign request and set recv window
-   */
-private async signRequest<
-    T extends ParamsInQueryBodyOrHeader | undefined = {},
-  >(
-    data: T,
-    endpoint: string,
-    method: Method,
-    signMethod: SignMethod,
-): Promise<SignedRequest<T>>
-⋮----
-const timestamp = +(this.getSignTimestampMs() / 1000).toFixed(0); // in seconds
-⋮----
-// recvWindow: this.options.recvWindow,
-⋮----
-// It's possible to override the recv window on a per rquest level
-⋮----
-// console.log('sign params: ', {
-//   requestBodyToHash,
-//   paramsStr: toSign,
-//   url: this.baseUrl,
-//   urlPath: this.baseUrlPath,
-// });
-⋮----
-private async signMessage(
-    paramsStr: string,
-    secret: string,
-    method: 'hex' | 'base64',
-    algorithm: SignAlgorithm,
-): Promise<string>
-⋮----
-private async prepareSignParams<
-    TParams extends ParamsInQueryBodyOrHeader | undefined,
-  >(
-    method: Method,
-    endpoint: string,
-    signMethod: SignMethod,
-    params?: TParams,
-    isPublicApi?: true,
-  ): Promise<UnsignedRequest<TParams>>;
-⋮----
-private async prepareSignParams<
-    TParams extends ParamsInQueryBodyOrHeader | undefined,
-  >(
-    method: Method,
-    endpoint: string,
-    signMethod: SignMethod,
-    params?: TParams,
-    isPublicApi?: false | undefined,
-  ): Promise<SignedRequest<TParams>>;
-⋮----
-private async prepareSignParams<
-    TParams extends ParamsInQueryBodyOrHeader | undefined,
-  >(
-    method: Method,
-    endpoint: string,
-    signMethod: SignMethod,
-    params?: TParams,
-    isPublicApi?: boolean,
-)
-⋮----
-/** Returns an axios request object. Handles signing process automatically if this is a private API call */
-private async buildRequest(
-    method: Method,
-    endpoint: string,
-    url: string,
-    params?: ParamsInQueryBodyOrHeader,
-    isPublicApi?: boolean,
-): Promise<AxiosRequestConfig>
-
-================
-File: src/types/request/earn.ts
-================
-/**==========================================================================================================================
- * EARN
- * ==========================================================================================================================
- */
-⋮----
-/** GET /earn/dual/investment_plan */
-export interface GetDualInvestmentPlansReq {
-  plan_id?: number | string;
-  coin?: string;
-  type?: string;
-  quote_currency?: string;
-  /** `apy` | `short-period` | `multiple` */
-  sort?: string;
-  page?: number;
-  page_size?: number;
-}
-⋮----
-/** `apy` | `short-period` | `multiple` */
-⋮----
-/** GET /earn/dual/orders */
-export interface GetDualInvestmentOrdersReq {
-  from?: number;
-  to?: number;
-  type?: string;
-  status?: string;
-  coin?: string;
-  page?: number;
-  limit?: number;
-}
-⋮----
-/** GET /earn/dual/order-refund-preview */
-export interface GetDualOrderRefundPreviewReq {
-  order_id: string;
-}
-⋮----
-/** POST /earn/dual/order-refund */
-export interface SubmitDualOrderRefundParams {
-  order_id: string;
-  /** From order-refund-preview */
-  req_id: string;
-}
-⋮----
-/** From order-refund-preview */
-⋮----
-/** POST /earn/dual/modify-order-reinvest */
-export interface UpdateDualOrderReinvestParams {
-  order_id?: number;
-  /** 0 off, 1 on */
-  status?: number;
-  /** Effective duration in seconds; default 86400 */
-  effective_time_duration?: number;
-}
-⋮----
-/** 0 off, 1 on */
-⋮----
-/** Effective duration in seconds; default 86400 */
-⋮----
-/** GET /earn/dual/project-recommend */
-export interface GetDualProjectRecommendReq {
-  mode?: string;
-  coin?: string;
-  type?: string;
-  /** Comma-separated project IDs to exclude */
-  history_pids?: string;
-}
-⋮----
-/** Comma-separated project IDs to exclude */
-⋮----
-/** GET /earn/dual/stock/investment_plan (public) */
-export interface GetDualStockInvestmentPlansReq {
-  plan_id?: string;
-  coin?: string;
-  /** `call` sell high, `put` buy low */
-  type?: 'call' | 'put';
-  /** Settlement currency. Default USDT */
-  quote_currency?: string;
-  /** `apy` | `short-period` | `multiple` */
-  sort?: string;
-  page?: number;
-  /** Max 100 */
-  page_size?: number;
-}
-⋮----
-/** `call` sell high, `put` buy low */
-⋮----
-/** Settlement currency. Default USDT */
-⋮----
-/** `apy` | `short-period` | `multiple` */
-⋮----
-/** Max 100 */
-⋮----
-/** GET /earn/dual/stock/orders */
-export interface GetDualStockOrdersReq {
-  coin?: string;
-  /**
-   * HOLD current, REPAY historical, PROCESSING, SETTLEMENT_PROCESSING, ALL.
-   * Default ALL.
-   */
-  status?: string;
-  /** `call` sell high, `put` buy low */
-  type?: 'call' | 'put';
-  /** Unix seconds */
-  from?: number;
-  /** Unix seconds */
-  to?: number;
-  page?: number;
-  /** Max 100. Defaults to 100 when omitted */
-  page_size?: number;
-  limit?: number;
-}
-⋮----
-/**
-   * HOLD current, REPAY historical, PROCESSING, SETTLEMENT_PROCESSING, ALL.
-   * Default ALL.
-   */
-⋮----
-/** `call` sell high, `put` buy low */
-⋮----
-/** Unix seconds */
-⋮----
-/** Unix seconds */
-⋮----
-/** Max 100. Defaults to 100 when omitted */
-⋮----
-/** POST /earn/dual/stock/orders */
-export interface PlaceDualStockInvestmentOrderParams {
-  plan_id: string;
-  amount: string;
-  /**
-   * Custom id. Must start with `t-`, at most 28 bytes after that prefix,
-   * and only numbers, letters, underscore, hyphen, or dot.
-   */
-  text?: string;
-  /**
-   * 1 uses the spot account to fund a buy-low (put) subscription.
-   * Omit, or any value other than 1, leaves it unselected.
-   */
-  hit_spot?: 0 | 1;
-  /** 1 uses the stock account to fund a buy-low (put) subscription. */
-  hit_stock?: 0 | 1;
-  /** 1 uses the Simple Earn account to fund a buy-low (put) subscription. */
-  hit_simple?: 0 | 1;
-}
-⋮----
-/**
-   * Custom id. Must start with `t-`, at most 28 bytes after that prefix,
-   * and only numbers, letters, underscore, hyphen, or dot.
-   */
-⋮----
-/**
-   * 1 uses the spot account to fund a buy-low (put) subscription.
-   * Omit, or any value other than 1, leaves it unselected.
-   */
-⋮----
-/** 1 uses the stock account to fund a buy-low (put) subscription. */
-⋮----
-/** 1 uses the Simple Earn account to fund a buy-low (put) subscription. */
-⋮----
-/** Request params for POST /earn/dual/orders */
-export interface PlaceDualInvestmentOrderParams {
-  plan_id: string;
-  /** Subscription amount. Mutually exclusive with copies. */
-  amount: string;
-  /** Units. Mutually exclusive with amount. */
-  copies?: string;
-  /** Custom order info, must start with t- */
-  text?: string;
-}
-⋮----
-/** Subscription amount. Mutually exclusive with copies. */
-⋮----
-/** Units. Mutually exclusive with amount. */
-⋮----
-/** Custom order info, must start with t- */
-⋮----
-/**==========================================================================================================================
- * EARN FIXED-TERM
- * ==========================================================================================================================
- */
-⋮----
-export interface GetEarnFixedTermProductsReq {
-  asset?: string;
-  type?: number; // 1 regular, 2 VIP
-  page: number;
-  limit: number;
-}
-⋮----
-type?: number; // 1 regular, 2 VIP
-⋮----
-export interface GetEarnFixedTermProductsByAssetReq {
-  /** Product type: "" or 1 regular, 2 VIP, 0 all */
-  type?: string;
-}
-⋮----
-/** Product type: "" or 1 regular, 2 VIP, 0 all */
-⋮----
-export interface CreateEarnFixedTermLendReq {
-  product_id: number;
-  amount: string;
-  year_rate?: string;
-  reinvest_status?: number; // 0 off, 1 on
-  redeem_account_type?: number; // 1 spot
-  financial_rate_id?: number; // interest boost coupon id, 0 = none
-  sub_business?: number;
-}
-⋮----
-reinvest_status?: number; // 0 off, 1 on
-redeem_account_type?: number; // 1 spot
-financial_rate_id?: number; // interest boost coupon id, 0 = none
-⋮----
-export interface GetEarnFixedTermLendsReq {
-  product_id?: number;
-  order_id?: number;
-  asset?: string;
-  order_type: '1' | '2'; // 1 current, 2 historical
-  page: number;
-  limit: number;
-  sub_business?: number;
-  business_filter?: string;
-}
-⋮----
-order_type: '1' | '2'; // 1 current, 2 historical
-⋮----
-export interface EarnFixedTermPreRedeemReq {
-  order_id: string;
-}
-⋮----
-export interface GetEarnFixedTermHistoryReq {
-  product_id?: number;
-  order_id?: string;
-  asset?: string;
-  type: '1' | '2' | '3' | '4'; // 1 subscribe, 2 redeem, 3 interest, 4 bonus
-  page: number;
-  limit: number;
-  start_at?: number;
-  end_at?: number;
-  sub_business?: number;
-  business_filter?: string;
-}
-⋮----
-type: '1' | '2' | '3' | '4'; // 1 subscribe, 2 redeem, 3 interest, 4 bonus
-
-================
-File: src/types/request/otc.ts
-================
-import { GateMultipartFile } from '../../lib/multipartUtil.js';
-⋮----
-/**==========================================================================================================================
- * OTC
- * ==========================================================================================================================
- */
-⋮----
-export interface CreateOTCQuoteReq {
-  side: 'PAY' | 'GET'; // PAY means user inputs pay amount, GET means user inputs get amount
-  pay_coin: string; // Currency the user pays
-  get_coin: string; // Currency the user receives
-  pay_amount?: string; // User payment currency amount (required if side is PAY)
-  get_amount?: string; // Amount of currency received by user (required if side is GET)
-  create_quote_token?: string; // Create quote token: 0: quote preview only; 1: generate quote token for order placement
-  promotion_code?: string; // Promotion code (optional)
-}
-⋮----
-side: 'PAY' | 'GET'; // PAY means user inputs pay amount, GET means user inputs get amount
-pay_coin: string; // Currency the user pays
-get_coin: string; // Currency the user receives
-pay_amount?: string; // User payment currency amount (required if side is PAY)
-get_amount?: string; // Amount of currency received by user (required if side is GET)
-create_quote_token?: string; // Create quote token: 0: quote preview only; 1: generate quote token for order placement
-promotion_code?: string; // Promotion code (optional)
-⋮----
-export interface CreateOTCFiatOrderReq {
-  type: 'BUY' | 'SELL'; // BUY (on-ramp) or SELL (off-ramp)
-  side: string; // Quote direction returned by the quote API (used for order validation)
-  crypto_currency: string; // Cryptocurrency
-  fiat_currency: string; // Fiat currency
-  crypto_amount: string; // Amount of cryptocurrency
-  fiat_amount: string; // Fiat amount
-  promotion_code?: string; // Promotion code
-  quote_token: string; // Parameter returned by the quote API
-  /** From GET /otc/bank/list; default card has is_default=1 */
-  bank_id: string;
-  receive_type?: string;
-}
-⋮----
-type: 'BUY' | 'SELL'; // BUY (on-ramp) or SELL (off-ramp)
-side: string; // Quote direction returned by the quote API (used for order validation)
-crypto_currency: string; // Cryptocurrency
-fiat_currency: string; // Fiat currency
-crypto_amount: string; // Amount of cryptocurrency
-fiat_amount: string; // Fiat amount
-promotion_code?: string; // Promotion code
-quote_token: string; // Parameter returned by the quote API
-/** From GET /otc/bank/list; default card has is_default=1 */
-⋮----
-export interface CreateOTCStablecoinOrderReq {
-  pay_coin: string; // Currency paid by the user
-  get_coin: string; // Currency to be received by the user
-  pay_amount: string; // User payment currency amount
-  get_amount: string; // Amount of currency received by the user
-  side: string; // Quote direction returned by the quote API (used for order validation)
-  quote_token: string; // Parameter returned by the quote API
-  promotion_code?: string; // Promotion code (optional)
-}
-⋮----
-pay_coin: string; // Currency paid by the user
-get_coin: string; // Currency to be received by the user
-pay_amount: string; // User payment currency amount
-get_amount: string; // Amount of currency received by the user
-side: string; // Quote direction returned by the quote API (used for order validation)
-quote_token: string; // Parameter returned by the quote API
-promotion_code?: string; // Promotion code (optional)
-⋮----
-export interface MarkOTCOrderAsPaidReq {
-  order_id: string; // Order ID
-  client_order_id?: string; // Client order ID (gateway/Inner Pay paths)
-  payment_receipt_file_key: string; // Required. Stored as file_key; jpg/jpeg/png/pdf; ≤10MB
-  payment_receipt?: string; // Alias compatible with payment_receipt_file_key
-}
-⋮----
-order_id: string; // Order ID
-client_order_id?: string; // Client order ID (gateway/Inner Pay paths)
-payment_receipt_file_key: string; // Required. Stored as file_key; jpg/jpeg/png/pdf; ≤10MB
-payment_receipt?: string; // Alias compatible with payment_receipt_file_key
-⋮----
-export interface CancelOTCOrderReq {
-  order_id: string; // Order ID
-}
-⋮----
-order_id: string; // Order ID
-⋮----
-export interface GetOTCFiatOrderListReq {
-  type?: 'BUY' | 'SELL'; // BUY (on-ramp) or SELL (off-ramp)
-  fiat_currency?: string; // Fiat currency
-  crypto_currency?: string; // Digital currency
-  start_time?: string; // Start Time
-  end_time?: string; // End time
-  status?: string; // DONE: Completed
-  pn?: string; // Page number
-  ps?: string; // Number of items per page
-}
-⋮----
-type?: 'BUY' | 'SELL'; // BUY (on-ramp) or SELL (off-ramp)
-fiat_currency?: string; // Fiat currency
-crypto_currency?: string; // Digital currency
-start_time?: string; // Start Time
-end_time?: string; // End time
-status?: string; // DONE: Completed
-pn?: string; // Page number
-ps?: string; // Number of items per page
-⋮----
-export interface GetOTCStablecoinOrderListReq {
-  page_size?: string; // Number of records per page
-  page_number?: string; // Page number
-  coin_name?: string; // Order currency
-  start_time?: string; // Start Time
-  end_time?: string; // End time
-  status?: string; // Status: PROCESSING: in progress / DONE: completed / FAILED: failed
-}
-⋮----
-page_size?: string; // Number of records per page
-page_number?: string; // Page number
-coin_name?: string; // Order currency
-start_time?: string; // Start Time
-end_time?: string; // End time
-status?: string; // Status: PROCESSING: in progress / DONE: completed / FAILED: failed
-⋮----
-export interface GetOTCFiatOrderDetailReq {
-  order_id: string; // Order ID
-}
-⋮----
-order_id: string; // Order ID
-⋮----
-export interface OTCBankIdReq {
-  bank_id: string;
-}
-⋮----
-export interface GetOTCBankSupplementChecklistReq {
-  bank_id: string;
-}
-⋮----
-export interface CreateOTCBankReq {
-  bank_account_name: string;
-  bank_name: string;
-  bank_country: string;
-  bank_address: string;
-  iban: string;
-  swift: string;
-  remittance_line_number?: string;
-  agent_bank_name?: string;
-  agent_bank_swift?: string;
-  documentation_file?: GateMultipartFile;
-  documentation_file_key?: string;
-  file_type?: string;
-}
-⋮----
-export interface SubmitOTCBankPersonalSupplementReq {
-  bank_id: string;
-  id_document_front: GateMultipartFile;
-  id_document_back: GateMultipartFile;
-  address_proof: GateMultipartFile;
-}
-⋮----
-export interface SubmitOTCBankEnterpriseSupplementReq {
-  bank_id: string;
-  certificate: GateMultipartFile;
-  share_holders: GateMultipartFile;
-  passport: GateMultipartFile;
-  share_holding_structure: GateMultipartFile;
-  uid?: string;
-  funds_statement?: GateMultipartFile;
-  additional?: GateMultipartFile;
-}
-⋮----
-export interface CreateOTCUploadPreUploadReq {
-  content_type: string;
-  scene: 'general' | 'bank' | 'assessment' | 'credit';
-}
-
-================
-File: src/types/request/spot.ts
-================
-/**==========================================================================================================================
- * SPOT
- * ==========================================================================================================================
- */
-⋮----
-/** Limit-order take-profit / stop-loss on create */
-export interface SpotOrderTPSL {
-  trigger_price: string;
-  order_price: string;
-}
-⋮----
-/** Limit-order take-profit / stop-loss on amend; `{}` cancels, `null` leaves unchanged */
-export type PatchSpotOrderTPSL = SpotOrderTPSL | {} | null;
-⋮----
-export interface GetSpotOrderBookReq {
-  currency_pair: string;
-  interval?: string;
-  limit?: number;
-  with_id?: boolean;
-}
-⋮----
-export interface GetSpotTradesReq {
-  currency_pair: string;
-  limit?: number;
-  last_id?: string;
-  reverse?: boolean;
-  from?: number;
-  to?: number;
-  page?: number;
-}
-⋮----
-export interface GetSpotCandlesReq {
-  currency_pair: string;
-  limit?: number;
-  from?: number;
-  to?: number;
-  interval?:
-    | '1s'
-    | '10s'
-    | '1m'
-    | '5m'
-    | '15m'
-    | '30m'
-    | '1h'
-    | '4h'
-    | '8h'
-    | '1d'
-    | '7d'
-    | '30d';
-}
-⋮----
-export interface GetSpotAccountBookReq {
-  currency?: string;
-  from?: number;
-  to?: number;
-  page?: number;
-  limit?: number;
-  /**
-   * BizType / business type filter. Sub-account transfer internal BizType values include
-   * 150215, 150216, 150217, 150218, 150219 (Subaccount Transfer); see Gate BizType reference.
-   */
-  type?: string;
-  code?: string;
-}
-⋮----
-/**
-   * BizType / business type filter. Sub-account transfer internal BizType values include
-   * 150215, 150216, 150217, 150218, 150219 (Subaccount Transfer); see Gate BizType reference.
-   */
-⋮----
-export interface SubmitSpotClosePosCrossDisabledReq {
-  text?: string;
-  currency_pair: string;
-  amount: string;
-  price: string;
-  action_mode?: 'ACK' | 'RESULT' | 'FULL';
-}
-⋮----
-export interface GetSpotOrdersReq {
-  currency_pair: string;
-  status: 'open' | 'finished';
-  page?: number;
-  limit?: number;
-  account?: 'spot' | 'margin' | 'cross_margin' | 'unified';
-  from?: number;
-  to?: number;
-  side?: 'buy' | 'sell';
-}
-⋮----
-export interface CancelSpotBatchOrdersReq {
-  currency_pair: string;
-  id: string;
-  account?: 'cross_margin';
-  action_mode?: 'ACK' | 'RESULT' | 'FULL';
-}
-⋮----
-export interface DeleteSpotOrderReq {
-  order_id: string;
-  currency_pair: string;
-  account?: 'spot' | 'margin' | 'cross_margin' | 'unified';
-  action_mode?: 'ACK' | 'RESULT' | 'FULL';
-  xGateExptime?: number;
-}
-⋮----
-export interface GetSpotOrderReq {
-  order_id: string;
-  currency_pair: string;
-  account?: 'spot' | 'margin' | 'cross_margin' | 'unified';
-}
-⋮----
-export interface GetSpotTradingHistoryReq {
-  currency_pair?: string;
-  limit?: number;
-  page?: number;
-  order_id?: string;
-  account?: 'spot' | 'margin' | 'cross_margin' | 'unified';
-  from?: number;
-  to?: number;
-}
-⋮----
-export interface UpdateSpotBatchOrdersReq {
-  order_id?: string;
-  currency_pair?: string;
-  amount?: string;
-  price?: string;
-  amend_text?: string;
-  stop_loss?: PatchSpotOrderTPSL;
-  stop_profit?: PatchSpotOrderTPSL;
-}
-⋮----
-export interface GetSpotInsuranceHistoryReq {
-  business: 'margin' | 'unified';
-  currency: string;
-  from: number;
-  to: number;
-  page?: number;
-  limit?: number;
-}
-⋮----
-export interface GetSpotAutoOrdersReq {
-  status: 'open' | 'finished';
-  market?: string;
-  account?: 'normal' | 'margin' | 'cross_margin' | 'unified';
-  limit?: number;
-  offset?: number;
-}
-⋮----
-export interface SubmitSpotOrderReq {
-  xGateExptime?: number;
-  side: 'buy' | 'sell';
-  amount: string;
-  text?: string;
-  currency_pair: string;
-  type?: 'limit' | 'market';
-  account?: 'spot' | 'margin' | 'cross_margin' | 'unified';
-  price?: string;
-  time_in_force?: 'gtc' | 'ioc' | 'poc' | 'fok';
-  iceberg?: string;
-  auto_borrow?: boolean;
-  auto_repay?: boolean;
-  stp_act?: string;
-  action_mode?: string;
-  stop_loss?: PatchSpotOrderTPSL;
-  stop_profit?: PatchSpotOrderTPSL;
-  post_only?: boolean;
-  trade_quote?: string;
-}
-⋮----
-export interface UpdateSpotOrderReq {
-  xGateExptime?: number;
-  order_id: string;
-  currency_pair: string;
-  account?: 'spot' | 'margin' | 'cross_margin' | 'unified';
-  amount?: string;
-  price?: string;
-  amend_text?: string;
-  action_mode?: 'ACK' | 'RESULT' | 'FULL';
-  stop_loss?: PatchSpotOrderTPSL;
-  stop_profit?: PatchSpotOrderTPSL;
-}
-⋮----
-/** GET /spot/pov_orders */
-export interface GetSpotPovOrdersReq {
-  status: 'open' | 'finished';
-  currency_pair?: string;
-  side?: 'buy' | 'sell';
-  page?: number;
-  limit?: number;
-}
-⋮----
-/** POST /spot/pov_orders */
-export interface CreateSpotPovOrderReq {
-  currency_pair: string;
-  side: 'buy' | 'sell';
-  amount: string;
-  participation_rate: 5 | 10 | 20 | 40;
-  ttl: '1h' | '6h' | '12h' | '1d' | '2d' | '3d' | '4d' | '5d' | '6d' | '7d';
-  limit_price?: string;
-  trigger_price?: string;
-  text?: string;
-}
-⋮----
-/** DELETE /spot/pov_orders */
-export interface CancelSpotPovOrdersReq {
-  currency_pair?: string;
-}
-
-================
-File: src/types/response/unified.ts
-================
-export interface UnifiedAccountInfo {
-  mode: 'classic' | 'multi_currency' | 'portfolio' | 'single_currency'; // classic: Classic account; multi_currency: Multi-currency margin; portfolio: Portfolio margin; single_currency: Single-currency margin
-  user_id: number;
-  refresh_time: number;
-  locked: boolean; // Whether the account is locked; valid in cross-currency/combined margin mode, false in other modes such as single-currency margin
-  balances: {
-    [key: string]: {
-      available: string; // Cross available balance, after deducting futures isolated margin occupation and frozen amount (futures isolated occupation = futures isolated balance); effective in single-currency/multi-currency/portfolio margin mode
-      freeze: string; // Frozen amount; effective in single-currency/multi-currency/portfolio margin mode
-      borrowed: string; // Borrowed amount; valid in cross-currency/combined margin mode, 0 in other modes such as single-currency margin
-      negative_liab: string; // Negative balance borrowing; valid in cross-currency/combined margin mode, 0 in other modes such as single-currency margin
-      futures_pos_liab: string; // Contract opening position borrowing currency (abandoned, to be removed)
-      equity: string; // Currency equity amount (cross); effective in single-currency/multi-currency/portfolio margin mode
-      total_freeze: string; // Total frozen (deprecated, to be removed)
-      total_liab: string; // Total borrowed amount; valid in cross-currency/combined margin mode, 0 in other modes such as single-currency margin
-      spot_in_use: string; // Spot hedging amount; valid in combined (portfolio) margin mode, 0 in single-currency and cross-currency margin modes
-      funding: string; // Uniloan / Earn amount; effective when Earn is enabled as unified account margin
-      funding_version: string; // Funding version
-      cross_balance: string; // Full margin balance; valid in single-currency margin mode, 0 in cross-currency/combined margin mode
-      iso_balance: string; // Futures isolated balance; effective in single-currency and multi-currency margin mode, 0 in portfolio margin mode
-      im: string; // Cross initial margin; only effective for USDT in single-currency margin mode, 0 in multi-currency/portfolio margin mode
-      mm: string; // Cross maintenance margin; only effective for USDT in single-currency margin mode, 0 in multi-currency/portfolio margin mode
-      mmr: string; // Cross maintenance margin rate; only effective for USDT in single-currency margin mode, 0 in multi-currency/portfolio margin mode
-      margin_balance: string; // Cross margin balance; only effective for USDT in single-currency margin mode, 0 in multi-currency/portfolio margin mode
-      available_margin: string; // Cross available margin; only effective for USDT in single-currency margin mode, 0 in multi-currency/portfolio margin mode
-      imr?: string; // Cross initial margin rate; only effective for USDT in single-currency margin mode, 0 in multi-currency/portfolio margin mode
-      enabled_collateral?: boolean; // Currency enabled as margin: true — enabled, false — disabled
-      balance_version?: number; // Balance version number (int64)
-    };
-  };
-  total: string; // Total account assets in USD: sum of (available + freeze) * price per currency (deprecated; use unified_account_total)
-  borrowed: string; // Total borrowed in USD: sum of borrowed * price (excluding point cards); valid in cross-currency/combined margin mode, 0 in single-currency margin mode
-  total_initial_margin: string; // Total initial margin (cross); effective in multi-currency/portfolio margin mode, 0 in single-currency margin mode
-  total_margin_balance: string; // Total margin balance (cross); effective in multi-currency/portfolio margin mode, 0 in single-currency margin mode
-  total_maintenance_margin: string; // Total maintenance margin (cross); effective in multi-currency/portfolio margin mode, 0 in single-currency margin mode
-  total_initial_margin_rate: string; // Total initial margin rate (cross); effective in multi-currency/portfolio margin mode, 0 in single-currency margin mode
-  total_maintenance_margin_rate: string; // Total maintenance margin rate (cross); effective in multi-currency/portfolio margin mode, 0 in single-currency margin mode
-  total_available_margin: string; // Available margin; valid in cross-currency/combined margin mode, 0 in single-currency margin mode
-  unified_account_total: string; // Total unified account assets: cross + isolated in single/multi-currency mode; cross only in portfolio margin mode
-  unified_account_total_liab: string; // Total unified borrowed (cross); effective in multi-currency/portfolio margin mode, 0 in single-currency margin mode
-  unified_account_total_equity: string; // Total unified equity: cross + isolated in single/multi-currency mode; cross only in portfolio margin mode
-  leverage: string; // Account leverage; effective in multi-currency/portfolio margin mode (deprecated; prefer GET /unified/leverage/user_currency_setting)
-  spot_order_loss: string; // Spot pending order loss (USDT); only in cross-currency and portfolio margin mode
-  options_order_loss?: string; // v4.105.29: Option pending order loss (USDT); only in portfolio margin mode
-  spot_hedge: boolean; // Spot hedging: true — enabled, false — disabled
-  margin_mode?: string;
-  total_balance?: string;
-  cross_leverage?: string;
-  portfolio_margin?: string;
-  risk_level?: string;
-  is_all_collateral?: boolean; // Whether all currencies are used as margin: true — all as margin, false — not all
-  borrow_amount?: string;
-  cross_margin_leverage?: string;
-  use_funding?: boolean; // Whether Earn funds are used as margin
-}
-⋮----
-mode: 'classic' | 'multi_currency' | 'portfolio' | 'single_currency'; // classic: Classic account; multi_currency: Multi-currency margin; portfolio: Portfolio margin; single_currency: Single-currency margin
-⋮----
-locked: boolean; // Whether the account is locked; valid in cross-currency/combined margin mode, false in other modes such as single-currency margin
-⋮----
-available: string; // Cross available balance, after deducting futures isolated margin occupation and frozen amount (futures isolated occupation = futures isolated balance); effective in single-currency/multi-currency/portfolio margin mode
-freeze: string; // Frozen amount; effective in single-currency/multi-currency/portfolio margin mode
-borrowed: string; // Borrowed amount; valid in cross-currency/combined margin mode, 0 in other modes such as single-currency margin
-negative_liab: string; // Negative balance borrowing; valid in cross-currency/combined margin mode, 0 in other modes such as single-currency margin
-futures_pos_liab: string; // Contract opening position borrowing currency (abandoned, to be removed)
-equity: string; // Currency equity amount (cross); effective in single-currency/multi-currency/portfolio margin mode
-total_freeze: string; // Total frozen (deprecated, to be removed)
-total_liab: string; // Total borrowed amount; valid in cross-currency/combined margin mode, 0 in other modes such as single-currency margin
-spot_in_use: string; // Spot hedging amount; valid in combined (portfolio) margin mode, 0 in single-currency and cross-currency margin modes
-funding: string; // Uniloan / Earn amount; effective when Earn is enabled as unified account margin
-funding_version: string; // Funding version
-cross_balance: string; // Full margin balance; valid in single-currency margin mode, 0 in cross-currency/combined margin mode
-iso_balance: string; // Futures isolated balance; effective in single-currency and multi-currency margin mode, 0 in portfolio margin mode
-im: string; // Cross initial margin; only effective for USDT in single-currency margin mode, 0 in multi-currency/portfolio margin mode
-mm: string; // Cross maintenance margin; only effective for USDT in single-currency margin mode, 0 in multi-currency/portfolio margin mode
-mmr: string; // Cross maintenance margin rate; only effective for USDT in single-currency margin mode, 0 in multi-currency/portfolio margin mode
-margin_balance: string; // Cross margin balance; only effective for USDT in single-currency margin mode, 0 in multi-currency/portfolio margin mode
-available_margin: string; // Cross available margin; only effective for USDT in single-currency margin mode, 0 in multi-currency/portfolio margin mode
-imr?: string; // Cross initial margin rate; only effective for USDT in single-currency margin mode, 0 in multi-currency/portfolio margin mode
-enabled_collateral?: boolean; // Currency enabled as margin: true — enabled, false — disabled
-balance_version?: number; // Balance version number (int64)
-⋮----
-total: string; // Total account assets in USD: sum of (available + freeze) * price per currency (deprecated; use unified_account_total)
-borrowed: string; // Total borrowed in USD: sum of borrowed * price (excluding point cards); valid in cross-currency/combined margin mode, 0 in single-currency margin mode
-total_initial_margin: string; // Total initial margin (cross); effective in multi-currency/portfolio margin mode, 0 in single-currency margin mode
-total_margin_balance: string; // Total margin balance (cross); effective in multi-currency/portfolio margin mode, 0 in single-currency margin mode
-total_maintenance_margin: string; // Total maintenance margin (cross); effective in multi-currency/portfolio margin mode, 0 in single-currency margin mode
-total_initial_margin_rate: string; // Total initial margin rate (cross); effective in multi-currency/portfolio margin mode, 0 in single-currency margin mode
-total_maintenance_margin_rate: string; // Total maintenance margin rate (cross); effective in multi-currency/portfolio margin mode, 0 in single-currency margin mode
-total_available_margin: string; // Available margin; valid in cross-currency/combined margin mode, 0 in single-currency margin mode
-unified_account_total: string; // Total unified account assets: cross + isolated in single/multi-currency mode; cross only in portfolio margin mode
-unified_account_total_liab: string; // Total unified borrowed (cross); effective in multi-currency/portfolio margin mode, 0 in single-currency margin mode
-unified_account_total_equity: string; // Total unified equity: cross + isolated in single/multi-currency mode; cross only in portfolio margin mode
-leverage: string; // Account leverage; effective in multi-currency/portfolio margin mode (deprecated; prefer GET /unified/leverage/user_currency_setting)
-spot_order_loss: string; // Spot pending order loss (USDT); only in cross-currency and portfolio margin mode
-options_order_loss?: string; // v4.105.29: Option pending order loss (USDT); only in portfolio margin mode
-spot_hedge: boolean; // Spot hedging: true — enabled, false — disabled
-⋮----
-is_all_collateral?: boolean; // Whether all currencies are used as margin: true — all as margin, false — not all
-⋮----
-use_funding?: boolean; // Whether Earn funds are used as margin
-⋮----
-export interface UnifiedLoan {
-  currency: string;
-  currency_pair: string;
-  amount: string;
-  type: 'platform' | 'margin';
-  create_time: number;
-  update_time: number;
-}
-⋮----
-export interface UnifiedLoanRecord {
-  id: number;
-  type: 'borrow' | 'repay';
-  repayment_type: 'none' | 'manual_repay' | 'auto_repay' | 'cancel_auto_repay';
-  currency_pair: string;
-  currency: string;
-  amount: string;
-  create_time: number;
-  borrow_type: string;
-}
-export interface UnifiedInterestRecord {
-  currency: string;
-  currency_pair: string;
-  actual_rate: string;
-  interest: string;
-  status: number;
-  type: 'platform' | 'margin';
-  create_time: number;
-}
-⋮----
-export interface UnifiedRiskUnitDetails {
-  user_id: number;
-  spot_hedge: boolean;
-  risk_units: {
-    symbol: string;
-    spot_in_use: string;
-    maintain_margin: string;
-    initial_margin: string;
-    delta: string;
-    gamma: string;
-    theta: string;
-    vega: string;
-  }[];
-}
-⋮----
-export interface UnifiedCurrencyDiscountTiers {
-  currency: string;
-  discount_tiers: {
-    tier: string;
-    discount: string;
-    lower_limit: string;
-    upper_limit: string;
-    leverage: string;
-  }[];
-}
-⋮----
-export interface UserCurrencyLeverageConfig {
-  current_leverage: string;
-  min_leverage: string;
-  max_leverage: string;
-  debit: string;
-  available_margin: string;
-  borrowable: string;
-  except_leverage_borrowable: string;
-}
-⋮----
-export interface UnifiedLoanCurrency {
-  name: string;
-  prec: string;
-  min_borrow_amount: string;
-  user_max_borrow_amount: string;
-  total_max_borrow_amount: string;
-  loan_status: string;
-}
-⋮----
-export interface UnifiedHistoryLendingRate {
-  currency: string;
-  tier: string;
-  tier_up_rate: string;
-  rates: {
-    time: number;
-    rate: string;
-  }[];
-}
-⋮----
-export interface MarginTier {
-  tier: string;
-  margin_rate: string;
-  lower_limit: string;
-  upper_limit: string;
-}
-⋮----
-export interface PortfolioMarginCalculation {
-  maintain_margin_total: string;
-  initial_margin_total: string;
-  calculate_time: number;
-  risk_unit: {
-    symbol: string;
-    spot_in_use: string;
-    maintain_margin: string;
-    initial_margin: string;
-    margin_result: {
-      type:
-        | 'original_position'
-        | 'long_delta_original_position'
-        | 'short_delta_original_position';
-      profit_loss_ranges: {
-        price_percentage: string;
-        implied_volatility_percentage: string;
-        profit_loss: string;
-      }[];
-      max_loss: {
-        price_percentage: string;
-        implied_volatility_percentage: string;
-        profit_loss: string;
-      };
-      mr1: string;
-      mr2: string;
-      mr3: string;
-      mr4: string;
-      delta: string;
-      gamma: string;
-      theta: string;
-      vega: string;
-    }[];
-  }[];
-}
-⋮----
-export interface UnifiedCollateralCurrenciesResp {
-  is_success: boolean;
-}
-⋮----
-export interface UnifiedQuickRepayDebtItem {
-  currency?: string;
-  debt_amount?: string;
-  estimated_usd?: string;
-  borrowed?: string;
-  neg_balance?: string;
-}
-⋮----
-export interface UnifiedQuickRepayAvailableItem {
-  currency?: string;
-  available?: string;
-  estimated_usd?: string;
-}
-⋮----
-export interface QuickEstimatedRepayment {
-  debt_currencies?: UnifiedQuickRepayDebtItem[];
-  available_currencies?: UnifiedQuickRepayAvailableItem[];
-}
-⋮----
-export interface QuickRepayRepaidInfo {
-  currency: string;
-  repaid: string;
-  left: string;
-}
-⋮----
-export interface QuickRepayUsedInfo {
-  currency: string;
-  used: string;
-}
-⋮----
-export interface QuickRepaymentResp {
-  order_id: string;
-  repaid_infos: QuickRepayRepaidInfo[];
-  used_infos: QuickRepayUsedInfo[];
-}
-⋮----
-/** GET/POST /unified/delta_neutral — v4.106.97 */
-export interface DeltaNeutralEnabled {
-  enabled: boolean;
-}
-⋮----
-/** POST /unified/leverage/user_setting failed currency entry */
-export interface LeverageFailedCurrency {
-  currency: string;
-  reason: string;
-}
 
 ================
 File: src/types/request/tradfi.ts
@@ -14842,7 +14809,7 @@ client
   });
 ```
 
-TestNet REST for spot and futures is `baseUrlKey: 'testnet'` (`https://api-testnet.gateapi.io/api/v4`). `baseUrlKey: 'futuresTestnet'` is that same host, kept so older configs keep working. WebSocket TestNet is `useTestnet: true` on `WebsocketClient`.
+WebSocket TestNet: set `useTestnet: true` on `WebsocketClient`.
 
 See [RestClient](./src/RestClient.ts) for further information, or the [examples](./examples/) for lots of usage examples.
 
