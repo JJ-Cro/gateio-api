@@ -4,8 +4,11 @@
  */
 
 export interface CrossExSymbol {
+  /** Exchange_Business_Base_Counter. Stocks/ETFs: {market}_{STOCK|ETF}_{code}_USDT, e.g. US_STOCK_AAPL_USDT */
   symbol: string;
+  /** BINANCE, OKX, GATE, BYBIT, KRAKEN, HYPERLIQUID, DERIBIT, LIGHTER. Stocks/ETFs: US, HK, KR, JP */
   exchange_type: string;
+  /** SPOT, FUTURE, MARGIN, STOCK, ETF */
   business_type: string;
   state: string;
   min_size: string;
@@ -20,7 +23,44 @@ export interface CrossExSymbol {
   delist_time: string;
   support_rpi?: string; // true/false whether RPI orders are supported
   support_cross?: string; // "true"/"false" whether the symbol supports cross-margin orders
+  /**
+   * Required (v4.106.157). Hyperliquid DEX info, or the stock/ETF security description.
+   * Empty string for other businesses.
+   */
+  tag: string;
 }
+
+/** GET /crossex/security_positions. Prices and values use the listing market currency (USD, HKD, KRW, JPY). */
+export interface CrossExSecurityPosition {
+  user_id: string;
+  symbol: string; // Stock or ETF pair
+  price: string; // Latest price in the listing market currency
+  entry_price: string;
+  diluted_cost_price: string;
+  upnl: string; // Unrealized PnL in the listing market currency
+  position_qty: string;
+  position_value: string;
+}
+
+/**
+ * Bill types on GET /crossex/account_book.
+ * v4.106.157 adds SECURITY_DIVIDEND and SECURITY_CORPORATE_ACTION.
+ */
+export type CrossExAccountBookStatementType =
+  | 'TRANSACTION'
+  | 'TRADING_FEE'
+  | 'FUNDING_FEE'
+  | 'LIQUIDATION_FEE'
+  | 'TRANSFER_IN'
+  | 'TRANSFER_OUT'
+  | 'BANKRUPT_COMPENSATION'
+  | 'AUTO_REPAY'
+  | 'INTEREST_ISOLATED'
+  | 'ACCOUNT_MODE_CHANGE'
+  | 'KRAKEN_CONVERSION'
+  | 'SECURITY_DIVIDEND'
+  | 'SECURITY_CORPORATE_ACTION'
+  | 'OTHER';
 
 export interface CrossExRiskLimitTier {
   min_risk_limit_value: string; // Minimum risk limit value
@@ -380,8 +420,17 @@ export interface CrossExHistoryTrade {
 export interface CrossExAccountBook {
   id: string; // Account Change Record ID
   user_id: string; // User ID
-  business_id: string; // Business ID
-  type: string; // TRANSACTION, TRADING_FEE, FUNDING_FEE, LIQUIDATION_FEE, TRANSFER_IN, TRANSFER_OUT, BANKRUPT_COMPENSATION, AUTO_REPAY
+  business_id: string; // Business ID. Meaning depends on statement_type
+  /**
+   * Current docs return the bill type here (example: FUNDING_FEE).
+   * SECURITY_DIVIDEND is a stock or ETF dividend. SECURITY_CORPORATE_ACTION is a split or reverse split.
+   */
+  statement_type?: CrossExAccountBookStatementType;
+  /**
+   * Older responses used `type` for the same bill types, including
+   * SECURITY_DIVIDEND and SECURITY_CORPORATE_ACTION. Current docs use statement_type.
+   */
+  type: string;
   exchange_type: string; // Exchange
   coin: string; // Currency
   change: string; // Change amount (positive indicates transfer in; negative indicates transfer out)

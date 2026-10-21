@@ -1,6 +1,7 @@
 export type GateBaseUrlKey =
   | 'live'
   | 'futuresLiveAlternative'
+  | 'testnet'
   | 'futuresTestnet';
 
 // interfaces

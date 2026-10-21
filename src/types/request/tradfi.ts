@@ -4,10 +4,25 @@ export interface TradFiGetSymbolDetailParams {
   symbols: string;
 }
 
+/**
+ * GET /tradfi/symbols/{symbol}/klines
+ *
+ * Docs: `begin_time` and `end_time` are Unix timestamps in seconds. `limit` max is 500
+ * (a larger limit is an error).
+ *
+ * Live on XAUUSD (19 Oct 2026): millisecond timestamps return an empty list.
+ * `limit` combined with `begin_time` and `end_time` returns INVALID_ARGUMENT
+ * ("Invalid parameter"). `begin_time` without `end_time` returns HTTP 400, label
+ * INTERNAL_SERVER_ERROR, message "Service is busy. Please try again later."
+ * Send `limit` alone, or `begin_time` and `end_time` together.
+ */
 export interface TradFiGetKlinesParams {
   kline_type: '1m' | '15m' | '1h' | '4h' | '1d' | '7d' | '30d';
+  /** Unix seconds. Pair with end_time. Do not send together with limit. */
   begin_time?: number;
+  /** Unix seconds. Required when begin_time is set. */
   end_time?: number;
+  /** Max 500. Do not send together with begin_time and end_time. */
   limit?: number;
 }
 

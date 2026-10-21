@@ -165,11 +165,25 @@ export interface FuturesAccount {
   funding_balance?: string;
 }
 
+/** v4.106.147: includes `dividend` (dividend payout) */
+export type FuturesAccountBookRecordType =
+  | 'dnw'
+  | 'pnl'
+  | 'fee'
+  | 'refr'
+  | 'fund'
+  | 'point_dnw'
+  | 'point_fee'
+  | 'point_refr'
+  | 'bonus_offset'
+  | 'dividend';
+
 export interface FuturesAccountBookRecord {
   time: number;
   change: string;
   balance: string;
-  type: string;
+  /** v4.106.147: includes `dividend` (dividend payout) */
+  type: FuturesAccountBookRecordType;
   text: string;
   contract?: string;
   trade_id: string;

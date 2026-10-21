@@ -101,7 +101,8 @@ export const WS_BASE_URL_MAP: Record<
 > = {
   spotV4: {
     livenet: 'wss://api.gateio.ws/ws/v4/',
-    testnet: 'NoTestnetForSpotWebsockets!',
+    // https://www.gate.com/docs/developers/apiv4/ws/en/
+    testnet: 'wss://ws-testnet.gate.com/v4/ws/spot',
   },
   perpFuturesUSDTV4: {
     livenet: 'wss://fx-ws.gateio.ws/v4/ws/usdt',
@@ -121,7 +122,8 @@ export const WS_BASE_URL_MAP: Record<
   },
   optionsV4: {
     livenet: 'wss://op-ws.gateio.live/v4/ws',
-    testnet: 'wss://op-ws-testnet.gateio.live/v4/ws',
+    // https://www.gate.com/docs/developers/options/ws/en/
+    testnet: 'wss://ws-testnet.gate.com/v4/ws/options',
   },
   announcementsV4: {
     livenet: 'wss://api.gateio.ws/ws/v4/ann',

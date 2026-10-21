@@ -68,6 +68,7 @@ Updated & performant JavaScript & Node.js SDK for the Gate.com (gate.io) REST AP
     - [WebSocket API](#websocket-api)
       - [Event Driven API](#event-driven-api)
       - [REST-like API](#rest-like-api)
+- [Why not raw ws?](#why-not-raw-ws)
 - [Customise Logging](#customise-logging)
 - [Browser/Frontend Usage](#browserfrontend-usage)
   - [Webpack](#webpack)
@@ -228,7 +229,30 @@ client
   });
 ```
 
+TestNet: set `useTestnet: true` on `RestClient` or `WebsocketClient`.
+
 See [RestClient](./src/RestClient.ts) for further information, or the [examples](./examples/) for lots of usage examples.
+
+## Why not raw ws?
+
+Gate publishes [`gate-api`](https://www.npmjs.com/package/gate-api) as a generated REST client. This package, `gateio-api`, covers the REST API and a WebSocket client.
+
+`WebsocketClient` keeps a public or private stream running:
+
+- reconnects after a drop, including Gate's scheduled 24 hour disconnect
+- heartbeats, and treats a missed pong as a dead connection
+- resubscribes to the topics you asked for after reconnect
+- signs private channels and WebSocket API requests
+- typed events: `update`, `response`, `reconnected`, `exception`
+
+Public spot tickers:
+
+```javascript
+const { WebsocketClient } = require('gateio-api');
+const ws = new WebsocketClient();
+ws.on('update', (data) => console.log(data));
+ws.subscribe({ topic: 'spot.tickers', payload: ['BTC_USDT'] }, 'spotV4');
+```
 
 ## WebSockets
 

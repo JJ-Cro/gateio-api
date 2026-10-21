@@ -9,6 +9,9 @@ export interface RestClientOptions {
   /** Your API secret */
   apiSecret?: string;
 
+  /** Use the Gate TestNet REST host. */
+  useTestnet?: boolean;
+
   /**
    * Override the default/global max size of the request window (in ms) for signed api calls.
    * If you don't include a recv window when making an API call, this value will be used as default
@@ -79,10 +82,15 @@ export function serializeParams<T extends Record<string, any> | undefined = {}>(
   return queryString ? prefixWith + queryString : queryString;
 }
 
+/** Global TestNet REST host. Gate docs: spot and futures. */
+const GATE_TESTNET_REST_URL = 'https://api-testnet.gateapi.io/api/v4';
+
 const GATE_BASE_URLS: Record<GateBaseUrlKey, string> = {
   live: 'https://api.gateio.ws/api/v4',
   futuresLiveAlternative: 'https://fx-api.gateio.ws/api/v4',
-  futuresTestnet: 'https://fx-api-testnet.gateio.ws/api/v4',
+  testnet: GATE_TESTNET_REST_URL,
+  // Same host as testnet. The old fx-api-testnet.gateio.ws host returns 502.
+  futuresTestnet: GATE_TESTNET_REST_URL,
 };
 
 export function getRestBaseUrl(restClientOptions: RestClientOptions): string {
@@ -92,6 +100,10 @@ export function getRestBaseUrl(restClientOptions: RestClientOptions): string {
 
   if (restClientOptions.baseUrlKey) {
     return GATE_BASE_URLS[restClientOptions.baseUrlKey];
+  }
+
+  if (restClientOptions.useTestnet) {
+    return GATE_BASE_URLS.testnet;
   }
 
   return GATE_BASE_URLS.live;

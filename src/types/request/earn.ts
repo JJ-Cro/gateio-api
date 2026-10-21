@@ -56,6 +56,61 @@ export interface GetDualProjectRecommendReq {
   history_pids?: string;
 }
 
+/** GET /earn/dual/stock/investment_plan (public) */
+export interface GetDualStockInvestmentPlansReq {
+  plan_id?: string;
+  coin?: string;
+  /** `call` sell high, `put` buy low */
+  type?: 'call' | 'put';
+  /** Settlement currency. Default USDT */
+  quote_currency?: string;
+  /** `apy` | `short-period` | `multiple` */
+  sort?: string;
+  page?: number;
+  /** Max 100 */
+  page_size?: number;
+}
+
+/** GET /earn/dual/stock/orders */
+export interface GetDualStockOrdersReq {
+  coin?: string;
+  /**
+   * HOLD current, REPAY historical, PROCESSING, SETTLEMENT_PROCESSING, ALL.
+   * Default ALL.
+   */
+  status?: string;
+  /** `call` sell high, `put` buy low */
+  type?: 'call' | 'put';
+  /** Unix seconds */
+  from?: number;
+  /** Unix seconds */
+  to?: number;
+  page?: number;
+  /** Max 100. Defaults to 100 when omitted */
+  page_size?: number;
+  limit?: number;
+}
+
+/** POST /earn/dual/stock/orders */
+export interface PlaceDualStockInvestmentOrderParams {
+  plan_id: string;
+  amount: string;
+  /**
+   * Custom id. Must start with `t-`, at most 28 bytes after that prefix,
+   * and only numbers, letters, underscore, hyphen, or dot.
+   */
+  text?: string;
+  /**
+   * 1 uses the spot account to fund a buy-low (put) subscription.
+   * Omit, or any value other than 1, leaves it unselected.
+   */
+  hit_spot?: 0 | 1;
+  /** 1 uses the stock account to fund a buy-low (put) subscription. */
+  hit_stock?: 0 | 1;
+  /** 1 uses the Simple Earn account to fund a buy-low (put) subscription. */
+  hit_simple?: 0 | 1;
+}
+
 /** Request params for POST /earn/dual/orders */
 export interface PlaceDualInvestmentOrderParams {
   plan_id: string;
